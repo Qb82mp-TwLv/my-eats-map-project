@@ -1,0 +1,308 @@
+:root{
+    --bg-color: aliceblue; 
+    --search-bar-option-hover: #f0eeee;
+    --search-border: 1px solid #cfcdcd;
+    --search-border-radius: 10px;
+    --btn-bg-color: #9b9a9a;
+    /* 當使用者移到我、追蹤者或收藏時，會hover的背景 */
+    --user-info-btn-bg-color: #000;
+    --user-info-btn-text-color: #fff;
+    --footer-color: #9b9a9a;
+}
+
+*{
+    padding: 0;
+    margin: 0;
+}
+
+body{
+    width: 100%;
+    height: 100vh;
+    font-family: 'Taipei Sans TC', 'Noto Sans TC', sans-serif;
+    box-sizing: border-box;
+}
+
+.navbar{
+    height: 50px;
+    border-bottom: var(--search-border);
+
+    display: flex;
+    justify-content: center;
+}
+
+.navbar-container{
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    padding-left: 10px;
+    padding-right: 10px;
+
+    box-sizing: border-box;
+}
+
+.navbar-title{
+    width: 100%;
+    height: 100%;
+    font-size: 20px;
+    font-weight: 500;
+    line-height: 50px;
+    cursor: pointer;
+}
+
+.navbar-btn{
+    all: unset;
+    width: 90px;
+    height: 50px;
+
+    font-size: 16px;
+    line-height: 10px;
+    text-align: center;
+
+    cursor: pointer;
+}
+
+.content-container{
+    width: 100%;
+    height: 100%;
+    display: grid;
+    grid-template-columns: 1fr;
+    grid-template-rows: 1fr auto;
+
+    align-items: center;
+}
+
+.secondblock{
+    height: 100%;
+    display: grid;
+    justify-items: center;
+
+    padding-bottom: 50px;
+    box-sizing: border-box;
+}
+
+.setting-info{
+    height: 550px;
+    display: grid;
+    grid-template-columns: 1fr;
+    grid-template-rows: 5fr 2fr 1fr;
+    gap: 10px;
+
+    padding-left: 50px;
+    padding-right: 50px;
+    box-sizing: border-box;
+}
+
+.setting-user{
+    width: 100%;
+    height: 100%;
+    display: grid;
+    grid-template-columns: 1fr;
+    grid-template-rows: repeat(5, 70px);
+}
+
+.user-info-container{
+    width: 100%;
+    height: 100%;
+}
+
+.setting-user-title, .update-title{
+    font-size: 20px;
+    font-weight: 600;
+    height: 100%;
+    line-height: 70px;
+}
+
+.user-info-rows{
+    width: 100%;
+    height: 100%;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: 1fr;
+}
+
+.user-info-l2{
+    width: 100%;
+    height: 100%;
+    display: grid;
+    grid-template-columns: 1fr;
+    grid-template-rows: 1fr 2fr;
+    gap: 5px;
+}
+
+.email-view, .user-info-l2 input{
+    width: 85%;
+    height: 30px;
+    border: 1px solid #000;
+    border-radius: var(--search-border-radius);
+
+    font-size: 16px;
+    padding-left: 10px;
+    box-sizing: border-box;
+}
+
+.email-view{
+    border: 1px solid #000;
+    box-sizing: border-box;
+}
+
+.item-title{
+    font-size: 16px;
+}
+
+.item-tracker, .item-fans{
+    width: 85%;
+    height: 30px;
+    border-radius: var(--search-border-radius);
+    border: var(--search-border);
+
+    position: relative;
+}
+
+.tracker-select, .fans-select{
+    all:unset;
+    width: 100%;
+    height: 100%;
+    box-sizing: border-box;
+    font-size: 16px;
+    font-weight: 500;
+    line-height: 32px;
+    text-align: center;
+    cursor: pointer;
+}
+
+.tracker-droplist, .fans-droplist{
+    width: 100%;
+    position: absolute;
+    cursor: pointer;
+
+    /* display: none; */
+}
+
+.tracker-option, .fans-option{
+    list-style: none;
+    width: 100%;
+    height: 200px;
+    display: grid;
+    grid-template-columns: 1fr;
+    grid-template-rows: repeat(auto-fill, minmax(35px, 1fr));
+    background-color: var(--bg-color);
+    border-radius: 7px;
+
+    text-align: center;
+    align-items: center;
+    margin-top: 3px;
+
+    /* 陰影 */
+    box-shadow: 0 0 3px 2px rgba(0, 0, 0, 0.3);
+    overflow-y: auto;
+
+    &::-webkit-scrollbar{
+        width: 6px;
+        border-radius: var(--search-border-radius);
+        background-color: #cfcdcd;
+    }
+
+    &::-webkit-scrollbar-thumb{
+        background: #9b9a9a;
+        border-radius: 10px;
+    }
+}
+
+.option{
+    height: 35px;
+    font-size: 16px;
+    font-weight: 500;
+    align-items: center;
+    line-height: 35px;
+    cursor: pointer;
+}
+
+.option:hover{
+    background-color: var(--search-bar-option-hover);
+    border-radius: 5px;
+}
+
+.save-user-info, .update-pw-btn{
+    all: unset;
+    width: 90px;
+    height: 30px;
+    background-color: var(--btn-bg-color);
+    border-radius: var(--search-border-radius);
+    text-align: center;
+    cursor: pointer;
+    color: var(--user-info-btn-text-color);
+}
+
+.setting-update{
+    width: 100%;
+    height: 100%;
+    display: grid;
+    grid-template-columns: 1fr;
+    grid-template-rows: repeat(2, 70px);
+}
+
+.logout-container{
+    width: 100%;
+    height: 50px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    padding-top: 10px;
+    box-sizing: border-box;
+}
+
+.logout-btn{
+    width: 100px;
+    height: 100%;
+    background-color: var(--btn-bg-color);
+    border-radius: var(--search-border-radius);
+    
+    font-size: 16px;
+    color: var(--user-info-btn-text-color);
+    text-align: center;
+    line-height: 40px;
+
+    cursor: pointer;
+}
+
+.footbar{
+    height: 100px;
+    font-size: 18px;
+    font-weight: 500;
+    background-color: var(--footer-color);
+    text-align: center;
+    line-height: 100px;
+}
+
+@media (1200px < width <= 1920px) {
+    .navbar-container{
+        width: 1200px;
+    }
+
+    .setting-info{
+        width: 1200px;
+    }
+}
+
+@media (650px < width < 1200px) {
+    .navbar-container{
+        width: 100%;
+    }
+
+    .setting-info{
+        width: 100%;
+    }
+}
+
+@media (300px < width < 650px) {
+    .navbar-container{
+        width: 100%;
+    }
+
+    .setting-info{
+        width: 100%;
+    }
+}

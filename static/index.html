@@ -3,11 +3,87 @@
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <link rel="stylesheet" href="index.css">
-        <script defer src="index.js"></script>
+        <link rel="stylesheet" href="/static/css/index.css">
+        <script defer type="module" src="/static/js/index-controller.js"></script>
         <title>美食地圖</title>
     </head>
     <body>
-        <div class="map-block" id="map"></div>
+        <div class="web-view-container">
+            <div class="map-outside-container">
+                <div class="map-block" id="map"></div>
+            </div>
+            <div class="search-bar">
+                <div class="bar-container">
+                    <div class="user-center">
+                        <button type="button" class="headshot-item">
+                            <img class="headshot-item-img" src="/static/img/caffeine.jpg">
+                        </button>
+                        <div class="user-name">tina</div>
+                    </div>
+                    <div class="position-item">
+                        <div class="item-country">
+                            <button type="button" class="country-select">選擇地區</button>
+                            <div class="country-droplist">
+                                <ul class="country-option">
+                                    <!-- <li class="option">台灣</li>
+                                    <li class="option">日本</li>
+                                    <li class="option">美國</li>
+                                    <li class="option">澳洲</li>
+                                    <li class="option">紐西蘭</li>
+                                    <li class="option">瑞士</li>
+                                    <li class="option">比利時</li>
+                                    <li class="option">義大利</li>
+                                    <li class="option">荷蘭</li> -->
+                                </ul>
+                            </div>
+                        </div>
+                        
+                        <div class="item-city">
+                            <button type="button" class="city-select">選擇城市</button>
+                            <div class="city-droplist">
+                                <ul class="city-option">
+                                    <!-- <li class="option">新竹縣</li>
+                                    <li class="option">新竹市</li>
+                                    <li class="option">台南市</li>
+                                    <li class="option">高雄市</li>
+                                    <li class="option">新北市</li>
+                                    <li class="option">台北市</li>
+                                    <li class="option">桃園市</li>
+                                    <li class="option">宜蘭市</li>
+                                    <li class="option">嘉義縣</li> -->
+                                </ul>
+                            </div>
+                        </div>
+
+                        <div class="item-types">
+                            <button type="button" class="types-select">店家種類</button>
+                            <div class="types-droplist">
+                                <ul class="types-option">
+                                    <!-- <li class="option">下午茶類</li>
+                                    <li class="option">餐食類</li>
+                                    <li class="option">麵包類</li>
+                                    <li class="option">小吃類(攤販)</li>
+                                    <li class="option">手搖類</li>
+                                    <li class="option">速食類</li> -->
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="search-input-item">
+                        <div class="input-item-container">
+                            <input class="input-item-keyword" type="text" placeholder="Search">
+                            <button class="input-item-btn" type="button">
+                                <img src="/static/img/magnifying-glass.png">
+                            </button>
+                        </div>
+                    </div>
+                    <div class="search-btn-item">
+                        <button class="btn-own" type="button">我</button>
+                        <button class="btn-tracker" type="button">追蹤者</button>
+                        <button class="btn-collect" type="button">收藏</button>
+                    </div>
+                </div>
+            </div>
+        </div>
     </body>
 </html>
