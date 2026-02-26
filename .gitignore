@@ -211,5 +211,6 @@ saveData.py
 pos.json
 types.json
 README_data.md
-img/
 sqlImg/
+private_key.pem
+public_key.pem

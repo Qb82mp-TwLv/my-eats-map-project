@@ -13,12 +13,14 @@
 *{
     padding: 0;
     margin: 0;
+    color: #000;
 }
 
 body{
     width: 100%;
     height: 100vh;
-    font-family: 'Taipei Sans TC', 'Noto Sans TC', sans-serif;
+    font-family: "Taipei Sans TC", "Zen Maru Gothic", sans-serif;
+    font-style: normal;
     box-sizing: border-box;
 }
 
@@ -45,8 +47,9 @@ body{
 .navbar-title{
     width: 100%;
     height: 100%;
-    font-size: 20px;
-    font-weight: 500;
+    font-size: 30px;
+    font-weight: bold;
+    font-family: "Kaushan Script";
     line-height: 50px;
 
     cursor: pointer;
@@ -147,11 +150,12 @@ body{
     all: unset;
     width: 100px;
     height: 30px;
-    border: 1px solid #000;
     border-radius: var(--search-border-radius);
     background-color: var(--btn-bg-color);
 
     font-size: 16px;
+    font-family: "Zen Maru Gothic";
+    font-weight: 600;
     text-align: center;
 
     bottom: 0px;
@@ -165,7 +169,9 @@ body{
     height: 100%;
     display: grid;
     grid-template-columns: 1fr;
-    grid-template-rows: 1fr 2fr;
+    grid-template-rows: 1fr 2fr; 
+    gap: 10px;
+    
     align-items: center;
 }
 
@@ -180,8 +186,11 @@ body{
 }
 
 .name-view{
+    height: 100%;
     font-size: 20px;
-    font-weight: 500;
+    font-weight: 600;
+    font-family: "Taipei Sans TC", "Zen Maru Gothic";
+    line-height: 35px;
 }
 
 .follow-btn{
@@ -191,8 +200,9 @@ body{
     border-radius: var(--search-border-radius);
     box-sizing: border-box;
 
-    font-size: 18px;
+    font-size: 20px;
     font-weight: 500;
+    font-family: "Taipei Sans TC", "Zen Maru Gothic";
     text-align: center;
     line-height: 32px;
     cursor: pointer;
@@ -206,7 +216,7 @@ body{
 
 .people-number-container{
     display: grid;
-    grid-template-columns: 1fr 1fr 1fr;
+    grid-template-columns: 1fr 1fr;
     grid-template-rows: 1fr;
     gap: 5px;
     align-items: center;
@@ -226,8 +236,9 @@ body{
 }
 
 .tracker-title, .fans-title{
-    font-size: 18px;
-    font-weight: 500;
+    font-size: 20px;
+    font-weight: 600;
+    font-family: "Taipei Sans TC", "Zen Maru Gothic";
     color: var(--btn-bg-color);
     padding-left: 10px;
     box-sizing: border-box;
@@ -254,15 +265,18 @@ body{
     grid-template-columns: 1fr 1fr;
     grid-template-rows: 1fr;
 
-    border: var(--search-border);
+    padding-left: 10px;
+    padding-right: 10px;
+
     box-sizing: border-box;
 }
 
-.post-btn, .collect-btn{
+.post-btn, .post-collect-btn{
     width: 100%;
     height: 100%;
-    font-size: 18px;
-    font-weight: 500;
+    font-size: 20px;
+    font-weight: 600;
+    font-family: "Taipei Sans TC", "Zen Maru Gothic";
     text-align: center;
     line-height: 35px;
     border: var(--search-border);
@@ -272,7 +286,17 @@ body{
     cursor: pointer;
 }
 
-.post-btn:hover, .collect-btn:hover{
+.post-btn:hover, .post-collect-btn:hover{
+    background-color: #000;
+    color: #fff;
+}
+
+.post-btn.active{
+    background-color: #000;
+    color: #fff;
+}
+
+.post-collect-btn.active{
     background-color: #000;
     color: #fff;
 }
@@ -284,7 +308,30 @@ body{
     box-sizing: border-box;
 }
 
+.posts-content-hidden{
+    display: none;
+}
+
 .posts-content-container{
+    width: 100%;
+    min-height: 100%;
+    border: var(--search-border);
+    box-sizing: border-box;
+    border-radius: var(--search-border-radius);
+
+    display: grid;
+    grid-template-columns: repeat(auto-fill, 100px);
+    grid-template-rows: repeat(auto-fit, 100px);
+    gap: 10px;
+
+    justify-content: center;
+}
+
+.collect-content-hidden{
+    display: none;
+}
+
+.collect-content-container{
     width: 100%;
     min-height: 100%;
     border: var(--search-border);
@@ -371,4 +418,8 @@ body{
         box-sizing: border-box;
     }
 
+    .headshot-img img{
+        width: 80%;
+        height: 100%;
+    }
 }

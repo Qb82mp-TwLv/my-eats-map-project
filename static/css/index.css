@@ -15,7 +15,8 @@
 }
 
 body{
-    font-family: 'Taipei Sans TC', 'Noto Sans TC', sans-serif;
+    font-family: "Taipei Sans TC", "Zen Maru Gothic", sans-serif;
+    font-style: normal;
     box-sizing: border-box;
 }
 
@@ -172,10 +173,12 @@ body{
 .country-option, .city-option, .types-option{
     list-style: none;
     width: 100%;
-    height: 200px;
+    height: auto;
+    min-height: 40px;
+    max-height: 200px;
     display: grid;
     grid-template-columns: 1fr;
-    grid-template-rows: repeat(auto-fit, minmax(35px, 1fr));
+    grid-template-rows: repeat(auto-fill, minmax(35px, 1fr));
     background-color: var(--bg-color);
     border-radius: 7px;
 
@@ -206,6 +209,7 @@ body{
     align-items: center;
     line-height: 35px;
     cursor: pointer;
+    align-content: start;
 }
 
 .option:hover{
@@ -333,6 +337,18 @@ body{
 .btn-collect.invisible{
     background-color: var(--bg-color);
     color: #000;
+}
+
+.marker-btn{
+    appearance:none;
+    width: 52px;
+    height: 52px;
+    background-color:#fff;
+    border-radius:5px;
+    overflow: hidden;
+    cursor:pointer;
+    position:absolute;
+    z-index: 5;
 }
 
 @media (1200px < width <= 1920px) {

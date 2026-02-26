@@ -1,6 +1,7 @@
 class memberSettingModel {
     constructor() {
-
+        this.memberName = document.querySelector(".name-view");
+        this.memberNickname = document.querySelector(".nickname-view");
     }
 
     async memberCenter() {
@@ -11,6 +12,98 @@ class memberSettingModel {
         window.location.href = "/eatsmap";
     }
 
+    async logOutSubmit() {
+        localStorage.removeItem("token");
+        window.location.href = "/login";
+    }
+
+    async updateMemberInfo(id) {
+        const name = this.memberName.value.trim();
+        const nickname = this.memberNickname.value.trim();
+        if (name !== ""){
+            if (name.length > 100){
+                return "輸入的名稱不能超過100個字";
+            }
+
+            if (nickname.length > 30){
+                return "輸入的暱稱不能超過30個字";
+            }
+
+            const jsonInfo = {
+                "id": id,
+                "name": name,
+                "nickname": nickname
+            }
+
+            try{
+                const token = localStorage.getItem("token");
+                const response = await fetch("/api/user/infoupdate", {
+                    method: "PATCH",
+                    headers: {"Content-Type": "application/json",
+                            "Authorization": `Bearer ${token}`
+                            },
+                    body: JSON.stringify(jsonInfo)
+                });
+
+                const data = await response.json();
+
+                if (data.ok !== undefined){
+                    return "更新個人資料成功。"
+                }
+                    
+                return "更新過程中發生錯誤，請稍後再更新。";
+
+            }catch(error){
+                return "更新過程中發生錯誤，請稍後再更新。";
+            }
+        }   
+    };
+
+    async updateMemberPw(id) {
+        const oldPwInout = document.querySelector(".old-pw");
+        const newPwInput = document.querySelector(".new-pw");
+        const oldPw = oldPwInout.value.trim();
+        const newPw = newPwInput.value.trim();
+
+        if (oldPw !== "" && newPw !== ""){
+            if (oldPw.length > 100){
+                return "原密碼有錯誤，密碼長度過長，請修正。";
+            }
+
+            if (newPw.length > 100){
+                return "新密碼的長度過長，請重新輸入。";
+            }
+
+            const jsonInfo = {
+                "id": id,
+                "oldpassword": oldPw,
+                "newpassword": newPw
+            }
+
+            try{
+                const token = localStorage.getItem("token");
+                const response = await fetch("/api/uer/updatepw", {
+                    method: "PATCH",
+                    headers: {"Content-Type": "application/json",
+                            "Authorization": `Bearer ${token}`
+                            },
+                    body: JSON.stringify(jsonInfo)
+                });
+
+                const data = await response.json();
+
+                if (data.ok !== undefined){
+                    oldPwInout.value="";
+                    newPwInput.value="";
+                    return "更新密碼成功。";
+                }                   
+                return "更新密碼過程中發生錯誤，請稍後再更新。";
+
+            }catch(error){
+                return "更新密碼過程中發生錯誤，請稍後再更新。";
+            }
+        };
+    };
 }
 
 const settingM = new memberSettingModel();

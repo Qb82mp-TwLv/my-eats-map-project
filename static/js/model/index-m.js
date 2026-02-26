@@ -11,6 +11,24 @@ class indexModel {
     
         // this.cityArr;
         this.mapkey = "";
+
+        this.viewPosts = document.querySelector(".view-posts");
+        this.closePostsDialogBtn = document.querySelector(".close-btn");
+        if (this.closePostsDialogBtn){
+            this.closePostsDialogBtn.addEventListener("click", () => {
+                this.viewPosts.close();
+            });
+        }
+
+        // 經緯度變數
+        this.lat;
+        this.lon;
+
+        this.options={
+            enableHighAccuracy: true,
+            timeout: 5000,
+            maximumAge:0
+        };
     };
 
     citySelectText() {
@@ -169,6 +187,37 @@ class indexModel {
 
         return {lat: "nan", lng: "nan"};
     }
+
+    async openPostsContent() {
+        if (this.viewPosts){
+            this.viewPosts.showModal();
+        }
+    }
+
+    async get_position_func(position) {
+        const lat_pos = position.coords.latitude;
+        const lon_pos = position.coords.longitude;
+        console.log(`緯度：${lat_pos}，經度：${lon_pos}`);
+        alert(`成功取得位置！\n緯度：${lat_pos}\n經度：${lon_pos}`);
+    }
+
+    async get_position_error(error) {
+        switch(error.code) {
+            case error.PERMISSION_DENIED:
+                console.error("使用者拒絕使用定位功能");
+                break;
+            case error.POSITION_UNAVAILABLE:
+                console.error("無取取得定位位置");
+                break;
+            case error.TIMEOUT:
+                console.error("取得定位的請求超時了");
+                break;
+            case error.UNKNOWN_ERROR:
+                console.error("發生其他錯誤");
+                break;
+        }
+    };
+
 }
 
 const indexM = new indexModel();

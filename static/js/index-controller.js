@@ -1,6 +1,27 @@
 import indexM  from './model/index-m.js';
 import indexV  from './view/index-v.js';
 
+async function verify_user_token() {
+    try{
+        const token = localStorage.getItem("token");
+
+        const response = await fetch("/api/user/auth", {
+            method: "GET",
+            headers: {"Authorization": `Bearer ${token}`}
+        });
+
+        const dt = await response.json();
+        if (dt.data === null){
+            window.location.href = "/login";
+        }
+
+        set_headshot_img(dt.data.headshot);
+    }catch(error){
+        window.location.href = "/login";
+        //console.log(error);
+    }
+};
+
 async function loadingMap() {
     const mapkey = await indexM.getMapValue();
 
@@ -27,23 +48,26 @@ async function initMap() {
         rotateControl: false,
     });
 
-    indexV.marker(map, { lat: 25.03420, lng: 121.56452,}, "測試")
+    const markerObj = await indexV.marker(map, { lat: 25.03420, lng: 121.56452,}, "測試");
+    markerObj.addEventListener("click", () => {
+        indexM.openPostsContent();
+    });
 }
 
-async function creatOptionItem() {
+
+async function createOptionItem() {
     // 取得地區(國家)
     const dt = await indexM.getCountryOptionName();
-    //const countryList = ["選擇地區", "台灣", "日本", "美國", "澳洲", "紐西蘭", "瑞士", "比利時", "義大利", "荷蘭"];
-    //const typesList = ["店家種類", "下午茶類", "冰品類", "餐食類", "麵包類", "小吃類(攤販)", "手搖類", "速食類"];
     // 建立地區的droplist
     const countryArr = dt.data;
     const country = countryArr.country;
     const countrySelect = document.querySelector(".country-select");
+    sessionStorage.setItem("country", country);
     for(let i=0; i< country.length; i++){
         const optionTag = indexV.countryDropList(country[i]);
         optionTag.addEventListener("click", () => {
             countrySelect.textContent = country[i];
-            creatCityOptionItem(country[i]);
+            createCityOptionItem(country[i]);
             console.log(optionTag.textContent);
         });
     };
@@ -51,14 +75,14 @@ async function creatOptionItem() {
     const typesDt = await indexM.getTypesOptionName();
     const typesArr = typesDt.data;
     const types = typesArr.types;
-    console.log(typesArr);
+    sessionStorage.setItem("type", types);
     for(let i=0; i< types.length; i++){
         const optionTag = indexV.typesDropList(types[i]);
         indexM.typesOptionItemClick(optionTag);
     };
 }
 
-async function creatCityOptionItem(country) {
+async function createCityOptionItem(country) {
     const cityOption = document.querySelector(".city-option");
     const childNode = cityOption.querySelectorAll("li");
     if (childNode){
@@ -77,11 +101,6 @@ async function creatCityOptionItem(country) {
     indexM.citySelectText();
     
 }
-
-// async function () {
-//     const cityList = ["選擇城市", "新竹縣", "新竹市", "台南市", "高雄市", "新北市", "台北市", "桃園市", "宜蘭市", "嘉義縣"];
-    
-// }
 
 async function userHeadshot() {
     const headshotImg = document.querySelector(".headshot-item-img");
@@ -120,6 +139,7 @@ if (searchBtn){
         searchPosts();
     });
 }
+
 async function searchPosts() {
     // 取得選項
     const country = indexM.countrySelect.textContent;
@@ -137,6 +157,15 @@ async function searchPosts() {
             }
             map.panTo(newPosition);
         }
+    }
+}
+
+async function get_user_position() {
+    // 確認是否支援定位功能
+    if (navigator.geolocation){
+        navigator.geolocation.getCurrentPosition(indexM.get_position_func, indexM.get_position_error, indexM.options);
+    }else{
+        console.log("使用者的瀏覽器不支援取定位的功能");
     }
 }
 
@@ -169,11 +198,36 @@ async function memberCenter() {
     // document.body.re
 }
 
+async function set_headshot_img(img) {
+    const headshot_obj = document.querySelector(".headshot-item-img");
+
+    switch (img){
+        case null:
+            headshot_obj.src = "/static/img/user.png";
+            break;
+        default:
+            headshot_obj.src = "/static/img/nginx.png";
+    }
+        
+
+}
+
+verify_user_token();
+
 loadingMap();
 window.initMap = initMap;
 
 userHeadshot();
-creatOptionItem();
-creatCityOptionItem("");
+createOptionItem();
+createCityOptionItem("");
 
 searchBarOptionClick();
+
+// 當網頁載入時，要執行此部分
+window.addEventListener("load", () => {
+    setTimeout(
+        get_user_position,
+        1000
+    );
+    
+});

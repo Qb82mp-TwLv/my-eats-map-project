@@ -35,3 +35,5 @@ class connection_database:
 
     def restart_connect(self):
         self._cnx.reconnect(attempts=2, delay=3)
+
+db_init = connection_database()

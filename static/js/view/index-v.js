@@ -11,15 +11,16 @@ class indexView {
         const { AdvancedMarkerElement, PinElement } = await google.maps.importLibrary("marker");
 
         const bgMarker = document.createElement("button");
-        bgMarker.style.appearance = "none";
-        bgMarker.style.width = "52px";
-        bgMarker.style.height = "52px";
-        bgMarker.style.backgroundColor = "#fff";
-        bgMarker.style.borderRadius = "5px";
-        bgMarker.style.overflow = "hidden";
-        bgMarker.style.cursor = "pointer";
-        bgMarker.style.position = "absolute";
-        bgMarker.style.zIndex = "5";
+        bgMarker.classList.add("marker-btn");
+        // bgMarker.style.appearance = "none";
+        // bgMarker.style.width = "52px";
+        // bgMarker.style.height = "52px";
+        // bgMarker.style.backgroundColor = "#fff";
+        // bgMarker.style.borderRadius = "5px";
+        // bgMarker.style.overflow = "hidden";
+        // bgMarker.style.cursor = "pointer";
+        // bgMarker.style.position = "absolute";
+        // bgMarker.style.zIndex = "5";
         const beachFlagImg = document.createElement("img");
         beachFlagImg.src = "./img/caffeine.jpg";
         beachFlagImg.style.width = "40px";
@@ -29,22 +30,21 @@ class indexView {
         beachFlagImg.style.margin = "3px";
         beachFlagImg.style.boxShadow = "3px 3px 5px rgba(0, 0, 0, 0.6)";
         bgMarker.appendChild(beachFlagImg);
-        bgMarker.addEventListener("click", () => {
-            window.location.href = "https://www.taipei-101.com.tw/tw/";
-        });
 
         const pin = new PinElement({ 
             glyph: bgMarker,
             background: "#4285F4", 
             glyphColor: "white",
         });
+        pin.element.style.cursor = "pointer";
 
-        new AdvancedMarkerElement({
+        return new AdvancedMarkerElement({
             map,
             position,
             title,
-            content: pin,
+            content: pin.element,
         });
+
     };
 
     countryDropList(country) {     
