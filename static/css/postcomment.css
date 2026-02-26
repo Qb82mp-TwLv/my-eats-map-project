@@ -1,0 +1,584 @@
+:root{
+    --bg-color: aliceblue; 
+    --search-bar-option-hover: #f0eeee;
+    --search-border: 1px solid #cfcdcd;
+    --search-border-radius: 10px;
+    --btn-bg-color: #9b9a9a;
+    /* 當使用者移到我、追蹤者或收藏時，會hover的背景 */
+    --user-info-btn-bg-color: #000;
+    --user-info-btn-text-color: #fff;
+    --footer-color: #9b9a9a;
+}
+
+*{
+    padding: 0;
+    margin: 0;
+}
+
+body{
+    width: 100%;
+    height: 100vh;
+    font-family: "Taipei Sans TC", "Zen Maru Gothic", sans-serif;
+    font-style: normal;
+    box-sizing: border-box;
+}
+
+input {
+    font-size: 16px;
+    font-family: "Taipei Sans TC", "Zen Maru Gothic", sans-serif;
+    font-style: normal;
+}
+
+textarea{
+    font-size: 16px;
+    font-family: "Taipei Sans TC", "Zen Maru Gothic", sans-serif;
+    font-style: normal;
+}
+
+.navbar{
+    height: 50px;
+    border-bottom: var(--search-border);
+
+    display: flex;
+    justify-content: center;
+
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    background-color: #fff;
+}
+
+.navbar-container{
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    padding-left: 10px;
+    padding-right: 10px;
+
+    box-sizing: border-box;
+}
+
+.navbar-title{
+    width: 100%;
+    height: 100%;
+    font-size: 30px;
+    font-weight: bold;
+    font-family: "Kaushan Script";
+    line-height: 50px;
+    cursor: pointer;
+}
+
+.navbar-btn{
+    all: unset;
+    width: 110px;
+    height: 50px;
+
+    font-size: 20px;
+    font-weight: 600;
+    font-family: "Taipei Sans TC", "Zen Maru Gothic";
+    line-height: 10px;
+    text-align: center;
+
+    cursor: pointer;
+}
+
+.content-container{
+    width: 100%;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: 1fr auto;
+
+    align-items: center;
+}
+
+.secondblock{
+    width: 100%;
+    display: grid;
+    grid-template-columns: minmax(0, 1200px);
+    grid-template-rows: auto;
+    align-items: center;
+    justify-content: center;
+}
+
+.post-block-container{
+    width: 100%;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: 400px auto;
+    justify-items: center;
+    padding-top: 10px;
+
+    padding-left: 275px;
+    padding-right: 275px;
+    box-sizing: border-box;
+}
+
+.post-img-container{
+    width: 500px;
+    height: 100%;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: 1fr 0.1fr;
+    gap: 5px;
+
+    justify-items: center;
+}
+
+.preview-img-slide{
+    width: 100%;
+    height: 100%;
+    position: relative;
+    overflow: hidden;
+
+    display: flex;
+    gap: 5px;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    scroll-behavior: smooth;
+
+    /* &::-webkit-scrollbar{
+        display: none;
+    } */
+
+    border: 1px solid #000;
+    border-radius: 10px;
+    cursor: pointer;
+}
+
+.imgSlides{
+    width: 100%;
+    height: 100%;
+    display: flex;
+    /* transform: translateX(0px);
+    transition: transform 500ms ease-in-out; */
+    border-radius: 10px;
+
+    position: relative;
+    flex: 0 0 100%;
+    scroll-snap-align:center;
+}
+
+.imgSlides img{
+    width: 100%;
+    height: 100%;
+    border-radius: 10px;
+    object-fit: cover;
+}
+
+.upload-img-file{
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: end;
+}
+
+.upload-img-btn{
+    display: none;
+}
+
+.add-img{
+    display: inline-block;
+    width: 50px;
+    height: 50px;
+    overflow: hidden;
+    cursor: pointer;
+}
+
+.add-img img{
+    width: 50px;
+    height: 50px;
+    object-fit: cover;
+}
+
+.add-img:hover{
+    width: 50px;
+    height: 50px;
+    box-shadow: 0 0 5px 3px rgba(210, 210, 210, 1);
+}
+
+.post-input-container{
+    width: 100%;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: 60px 60px  200px 200px auto 60px;
+    gap: 15px;
+
+    justify-items: center;
+    align-items: start;
+}
+
+.store-address{
+    width: 100%;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: 1fr;
+    gap: 10px;
+    justify-content: center;
+}
+
+.address-info{
+    width: 340px;
+    height: 60px;
+    font-size: 16px;
+    display: grid;
+    grid-template-columns: 1fr;
+    grid-template-rows: 0.3fr 0.7fr;
+}
+
+.rest-name-info{
+    width: 250px;
+    height: 60px;
+    font-size: 16px;
+    display: grid;
+    grid-template-columns: 1fr;
+    grid-template-rows: 0.3fr 0.7fr;
+}
+
+.rest-name-title, .name-title, .price-title{
+    font-size: 18px;
+    font-weight: 600;
+    font-family: "Taipei Sans TC", "Zen Maru Gothic";
+}
+
+.address-text, .rest-name-text{
+    height: 30px;
+    border: var(--search-border);
+    border-radius: var(--search-border-radius);
+    padding-left: 10px;
+}
+
+.store-position-type{
+    width: 100%;
+    height: 100%;
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    grid-template-rows: 1fr;
+    gap: 5px;
+    justify-content: center;
+}
+
+.country-info, .city-info,.type-info{
+    width: 100%;
+    height: 60px;
+    font-size: 16px;
+    display: grid;
+    grid-template-columns: 1fr;
+    grid-template-rows: 0.5fr 1.5fr;
+    box-sizing: border-box;
+}
+
+.item-country, .item-city,.item-type{
+    width: 100%;
+    height: 30px;
+    border-radius: var(--search-border-radius);
+    border: var(--search-border);
+
+    position: relative;
+}
+
+.country-select, .city-select,.type-select{
+    all:unset;
+    width: 100%;
+    height: 100%;
+    box-sizing: border-box;
+    font-size: 16px;
+    font-weight: 500;
+    line-height: 25px;
+    text-align: center;
+    cursor: pointer;
+}
+
+.country-droplist, .city-droplist, .type-droplist{
+    width: 100%;
+    position: absolute;
+    cursor: pointer;
+    z-index: 99;
+    display: none;
+}
+
+/* 地區選項的下拉式動作 */
+.country-droplist.active{
+    display: block;
+}
+
+.country-droplist.invisible{
+    display: none;
+}
+/* 城市選項的下拉式動作 */
+.city-droplist.active{
+    display: block;
+}
+
+.city-droplist.invisible{
+    display: none;
+}
+/* 店家種類選項的下拉式動作 */
+.type-droplist.active{
+    display: block;
+}
+.type-droplist.invisible{
+    display: none;
+}
+
+.country-option, .city-option, .type-option{
+    list-style: none;
+    width: 100%;
+    height: 200px;
+    display: grid;
+    grid-template-columns: 1fr;
+    grid-template-rows: repeat(auto-fill, minmax(35px, 1fr));
+    background-color: var(--bg-color);
+    border-radius: 7px;
+
+    text-align: center;
+    align-items: center;
+    margin-top: 3px;
+
+    /* 陰影 */
+    box-shadow: 0 0 3px 2px rgba(0, 0, 0, 0.3);
+    overflow-y: auto;
+
+    &::-webkit-scrollbar{
+        width: 6px;
+        border-radius: var(--search-border-radius);
+        background-color: #cfcdcd;
+    }
+
+    &::-webkit-scrollbar-thumb{
+        background: #9b9a9a;
+        border-radius: 10px;
+    }
+}
+
+.option{
+    height: 35px;
+    font-size: 16px;
+    font-weight: 500;
+    align-items: center;
+    line-height: 35px;
+    cursor: pointer;
+}
+
+.option:hover{
+    background-color: var(--search-bar-option-hover);
+    border-radius: 5px;
+}
+
+.food-experience-container, .dining-area-container{
+    width: 100%;
+    height: 100%;
+}
+
+.experience-comment, .dining-area-comment{
+    width: 100%;
+    height: 100%;
+    display: grid;
+    grid-template-columns: 1fr;
+    grid-template-rows: 0.2fr 1.5fr;
+}
+
+.comment-info, .dining-area-info{
+    width: 100%;
+    height: 100%;
+    border: var(--search-border);
+    border-radius: var(--search-border-radius);
+    resize: none;
+    padding: 10px;
+    box-sizing: border-box;
+
+    font-size: 16px;
+}
+
+.food-info-container{
+    width: 100%;
+    /* display: grid;
+    grid-template-columns: 1fr;
+    grid-template-rows: auto; */
+    display: flex;
+    flex-direction: column;
+    align-items: start;
+    box-sizing: border-box;
+}
+
+.food-title-container{
+    width: 100%;
+    height: 50px;
+    display: flex;
+    gap: 20px;
+
+    font-size: 18px;
+    font-weight: 500;
+}
+
+.add-object{
+    all: unset;
+    width: 30px;
+    height: 30px;
+    overflow: hidden;
+    cursor: pointer;
+}
+
+.add-object img{
+    width: 30px;
+    height: 30px;
+   object-fit: cover;
+}
+
+.food-block{
+    width: 100%;
+    display: grid;
+    grid-template-columns: 1fr;
+    grid-template-rows: repeat(auto-fill, 65px);
+}
+
+.food-content-container{
+    width: 100%;
+    height: 60px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: 1fr;
+    gap: 10px;
+}
+
+.food-name{
+    width: 340px;
+    height: 100%;
+    font-size: 16px;
+    display: grid;
+    grid-template-columns: 1fr;
+    grid-template-rows: 0.5fr 1.5fr;
+}
+
+.food-price{
+    width: 240px;
+    height: 100%;
+    font-size: 16px;
+    display: grid;
+    grid-template-columns: 1fr;
+    grid-template-rows: 0.5fr 1.5fr;
+
+    justify-self: end;
+}
+
+.name-text, .price-text{
+    height: 30px;
+    border: var(--search-border);
+    border-radius: var(--search-border-radius);
+    padding-left: 10px;
+}
+
+.submit-container{
+    width: 100%;
+    height: 40px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.submit-btn{
+    width: 100px;
+    height: 100%;
+    border: var(--search-border);
+    border-radius: var(--search-border-radius);
+    background-color: var(--user-info-btn-bg-color);
+    color: var(--user-info-btn-text-color);
+
+    font-size: 16px;
+    line-height: 15px;
+    cursor: pointer;
+}
+
+.footbar{
+    height: 100px;
+    font-size: 18px;
+    font-weight: 500;
+    background-color: var(--footer-color);
+    text-align: center;
+    line-height: 100px;
+}
+
+@media (1200px < width <= 1920px) {
+    .navbar-container{
+        width: 1200px;
+    }
+
+    /* .post-block-container{
+        width: 1200px;
+    } */
+}
+
+@media (650px < width <= 1200px) {
+    .navbar-container{
+        width: 100%;
+    }
+
+    .secondblock{
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    .post-block-container{
+        grid-template-columns: minmax(0, 1fr);
+        padding-left: 10px;
+        padding-right: 10px;
+        box-sizing: border-box;
+    }
+
+}
+
+@media (360px <= width < 650px) {
+    .navbar-container{
+        width: 100%;
+    }
+
+    .secondblock{
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    .post-block-container{
+        grid-template-columns: minmax(0, 1fr);
+        grid-template-rows: 0.3fr 1fr;
+        padding-left: 10px;
+        padding-right: 10px;
+        box-sizing: border-box;
+    }
+
+    .post-img-container{
+        width: 340px;
+        height: 340px;
+    }
+
+    .post-input-container{
+        grid-template-rows: 140px 200px 400px 400px auto 60px;
+    }
+
+    .store-address{
+        grid-template-columns: 1fr;
+        grid-template-rows: 1fr 1fr;
+    }
+
+    .store-position-type{
+        grid-template-columns: 1fr;
+        grid-template-rows: 60px 60px 60px;
+    }
+
+    .food-content-container{
+        height: 140px;
+        grid-template-columns: 1fr;
+        grid-template-rows: 1fr 1fr;
+    }
+
+    .food-block{
+        grid-template-rows: repeat(auto-fill, 140px);
+    }
+
+    .food-name{
+        max-width: 320px;
+        min-width: 300px;
+    }
+
+    .food-price{
+        justify-self: start;
+    }
+}

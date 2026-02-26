@@ -1,0 +1,364 @@
+*{
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box;
+}
+
+body{
+    font-family: 'Taipei Sans TC', 'Noto Sans TC', sans-serif;
+    box-sizing: border-box;
+}
+
+.view-posts{
+    height: 600px;
+    border: none;
+    border-radius: 5px;
+    background-color: rgb(233, 233, 233);
+
+    margin:  auto;
+
+    overflow-y: auto;
+    &::-webkit-scrollbar{
+        width: 6px;
+        border-radius: var(--search-border-radius);
+        background-color: #cfcdcd;
+    }
+
+    &::-webkit-scrollbar-thumb{
+        background: #9b9a9a;
+        border-radius: 10px;
+    }
+
+}
+
+.nav{
+    width: 100%;
+    height: 30px;
+    display: flex;
+    justify-content: flex-end;
+    padding-top: 5px;
+    padding-right: 20px;
+    /* 固定的方法 */
+    position: sticky;
+    top: 0;
+    z-index: 10;
+
+    background-color: rgb(233, 233, 233);
+    border-radius: 10px;
+}
+
+.close-btn{
+    width: 20px;
+    height: 20px;
+    overflow: hidden;
+
+    cursor: pointer;
+}
+
+.close-btn img{
+    width: 20px;
+    height: 20px;
+    object-fit: cover;
+}
+
+.posts-container{
+    width: 100%;
+    height: 100%;
+    padding: 2px 10px 10px 10px;
+
+    display: grid;
+    grid-template-columns: 1fr;
+    grid-template-rows: repeat(auto-fill, 290px);
+    gap: 5px;
+}
+
+.post-content-container{
+    width: 100%;
+    height: 290px;
+    border: 1px solid #000;
+    border-radius: 10px;
+    background-color: #fff;
+
+    box-sizing: border-box;
+
+    display: grid;
+    grid-template-columns: 1fr 1.5fr;
+    grid-template-rows: 1fr;
+    gap: 20px;
+}
+
+.post-content-img{
+    width: 100%;
+    height: 100%;
+    display: grid;
+    grid-template-columns: 1fr;
+    grid-template-rows: 1fr 35px;
+}
+
+.content-img-container{
+    position: relative;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    border-radius: 10px;
+}
+
+.food-img-info{
+    position: relative;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+
+    display: flex;
+    gap: 5px;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    scroll-behavior: smooth;
+
+    /* &::-webkit-scrollbar{
+        display: none;
+    } */
+
+    cursor: pointer;
+}
+
+.img-info-scroll{
+    border-radius: 10px;
+    position: relative;
+    flex: 0 0 100%;
+    scroll-snap-align:center;
+}
+
+.imgSlides{
+    width: 100%;
+    height: 100%;
+    display: flex;
+    transform: translateX(0px);
+    transition: transform 500ms ease-in-out;
+    border-radius: 10px;
+}
+
+.img-container{
+    width: 100%;
+    height: 100%;
+    background-color: #000;
+    border-radius: 10px;
+
+    display: flex;
+    justify-content: center;
+    flex: 0 0 100%;
+
+    overflow: hidden;
+}
+
+.img-container img{
+    width: 100%;
+    height: 80%;
+    border-radius: 10px;
+    object-fit: cover;
+    position: absolute;
+    z-index: 1;
+}
+
+.sildeBtn{
+    width: 100%;
+    max-height: 100%;
+    display: flex;
+    justify-content: space-between;
+    position: absolute;
+    z-index: 2;
+    top: 110px;
+}
+
+.food-info{
+    width: 100%;
+    height: 20%;
+    background-color: rgba(255, 255, 255, 0.3);
+    border-radius: 0 0 10px 10px;
+    position: absolute;
+    z-index: 3;
+    bottom: 0;
+    right: 0;
+
+    transform: translateX(0px);
+    transition: transform 500ms ease-in-out;
+}
+
+.info-container{
+    width: 100%;
+    height: 100%;
+
+    font-size: 15px;
+    font-weight: 500;
+    text-align: center;
+    color: #fff;
+    padding-left: 10px;
+    line-height: 25px;
+}
+
+.post-evaluate-action{
+    width: 100%;
+    height: 100%;
+    display: flex;
+    gap: 20px;
+
+    padding-top: 8px;
+    padding-left: 20px;
+}
+
+.love-btn, .collect-btn{
+    width: 20px;
+    height: 20px;
+    overflow: hidden;
+}
+
+.love-btn img{
+    width: 20px;
+    height: 20px;
+    object-fit: cover;
+}
+
+.collect-btn img{
+    width: 20px;
+    height: 20px;
+    object-fit: cover;
+}
+
+.post-content-comment{
+    width: 100%;
+    height: 100%;
+    display: grid;
+    grid-template-columns: 1fr;
+    grid-template-rows: 70px 120px;
+}
+
+.user-info{
+    width: 100%;
+    height: 100%;
+    display: grid;
+    grid-template-columns: 0.5fr 3.5fr;
+    grid-template-rows: 1fr;
+    align-items: center;
+}
+
+.user-headshot{
+    width: 50px;
+    height: 50px;
+    overflow: hidden;
+
+    border-radius: 10px;
+    border: 1px solid #000;
+    box-sizing: border-box;
+}
+
+.user-headshot img{
+    width: 100%;
+    height: 100%;
+    border-radius: 10px;
+    object-fit: cover;
+}
+
+.user-nickname{
+    width: 100%;
+    height: 100%;
+    font-size: 18px;
+    font-weight: 500;
+    line-height: 70px;
+    padding-left: 10px;
+}
+
+.post-comment{
+    width: 100%;
+    min-height: 0;
+    padding-right: 5px;
+    box-sizing: border-box;
+
+    font-size: 15px;
+    overflow-y: auto;
+
+    display: grid;
+    grid-template-columns: 1fr;
+    grid-template-rows: 1fr 1fr;
+    gap: 10px;
+}
+
+.food-experience, .dining-area{
+    width: 100%;
+    height: 100%;
+    display: grid;
+    grid-template-columns: 1fr;
+    grid-template-rows: 0.1fr 1fr;
+    gap: 5px;
+
+    box-sizing: border-box;
+}
+
+.space{
+    width: 100%;
+    height: 30px;
+    flex-shrink: 0;
+}
+
+@media (1200px < width <=1920px){
+    .view-posts{
+        width: 1200px;
+    }
+
+    .post-content-comment{
+        padding-bottom: 10px;
+        box-sizing: border-box;
+    }
+}
+
+@media (600px < width <= 1200px){
+    .view-posts{
+        width: 100%;
+    }
+
+    .posts-container{
+        grid-template-columns: 1fr;
+        grid-template-rows: repeat(auto-fill, 500px);
+        gap: 5px;
+    }
+
+    .post-content-container{
+        height: 100%;
+        grid-template-columns: 1fr;
+        grid-template-rows: 300px 200px;
+        gap: 5px;
+    }
+
+    .post-content-comment{
+        padding-left: 10px;
+        padding-right: 10px;
+        padding-bottom: 10px;
+        box-sizing: border-box;
+    }
+}
+
+@media (300px <= width <= 600px){
+    .view-posts{
+        width: 100%;
+        height: 100vh;
+    }
+
+    .posts-container{
+        grid-template-columns: 1fr;
+        grid-template-rows: repeat(auto-fill, 510px);
+        gap: 5px;
+    }
+
+    .post-content-container{
+        height: 100%;
+        grid-template-columns: 1fr;
+        grid-template-rows: 300px 200px;
+        gap: 5px;
+    }
+
+    .post-content-comment{
+        padding-left: 10px;
+        padding-right: 10px;
+        padding-bottom: 10px;
+        box-sizing: border-box;
+    }
+}

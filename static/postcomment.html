@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Kaushan+Script&family=Zen+Maru+Gothic&display=swap" rel="stylesheet">
+        <link rel="stylesheet" href="/static/css/postcomment.css">
+        <script defer type="module" src="/static/js/postcomment-controller.js"></script>
+        <title>My Eats Map</title>
+    </head>
+    <body>
+        <nav class="navbar">
+            <div class="navbar-container">
+                <div class="navbar-title">My Eats Map</div>
+                <button class="navbar-btn">會員中心</button>
+            </div>
+        </nav>
+
+        <div class="content-container">
+            <div class="secondblock">
+                <div class="post-block-container">
+                    <div class="post-img-container">
+                        <div class="preview-img-slide">
+                            
+                        </div>
+                        <div class="upload-img-file">
+                            <input type="file" id="image-upload" class="upload-img-btn" multiple accept="image/*">
+                            <label for="image-upload" class="add-img">
+                                <img src="/static/img/add-image.png">
+                            </label>
+                        </div>
+                    </div>
+                    <div class="post-input-container">
+                        <div class="store-address">
+                            <div class="rest-name-info">
+                                <div class="rest-name-title">餐廳名稱</div>
+                                <input type="text" class="rest-name-text">
+                            </div>
+                            <div class="address-info">
+                                <div class="rest-name-title">餐廳地址</div>
+                                <input type="text" class="address-text">
+                            </div>
+                        </div>
+
+                        <div class="store-position-type">
+                            <div class="country-info">
+                                    <div class="rest-name-title">地區(國家)</div>
+                                    <div class="item-country">
+                                        <button type="button" class="country-select">選擇地區</button>
+                                        <div class="country-droplist">
+                                            <ul class="country-option">
+
+                                            </ul>
+                                        </div>
+                                    </div>
+                            </div>
+
+                            <div class="city-info">
+                                    <div class="rest-name-title">城市</div>
+                                    <div class="item-city">
+                                        <button type="button" class="city-select">選擇城市</button>
+                                        <div class="city-droplist">
+                                            <ul class="city-option">
+
+                                            </ul>
+                                        </div>
+                                    </div>
+                            </div>
+                            
+                            <div class="type-info">
+                                    <div class="rest-name-title">餐廳種類</div>
+                                    <div class="item-type">
+                                        <button type="button" class="type-select">選擇種類</button>
+                                        <div class="type-droplist">
+                                            <ul class="type-option">
+                                                
+                                            </ul>
+                                        </div>
+                                    </div>
+                            </div>
+                        </div>
+
+                        <div class="food-experience-container">
+                            <div class="experience-comment">
+                                <div class="rest-name-title">餐點評價</div>
+                                <textarea type="text" class="comment-info" maxlength="500"></textarea>
+                            </div>
+                        </div>
+
+                        <div class="dining-area-container">
+                            <div class="dining-area-comment">
+                                <div class="rest-name-title">用餐環境</div>
+                                <textarea type="text" class="dining-area-info" maxlength="255"></textarea>
+                            </div>
+                        </div>
+
+                        <div class="food-info-container">
+                            <div class="food-title-container">
+                                <div class="rest-name-title">餐點</div>
+                                <button class="add-object">
+                                    <img src="/static/img/additionPosts.png">
+                                </button>
+                            </div>
+                            
+                            <form class="food-block">
+                                <div class="food-content-container">
+                                    <div class="food-name">
+                                        <div class="name-title">名稱</div>
+                                        <input type="text" name="nametext" class="name-text" maxlength="80"></input>
+                                    </div>
+                                    
+                                    <div class="food-price">
+                                        <div class="price-title">價格</div>
+                                        <input type="text" name="pricetext" class="price-text"></input>
+                                    </div>
+                                </div>
+                                
+                                
+                            </form>
+                            
+                        </div>
+
+                        <div class="submit-container">
+                            <button type="button" class="submit-btn">送出</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <footer class="footbar">
+                COPY RIGHT 2026
+            </footer>
+        </div>
+    </body>
+</html>

@@ -1,0 +1,378 @@
+:root{
+    --bg-color: aliceblue; 
+    --search-bar-option-hover: #f0eeee;
+    --search-border: 1px solid #cfcdcd;
+    --search-border-radius: 10px;
+    --btn-bg-color: #9b9a9a;
+    /* 當使用者移到我、追蹤者或收藏時，會hover的背景 */
+    --user-info-btn-bg-color: #000;
+    --user-info-btn-text-color: #fff;
+}
+
+*{
+    padding: 0;
+    margin: 0;
+}
+
+body{
+    font-family: "Taipei Sans TC", "Zen Maru Gothic", sans-serif;
+    font-style: normal;
+    box-sizing: border-box;
+}
+
+.set-border-line{
+    border: 1px solid #000;
+}
+
+.map-outside-container{
+    width: 100vw;
+    height: 100vh;
+    background-color: var(--bg-color);
+
+    position: relative;
+}
+
+.web-view-container, .map-outside-container, .search-bar{
+    display: grid;
+    grid-template-columns: 1fr;
+    grid-template-rows: 1fr;
+    justify-items: center;
+    align-items: center;
+}
+
+.map-block{
+    width: 99%;
+    height: 99%;
+    border-radius: 5px;
+    box-sizing: border-box;
+}
+
+/* 搜尋框設計 */
+.search-bar{
+    height: 190px;
+    background-color: var(--bg-color);
+    border: var(--search-border);
+    border-radius: var(--search-border-radius);
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    z-index: 5;
+}
+
+.bar-container{
+    width: 97%;
+    max-height: 95%;
+    display: grid;
+    grid-template-columns: 1fr;
+    grid-template-rows: repeat(4, minmax(35px, max-content));
+    gap: 5px;
+    box-sizing: border-box;
+}
+
+/* 搜尋框下的使用者部分(用戶中心) */
+.user-center{
+    width: 100%;
+    height: 50px;
+
+    display: grid;
+    grid-template-columns: repeat(2, minmax(50px, max-content));
+    grid-template-rows: 1fr;
+    gap: 7px;
+
+    align-items: center;
+}
+
+.headshot-item{
+    all: unset;
+    width: 50px;
+    height: 100%;
+    border-radius: 50%;
+    border: 2px solid rgba(116, 118, 121, 0);
+
+    overflow: hidden;
+    cursor: pointer;
+}
+
+.headshot-item:hover{
+    border: 2px solid rgba(116, 118, 121, 0.8);
+}
+
+.headshot-item-img{
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.user-name {
+    font-size: 20px;
+    font-weight: 500;
+    text-align: left;
+    text-align: center;
+}
+
+/* 搜尋框定位選項 */
+.position-item{
+    width: 100%;
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    grid-template-rows: 1fr;
+    gap: 5px;
+}
+/* 地區選項 */
+.item-country, .item-city, .item-types{
+    border-radius: var(--search-border-radius);
+    border: var(--search-border);
+
+    position: relative;
+}
+
+.country-select, .city-select, .types-select{
+    all:unset;
+    width: 100%;
+    height: 100%;
+    box-sizing: border-box;
+    font-size: 16px;
+    font-weight: 500;
+    line-height: 32px;
+    text-align: center;
+    cursor: pointer;
+}
+
+.country-droplist, .city-droplist, .types-droplist{
+    width: 189px;
+    position: absolute;
+    cursor: pointer;
+
+    display: none;
+}
+
+/* 地區選項的下拉式動作 */
+.country-droplist.active{
+    display: block;
+}
+
+.country-droplist.invisible{
+    display: none;
+}
+/* 城市選項的下拉式動作 */
+.city-droplist.active{
+    display: block;
+}
+
+.city-droplist.invisible{
+    display: none;
+}
+/* 店家種類選項的下拉式動作 */
+.types-droplist.active{
+    display: block;
+}
+.types-droplist.invisible{
+    display: none;
+}
+
+.country-option, .city-option, .types-option{
+    list-style: none;
+    width: 100%;
+    height: auto;
+    min-height: 40px;
+    max-height: 200px;
+    display: grid;
+    grid-template-columns: 1fr;
+    grid-template-rows: repeat(auto-fill, minmax(35px, 1fr));
+    background-color: var(--bg-color);
+    border-radius: 7px;
+
+    text-align: center;
+    align-items: center;
+    margin-top: 3px;
+
+    /* 陰影 */
+    box-shadow: 0 0 3px 2px rgba(0, 0, 0, 0.3);
+    overflow-y: auto;
+
+    &::-webkit-scrollbar{
+        width: 6px;
+        border-radius: var(--search-border-radius);
+        background-color: #cfcdcd;
+    }
+
+    &::-webkit-scrollbar-thumb{
+        background: #9b9a9a;
+        border-radius: 10px;
+    }
+}
+
+.option{
+    height: 35px;
+    font-size: 16px;
+    font-weight: 500;
+    align-items: center;
+    line-height: 35px;
+    cursor: pointer;
+    align-content: start;
+}
+
+.option:hover{
+    background-color: var(--search-bar-option-hover);
+    border-radius: 5px;
+}
+
+/* 搜尋框下的輸入匡與送出按鈕區塊 */
+.search-input-item{
+    width: 100%;
+    height: 100%;
+    display: grid;
+    grid-template-columns: 1fr;
+    grid-template-rows: 1fr;
+    justify-content: center;
+    align-items: center;
+}
+
+.input-item-container{
+    width: 100%;
+    height: 100%;
+    background-color: var(--bg-color);
+    border: var(--search-border);
+    border-radius: var(--search-border-radius);
+
+    box-sizing: border-box;
+
+    display: flex;
+}
+
+.input-item-keyword{
+    all: none;
+    width: 88%;
+    height: 95%;
+    margin-top: 1px;
+    padding-left: 10px;
+    border-radius: var(--search-border-radius);
+    background-color: var(--bg-color);
+
+    font-size: 18px;
+
+    /* 移除外框以及點擊時出現的外框 */
+    border: none;
+    outline: none;
+}
+
+.input-item-btn{
+    all:unset;
+    width: 20%;
+    background-color: var(--btn-bg-color);
+    border-radius: var(--search-border-radius);
+    
+    display: grid;
+    justify-content: center;
+    align-items: center;
+
+    overflow-y: hidden;
+    cursor: pointer;
+}
+
+.input-item-btn:hover{
+    box-shadow: 0 0 8px 3px rgba(155, 154, 154, 0.7);
+}
+
+.input-item-btn img{
+    width: 25px;
+    height: 25px;
+
+    object-fit: cover;
+}
+
+.search-btn-item{
+    display: flex;
+    box-sizing: border-box;
+}
+
+.btn-own, .btn-tracker, .btn-collect{
+    all: unset;
+    width: 100px;
+    height: 95%;
+    border: var(--search-border);
+    border-radius: var(--search-border-radius);
+
+    font-size: 16px;
+    font-weight: 450;
+    text-align: center;
+
+    cursor: pointer;
+}
+
+.btn-tracker, .btn-collect{
+    margin-left: 5px;
+}
+
+.btn-own:hover, .btn-tracker:hover, .btn-collect:hover{
+    background-color: var(--user-info-btn-bg-color);
+    color: #fff;
+}
+
+.btn-own.active{
+    background-color: var(--user-info-btn-bg-color);
+    color: #fff;
+}
+
+.btn-own.invisible{
+    background-color: var(--bg-color);
+    color: #000;
+}
+
+.btn-tracker.active{
+    background-color: var(--user-info-btn-bg-color);
+    color: #fff;
+}
+
+.btn-tracker.invisible{
+    background-color: var(--bg-color);
+    color: #000;
+}
+
+.btn-collect.active{
+    background-color: var(--user-info-btn-bg-color);
+    color: #fff;
+}
+
+.btn-collect.invisible{
+    background-color: var(--bg-color);
+    color: #000;
+}
+
+.marker-btn{
+    appearance:none;
+    width: 52px;
+    height: 52px;
+    background-color:#fff;
+    border-radius:5px;
+    overflow: hidden;
+    cursor:pointer;
+    position:absolute;
+    z-index: 5;
+}
+
+@media (1200px < width <= 1920px) {
+    .search-bar{
+        width: 600px;
+    }
+}
+
+@media (650px < width < 1200px) {
+    .search-bar{
+        width: 600px;
+    }
+
+    .country-droplist, .city-droplist, .types-droplist{
+        width: 100%;
+    }
+}
+
+@media (300px < width < 650px) {
+    .search-bar{
+        width: 90%;
+    }
+
+    .country-droplist, .city-droplist, .types-droplist{
+        width: 100%;
+    }
+}

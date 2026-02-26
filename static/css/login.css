@@ -1,0 +1,210 @@
+*{
+    padding: 0;
+    margin: 0;
+}
+
+body{
+    width: 100vw;
+    height: 100vh;
+    font-family: "Taipei Sans TC", "Zen Maru Gothic", sans-serif;
+    font-style: normal;
+    box-sizing: border-box;
+}
+
+.login-ui-container{
+    width: 100%;
+    height: 100%;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: minmax(0, 1fr);
+    padding: 10px;
+    box-sizing: border-box;
+}
+
+.login-ui{
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(45deg, rgba(44, 146, 184, 0.7) 0%, rgba(44, 146, 184, 0.5) 50%, rgba(44, 146, 184, 0.3) 100%);
+    border-radius: 5px;
+
+    display: grid;
+    grid-template-columns: 0.7fr 0.3fr;
+    grid-template-rows:  minmax(0, 1fr);
+}
+
+.login-ui-img{
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    border-radius: 10px;
+
+    padding: 10px;
+    box-sizing: border-box;
+}
+
+.login-ui-img img{
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 5px;
+}
+
+.login-input{
+    width: 100%;
+    height: 100%;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: minmax(0, 1fr);
+    justify-items: center;
+    align-items: center;
+
+    padding-left: 50px;
+    padding-right: 50px;
+    padding-top: 50px;
+    box-sizing: border-box;
+}
+
+.login-input-container{
+    width: 360px;
+    height: 100%; 
+
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: 40px 1fr;
+    gap: 20px;
+}
+
+.login-first-container{
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content:flex-end;
+}
+
+.login-signin-btn{
+    all: unset;
+    width: 70px;
+    height: 38px;
+    border-radius: 5px;
+    background-color: #60a5f5;
+
+    font-size: 18px;
+    text-align: center;
+    cursor: pointer;
+}
+
+.login-second-container{
+    width: 100%;
+    height: 100%;
+    display: grid;
+    grid-template-columns: 1fr;
+    grid-template-rows: repeat(auto-fill, 40px);
+    gap: 10px;
+}
+
+.login-second-hidden{
+    display: none;
+}
+
+.sign-second-hidden{
+    display: none;
+}
+
+.sign-second-container{
+    width: 100%;
+    height: 100%;
+    display: grid;
+    grid-template-columns: 1fr;
+    grid-template-rows: repeat(auto-fill, 40px);
+    gap: 10px;
+}
+
+.login-title, .signin-title{
+    width: 100%;
+    height: 100%;
+    font-size: 30px;
+    font-weight: bold;
+    font-family: "Kaushan Script";
+    text-align: center;
+    line-height: 30px;
+}
+
+.login-email, .login-pw, 
+.signin-email, .signin-pw, .signin-name, .signin-nickname{
+    all: unset;
+    width: 100%;
+    height: 35px;
+    border: 1px solid #000;
+    border-radius: 5px;
+
+    padding-left: 10px;
+    box-sizing: border-box;
+
+    font-size: 16px;
+}
+
+.login-btn, .signin-btn{
+    all: unset;
+    width: 100%;
+    height: 100%;
+    border-radius: 5px;
+    background-color: #002060;
+    color: #fff;
+
+    font-size: 16px;
+    text-align: center;
+    cursor: pointer;
+}
+
+.error-login-text, .error-signin-text{
+    width: 100%;
+    height: 100%;
+    font-size: 16px;
+    font-weight: 600;
+    color: rgb(179, 17, 17);
+
+    text-align: center;
+    display: none;
+}
+
+@media (1200px < width <= 1920px) {
+   
+}
+
+@media (650px < width <= 1200px) {
+    .login-ui{
+        grid-template-columns: minmax(0, 1fr);
+        grid-template-rows:  0.6fr 0.4fr;
+    }
+
+    .login-input{
+        padding-left: 50px;
+        padding-right: 50px;
+        padding-top: 10px;
+        padding-bottom: 10px;
+        box-sizing: border-box;
+    }
+}
+
+@media (300px < width < 650px) {
+    .login-ui{
+        grid-template-columns: minmax(0, 1fr);
+        grid-template-rows:  0.4fr 0.6fr;
+    }
+
+    .login-input{
+        padding-left: 10px;
+        padding-right: 10px;
+        padding-top: 10px;
+        padding-bottom: 10px;
+        box-sizing: border-box;
+    }
+
+    .login-input-container{
+        width: 320px;
+    }
+}
+
+@view-transition{
+    navigation: auto;
+}

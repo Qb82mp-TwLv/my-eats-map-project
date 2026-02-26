@@ -3,11 +3,149 @@
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <link rel="stylesheet" href="index.css">
-        <script defer src="index.js"></script>
-        <title>美食地圖</title>
+        <link rel="stylesheet" href="/static/css/index.css">
+        <link rel="stylesheet" href="/static/css/postsdialog.css">
+        <script defer type="module" src="/static/js/index-controller.js"></script>
+        <title>My Eats Map</title>
     </head>
     <body>
-        <div class="map-block" id="map"></div>
+        <div class="web-view-container">
+            <div class="map-outside-container">
+                <div class="map-block" id="map"></div>
+            </div>
+            <div class="search-bar">
+                <div class="bar-container">
+                    <div class="user-center">
+                        <button type="button" class="headshot-item">
+                            <img class="headshot-item-img" src="/static/img/user.png">
+                        </button>
+                        <div class="user-name">tina</div>
+                    </div>
+                    <div class="position-item">
+                        <div class="item-country">
+                            <button type="button" class="country-select">選擇地區</button>
+                            <div class="country-droplist">
+                                <ul class="country-option">
+                                    
+                                </ul>
+                            </div>
+                        </div>
+                        
+                        <div class="item-city">
+                            <button type="button" class="city-select">選擇城市</button>
+                            <div class="city-droplist">
+                                <ul class="city-option">
+                                   
+                                </ul>
+                            </div>
+                        </div>
+
+                        <div class="item-types">
+                            <button type="button" class="types-select">店家種類</button>
+                            <div class="types-droplist">
+                                <ul class="types-option">
+                                    
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="search-input-item">
+                        <div class="input-item-container">
+                            <input class="input-item-keyword" type="text" placeholder="Search">
+                            <button class="input-item-btn" type="button">
+                                <img src="/static/img/magnifying-glass.png">
+                            </button>
+                        </div>
+                    </div>
+                    <div class="search-btn-item">
+                        <button class="btn-own" type="button">我</button>
+                        <button class="btn-tracker" type="button">追蹤者</button>
+                        <button class="btn-collect" type="button">收藏</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <dialog class="view-posts">
+            <nav class="nav">
+                <div class="close-btn">
+                    <img src="./img/close.png">
+                </div>
+            </nav>
+            <div class="posts-container">
+                <div class="post-content-container">
+                    <div class="post-content-img">
+                        <div class="content-img-container">
+                            <div class="food-img-info">
+                                <div class="img-info-scroll">
+                                    <div class="imgSlides" id="imgItem">
+                                        <div class="img-container">
+                                            <img src="./img/caffeine.jpg">
+                                        </div>
+                                    </div>
+                            
+                                    <div class="food-info">
+                                        <div class="info-container">
+                                            <div class="img-name">奶油義大利麵佐松露</div>
+                                            <div class="img-price">280元</div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="img-info-scroll">
+                                    <div class="imgSlides" id="imgItem">
+                                        <div class="img-container">
+                                            <img src="/static/img/photo.png">
+                                        </div>
+                                    </div>
+                            
+                                    <div class="food-info">
+                                        <div class="info-container">
+                                            <div class="img-name">奶油義大利麵佐松露</div>
+                                            <div class="img-price">280元</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="post-evaluate-action">
+                            <div class="love-btn">
+                                <img src="./img/heart-nocolor.png">
+                            </div>
+                            <div class="collect-btn">
+                                <img src="./img/bookmark-nocolor.png">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="post-content-comment">
+                        <div class="user-info">
+                            <div class="user-headshot">
+                                <img src="./img/nginx.png">
+                            </div>
+                            <div class="user-nickname">Tina</div>
+                        </div>
+                        <div class="post-comment">
+                            <div class="food-experience">
+                                <div>食物體驗</div>
+                                <p>要吃好吃的冰餅，終於不用跑到台南或斗六，高雄鹽埕區建國路 斗六冰城 上就有❤️❤️
+                                小小低調的店面，已經默默營業10幾年，入門就聞到療癒咖啡香
+                                裡面販賣的冰淇淋、冰餅、冰棒、雪糕都是由高雄旗津營業超過40年的傳統冰店—斗六冰城總店配送</p>
+                            </div>
+                            
+                            <div class="dining-area">
+                                <div>用餐環境</div>
+                                <p>獨家自製的冰品甜點，堅持都是純天然手工製作，不加乳化劑，無添加人工香料及色素
+                                走純粹天然的冰品店，另外還有獨特的紅茶冰淇淋、梅汁冰淇淋等，都是熟客招牌首選
+                                冰淇淋及飲料口味很多，每次都可以迸出新吃法好滋味</p>
+                            </div>   
+                        </div>
+                    </div>
+                </div>
+
+                <div class="space"></div>
+            </div>
+
+        </dialog>
     </body>
 </html>
