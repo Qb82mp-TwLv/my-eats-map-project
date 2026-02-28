@@ -8,7 +8,7 @@ async def get_CDN_image(img_name):
         url = f"{CDN_path}/"
 
         imgUrl = url+img_name
-        print(imgUrl)
+
         return {"data": {
             "img": imgUrl
         }}
@@ -24,7 +24,7 @@ async def get_Post_CDN_image(img_name):
 
         imgUrl = url+img_name
         url_list.append(imgUrl)
-        print(imgUrl)
+
         if url_list != []:
             return {"data": {
                 "img": url_list

@@ -45,7 +45,7 @@ body{
 }
 
 .navbar-title{
-    width: 100%;
+    width: 170px;
     height: 100%;
     font-size: 30px;
     font-weight: bold;
@@ -336,6 +336,7 @@ body{
     min-height: 100%;
     border: var(--search-border);
     box-sizing: border-box;
+    border-radius: var(--search-border-radius);
 
     display: grid;
     grid-template-columns: repeat(auto-fill, 100px);
@@ -364,6 +365,8 @@ body{
     cursor: pointer;
 
     border-radius: var(--search-border-radius);
+    border: var(--search-border);
+    box-sizing: border-box;
 }
 
 .post-img img{

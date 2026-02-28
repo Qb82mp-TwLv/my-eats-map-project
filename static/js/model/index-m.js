@@ -39,6 +39,7 @@ class indexModel {
         const response = await fetch("/api/countryname", {method: "GET"});
         const dt = await response.json();
 
+        await new Promise(delay => setTimeout(delay, 100));
         if (!response.ok || dt.error !== undefined){
             console.log("取得地區資料出現錯誤。");
         }else{
@@ -52,6 +53,7 @@ class indexModel {
         });
         const dt = await response.json();
 
+        await new Promise(delay => setTimeout(delay, 100));
         if (!response.ok || dt.error !== undefined){
             console.log("取得地區資料出現錯誤。");
             return {"city":[]};
@@ -66,6 +68,7 @@ class indexModel {
         });
         const dt = await response.json();
 
+        await new Promise(delay => setTimeout(delay, 100));
         if (!response.ok || dt.error !== undefined){
             console.log("取得地區資料出現錯誤。");
         }else{
@@ -145,6 +148,8 @@ class indexModel {
             }else{
                 this.mapkey = value.data;
             }
+
+            await new Promise(delay => setTimeout(delay, 200));
         }catch{
             console.log("地圖發生錯誤。");
         };
@@ -158,6 +163,7 @@ class indexModel {
             const response = await fetch("/api/mapid");
             const value = await response.json();
 
+            await new Promise(delay => setTimeout(delay, 100));
             if (!response.ok || value.error!== undefined){
                 console.log("地圖發生錯誤。");
             }else{

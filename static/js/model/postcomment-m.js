@@ -21,6 +21,12 @@ class postCommentModel {
     
         this.mapkey="";
         this.getMapValue();
+
+        // 滑動圖片的按鈕
+        this.slideLeftBtn = document.getElementById("slideLeft");
+        this.slideRightBtn = document.getElementById("slideRight");
+        // 預覽圖片容器
+        this.previewImgCTN = document.querySelector(".preview-img-slide");
     }
 
     async memberCenter() {
@@ -128,9 +134,13 @@ class postCommentModel {
     // };
 
     joinText(arr) {
-        const textAdd = "";
+        let textAdd = "";
         for (let i=0; i < arr.length; i++){
-            textAdd += String(arr[i]);
+            if (i === 0){
+                textAdd += String(arr[i]);
+                continue;
+            }
+            textAdd += "," +String(arr[i]);
         }
 
         return textAdd;
@@ -138,6 +148,8 @@ class postCommentModel {
 
     async submitPostInfo(id) {
         const token = localStorage.getItem("token");
+        console.log(id);
+        console.log(`資料型別: ${typeof id}`);
         // 先取得圖片
         if (this.imgFiles !== null){
             try{
@@ -173,14 +185,19 @@ class postCommentModel {
                 // 取得地址的經緯度
                 const addCoordinate = await this.getAddressCoordinates(restaurantAddress);
                 if (addCoordinate === "error"){
+                    console.log("找經緯度")
                     return "建立貼文失敗，請稍後再執行。";
                 }
 
-                if (addCoordinate.country !== restaurantCountry){
-                    return "請確認地址是否為選擇的地區選項";
+                if (addCoordinate.data.country !== restaurantCountry){
+                    return "請確認地址是否為選擇的地區選項，或是選項中並沒有該地區，\n請根據有的地區進行發文動作，謝謝。";
+                };
+                if (!addCoordinate.data.city.includes(restaurantCity)){
+                    return "請確認地址是否為選擇的城市選項，或是選項中並沒有該城市，\n請根據有的城市進行發文動作，謝謝。";
                 }
-                const latCoordinate = addCoordinate.lat;
-                const lonCoordinate = addCoordinate.lon;
+
+                const latCoordinate = parseFloat(addCoordinate.data.lat);
+                const lonCoordinate = parseFloat(addCoordinate.data.lon);
 
                 if (foodNameText !== "" && foodPriceText !== "" && restaurantName !== "" &&
                     restaurantAddress !== "" && restaurantCountry !== "選擇地區" && restaurantCity !== "選擇城市" &&
@@ -199,26 +216,35 @@ class postCommentModel {
                     formData.append("rest_area", restaurantArea);
                     formData.append("rest_foodname", foodNameText);
                     formData.append("rest_foodprice", foodPriceText);
-                    formData.append("image", this.imgFiles)
-
-                    console.log(formData);
-                    // const response = await fetch("/api/post/single", {
-                    //     method: "POST",
-                    //     headers: {"Authorization": `Bearer ${token}`},
-                    //     body: formData,
+                    for(let i=0; i<imgFilesLength; i++){
+                        formData.append("image", this.imgFiles[i]);
+                    };
+                    
+                    // formData.forEach((value, key) => {
+                    //     console.log(`欄位名稱: ${key}`);
+                    //     console.log(`數值內容: "${value}"`); // 加上引號方便觀察有無空白
+                    //     console.log(`資料型別: ${typeof value}`);
+                    //     console.log('---');
                     // });
+                    const response = await fetch("/api/post/single", {
+                        method: "POST",
+                        headers: {"Authorization": `Bearer ${token}`},
+                        body: formData,
+                    });
 
-                    // const dt = await response.json();
+                    const dt = await response.json();
 
-                    // if (!response.ok || dt.error !== undefined){
-                    //     return "建立貼文失敗，請稍後再執行。";
-                    // }
-
+                    if (!response.ok || dt.error !== undefined){
+                        console.error("後端報錯詳情:", dt);
+                        return "建立貼文失敗，請稍後再執行。";
+                    }
+                    console.error(dt);
                     return "建立貼文成功。";
                 }
 
                 return "建立貼文失敗，請稍後再執行。";
             }catch(error){
+                console.log(error);
                 return "建立貼文失敗，請稍後再執行。";
             }
         }
@@ -226,6 +252,7 @@ class postCommentModel {
     }
 
     async getAddressCoordinates(address) {
+        console.log(address);
         const addressCoordinate = `https://maps.googleapis.com/maps/api/geocode/json?address=${address}&key=${this.mapkey}&language=zh-TW`
         try{
             const response = await fetch(addressCoordinate);
@@ -234,18 +261,26 @@ class postCommentModel {
             if (dt.status === "OK"){
                 // 先將資料用到子層的Array位置，再透過foreach迴圈，找對應的資料
                 const componentsArr = dt.results[0].address_components;
-                const geometryLocation= dt.results[1].geometry.location;
+                const geometryLocation= dt.results[0].geometry.location;
                 let country = null;
-                let city = null;
+                let city = [];
 
                 componentsArr.forEach(e => {
                     if (e.types.includes("country")){
                         country = e.long_name;
-                    }
+                    };
+
+                    if (e.types.includes("locality")){
+                        city.push(e.long_name);
+                    };
+
+                    if (e.types.includes("administrative_area_level_2")){
+                        city.push(e.long_name);
+                    };
 
                     if (e.types.includes("administrative_area_level_1")){
-                        city = e.long_name;
-                    }
+                        city.push(e.long_name);
+                    };
                 });
 
                 return {"data": {
@@ -277,6 +312,22 @@ class postCommentModel {
         };
 
         return this.mapkey;
+    }
+
+    async slideBtnClick() {
+        this.slideLeftBtn.addEventListener("click", () => {
+            this.previewImgCTN.scrollTo({
+                left: -this.previewImgCTN.offsetWidth,
+                behavior: "smooth"
+            });
+        });
+
+        this.slideRightBtn.addEventListener("click", () => {
+            this.previewImgCTN.scrollTo({
+                left: this.previewImgCTN.offsetWidth,
+                behavior: "smooth"
+            });
+        });
     }
 };
 

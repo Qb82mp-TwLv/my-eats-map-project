@@ -5,38 +5,46 @@ def post_content_data(dt):
     if type(dt) != bool:
         load_dotenv()
         CDN_path = os.getenv("API_AWS_CDN_PATH")
-        url = f"{CDN_path}"
+        url = f"{CDN_path}/"
 
-
+        
         user_name = dt[2] if dt[2] != "" else dt[1]
+
+        user_liked = "no" if dt[14] == None else "yes"
+        user_collected = "no" if dt[13] == None else "yes"
+
         user_headshot = url+dt[3]
         dt_json = {
             "data":{
                 "user_id": dt[0],
                 "name": user_name,
                 "headshot": user_headshot,
+                "store_address": dt[4],
+                "store_name": dt[5],
                 "img": [],
-                "name": [],
-                "price": [],
-                "comment": dt[7],
-                "environment": dt[8],
-                "collect_count": dt[9],
-                "like_count": dt[10]
+                "food_name": [],
+                "food_price": [],
+                "comment": dt[9],
+                "environment": dt[10],
+                "collect_count": dt[11],
+                "like_count": dt[12],
+                "liked": user_liked,
+                "collected": user_collected,
             }
         }
         if dt == []:
             return {"data":"無資料"}
 
-        img_split = dt[4].split(",")
+        img_split = dt[6].split(",")
         for img_item in img_split:
             imgUrl = url+img_item
             dt_json["data"]["img"].append(imgUrl)
 
-        for name_item in dt[5].split(","):
-            dt_json["data"]["name"].append(name_item)
+        for name_item in dt[7].split(","):
+            dt_json["data"]["food_name"].append(name_item)
 
-        for price_item in dt[6].split(","):
-            dt_json["data"]["price"].append(price_item)
+        for price_item in dt[8].split(","):
+            dt_json["data"]["food_price"].append(price_item)
             
         return dt_json
     

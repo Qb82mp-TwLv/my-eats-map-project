@@ -1,3 +1,6 @@
+from dotenv import load_dotenv
+import os
+
 def user_follows_people(dt):
     if type(dt) != bool:
         return {"data": {
@@ -27,11 +30,16 @@ def user_posts_data(dt):
 
         post_id_list = []
         img_list = []
+        load_dotenv()
+        CDN_path = os.getenv("API_AWS_CDN_PATH")
+        url = f"{CDN_path}/"
+
         for id, img in dt:
             post_id_list.append(id)
 
             split_img = img.split(",")
-            img_list.append(split_img[0])
+            imgUrl = url+split_img[0]
+            img_list.append(imgUrl)
             
         if img_list != []:
             dt_json["data"]["image"]=img_list
@@ -55,10 +63,16 @@ def user_collect_data(dt):
 
         collect_id_list = []
         img_list = []
+        load_dotenv()
+        CDN_path = os.getenv("API_AWS_CDN_PATH")
+        url = f"{CDN_path}/"
+
         for id, img in dt:
             collect_id_list.append(id)
+
             split_img = img.split(",")
-            img_list.append(split_img[0])
+            imgUrl = url+split_img[0]
+            img_list.append(imgUrl)
             
         if img_list != []:
             dt_json["data"]["image"]=img_list

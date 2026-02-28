@@ -319,7 +319,7 @@ class db_interaction:
         cursor = self.db_operate.cursor()
         query_collect = """SELECT post.post_id, post.food_img FROM `collect_info` AS coll
                         JOIN `posts_info` AS post ON coll.post_id = post.post_id 
-                        WHERE user_id=%s;"""
+                        WHERE coll.user_id=%s;"""
         query_data = (user_id,)
 
         cursor.execute(query_collect, query_data)
@@ -460,23 +460,39 @@ class db_interaction:
         
         return _result
     
-    async def query_post_data(self, post_id):
+    async def query_post_data(self, post_id, user_id):
         dt_json = False
         
         cursor = self.db_operate.cursor()
-        query_post = """SELECT M.user_id, M.name, M.nickname, M.headshot_img, P.food_img, P.food_name, P.food_price, P.food_comment, P.dining_area,
+        query_post = """SELECT M.user_id, M.name, M.nickname, M.headshot_img, P.store_location, P.store_name,
+                        P.food_img, P.food_name, P.food_price, P.food_comment, P.dining_area,
                         IFNULL(collect.c_count, 0) AS collect_total,
-                        IFNULL(like.l_count, 0) AS like_total
+                        IFNULL(lk.l_count, 0) AS like_total,
+                        co.post_id, lik.post_id 
                         FROM `posts_info` AS P 
-                        LEFT JOIN `member_info` AS M ON P.user_id=M.user_id
+                        LEFT JOIN `member_info` AS M ON P.user_id=M.user_id 
                         LEFT JOIN (
-                            SELECT COUNT(*) AS c_count FROM `collect_info`
-                        ) AS collect ON P.post_id = collect.post_id
+                            SELECT post_id, COUNT(*) AS c_count
+                            FROM `collect_info`
+                            GROUP BY post_id
+                        ) AS collect ON P.post_id = collect.post_id 
                         LEFT JOIN (
-                            SELECT COUNT(*) AS l_count FROM `like_info`
-                        ) AS like ON P.post_id = like.post_id
-                        WHERE P.post_id=%s; """
-        query_data = (post_id,)
+                            SELECT post_id 
+                            FROM `collect_info` 
+                            WHERE user_id=%s
+                        ) AS co ON P.post_id = co.post_id 
+                        LEFT JOIN (
+                            SELECT post_id, COUNT(*) AS l_count 
+                            FROM `like_info`
+                            GROUP BY post_id
+                        ) AS lk ON P.post_id = lk.post_id 
+                        LEFT JOIN (
+                            SELECT post_id 
+                            FROM `like_info` 
+                            WHERE user_id=%s
+                        ) AS lik ON P.post_id = lik.post_id 
+                        WHERE P.post_id=%s;"""
+        query_data = (user_id, user_id, post_id)
 
         cursor.execute(query_post, query_data)
         findOne = cursor.fetchone()
@@ -488,14 +504,14 @@ class db_interaction:
             cursor.close()
         return dt_json
 
-    async def get_post_info(self, post_id):
+    async def get_post_info(self, post_id, user_id):
         _result = False
         try:
-            _result = await self.query_post_data(post_id)
+            _result = await self.query_post_data(post_id, user_id)
         except OperationalError:
             self.db_conf.restart_connect()
             try:
-                _result = await self.query_post_data(post_id)
+                _result = await self.query_post_data(post_id, user_id)
             except Exception:
                 return False
         except Exception as e:
@@ -550,7 +566,8 @@ class db_interaction:
                                rest_country, rest_city, rest_lat, rest_lon,
                                rest_type, rest_comment, rest_area, rest_foodname, 
                                rest_foodprice, img_text)
-            except Exception:
+            except Exception as e:
+                print("user post info error,"+str(e))
                 return False
         except Exception as e:
             print("user post info error,"+str(e))
@@ -558,4 +575,87 @@ class db_interaction:
         
         return _result
         
+    def add_or_del_like(self, user_id, post_id, action):
+        dt_json = False
+        
+        cursor = self.db_operate.cursor()
+        action_like=""
+
+        if action == "yes":
+            action_like = """INSERT INTO `like_info` (user_id, post_id)
+                            VALUES (%s, %s);"""
+        if action == "no":
+            action_like = """DELETE FROM `like_info` WHERE user_id=%s AND post_id=%s;"""
+
+        like_data = (user_id, post_id)
+
+        cursor.execute(action_like, like_data)      
+        if cursor.rowcount == 1:
+            self.db_operate.commit()
+            dt_json = True
+        else:
+            self.db_operate.rollback()
+
+        if cursor is not None:
+            cursor.close()
+        return dt_json
+
+    def post_like_action(self, user_id, post_id, action):  
+        _result = False
+        try:
+            _result = self.add_or_del_like(user_id, post_id, action)
+        except OperationalError:
+            self.db_conf.restart_connect()
+            try:
+                _result = self.add_or_del_like(user_id, post_id, action)
+            except Exception as e:
+                print("post like action error,"+str(e))
+                return False
+        except Exception as e:
+            print("post like action error,"+str(e))
+            return False
+        
+        return _result
+
+    def add_or_del_collect(self, user_id, post_id, action):
+        dt_json = False
+        
+        cursor = self.db_operate.cursor()
+        action_like=""
+
+        if action == "yes":
+            action_like = """INSERT INTO `collect_info` (user_id, post_id)
+                            VALUES (%s, %s);"""
+        if action == "no":
+            action_like = """DELETE FROM `collect_info` WHERE user_id=%s AND post_id=%s;"""
+
+        like_data = (user_id, post_id)
+
+        cursor.execute(action_like, like_data)      
+        if cursor.rowcount == 1:
+            self.db_operate.commit()
+            dt_json = True
+        else:
+            self.db_operate.rollback()
+
+        if cursor is not None:
+            cursor.close()
+        return dt_json
+
+    def post_collect_action(self, user_id, post_id, action):  
+        _result = False
+        try:
+            _result = self.add_or_del_collect(user_id, post_id, action)
+        except OperationalError:
+            self.db_conf.restart_connect()
+            try:
+                _result = self.add_or_del_collect(user_id, post_id, action)
+            except Exception as e:
+                print("post collect action error,"+str(e))
+                return False
+        except Exception as e:
+            print("post collect action error,"+str(e))
+            return False
+        
+        return _result
 db = db_interaction()

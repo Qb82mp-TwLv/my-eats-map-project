@@ -28,6 +28,7 @@ async function loadingMap() {
     const mapScript = document.createElement("script");
     mapScript.src = `https://maps.googleapis.com/maps/api/js?key=${mapkey}&loading=async&callback=initMap&libraries=marker`;
     mapScript.async = true;
+    mapScript.defer = true;
     document.body.appendChild(mapScript);
 }
 
@@ -42,7 +43,7 @@ async function initMap() {
             lng: 121.56452, 
         },
         mapId: `${mapid}`,
-        zoom: 10,
+        zoom: 13,
         tilt:0,
         heading: 0,
         rotateControl: false,
@@ -206,10 +207,21 @@ async function set_headshot_img(img) {
             headshot_obj.src = "/static/img/user.png";
             break;
         default:
-            headshot_obj.src = "/static/img/nginx.png";
+            headshot_obj.src = img;
     }
         
 
+}
+
+// 若使用者的滑鼠移至大頭照上，就會先預載資料
+async function memberPreload() {
+    const userHeadshotBtn = document.querySelector(".headshot-item");
+    userHeadshotBtn.addEventListener("mouseenter", () => {
+        const memberLinkTag = document.createElement("link");
+        memberLinkTag.rel="prerender";
+        memberLinkTag.href = "/member";
+        document.head.appendChild(memberLinkTag); 
+    }, {once: true});
 }
 
 verify_user_token();
@@ -222,6 +234,7 @@ createOptionItem();
 createCityOptionItem("");
 
 searchBarOptionClick();
+memberPreload();
 
 // 當網頁載入時，要執行此部分
 window.addEventListener("load", () => {

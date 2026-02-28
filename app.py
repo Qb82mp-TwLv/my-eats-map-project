@@ -3,6 +3,7 @@ from fastapi.responses import FileResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
 from controller.index import router as index_router
 from controller.user import router as user_router
+from controller.post import router as post_router
 from starlette.middleware.sessions import SessionMiddleware
 from starlette.middleware.cors import CORSMiddleware
 from dotenv import load_dotenv
@@ -11,6 +12,7 @@ import os
 app=FastAPI()
 app.include_router(index_router)
 app.include_router(user_router)
+app.include_router(post_router)
 
 app.mount("/static", StaticFiles(directory="static"), name="static")
 

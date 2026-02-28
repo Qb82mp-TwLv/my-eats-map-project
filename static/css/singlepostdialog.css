@@ -5,16 +5,18 @@
 }
 
 body{
-    font-family: 'Taipei Sans TC', 'Noto Sans TC', sans-serif;
+    font-family: "Taipei Sans TC", "Zen Maru Gothic", sans-serif;
+    font-style: normal;
+    box-sizing: border-box;
 }
 
 .view-one-post{
-    height: 370px;
+    height: 470px;
     border-radius: 5px;
     background-color: rgba(202, 229, 231);
-    border: none;
-
     margin: auto;
+    border: none;
+    outline: none;
 }
 
 .nav-post{
@@ -53,7 +55,7 @@ body{
 
     display: grid;
     grid-template-columns: 1fr;
-    grid-template-rows: 320px;
+    grid-template-rows: 420px;
     gap: 5px;
 
     align-items: center;
@@ -61,7 +63,7 @@ body{
 
 .post-content-container{
     width: 100%;
-    height: 320px;
+    height: 420px;
     border-radius: 10px;
     background-color: #fff;
 
@@ -71,6 +73,9 @@ body{
     grid-template-columns: 1fr 1.5fr;
     grid-template-rows: 1fr;
     gap: 20px;
+
+    outline: none;
+    border: none;
 }
 
 .post-content-img{
@@ -100,11 +105,11 @@ body{
     scroll-snap-type: x mandatory;
     scroll-behavior: smooth;
 
-    /* &::-webkit-scrollbar{
-        display: none;
-    } */
-
     cursor: pointer;
+
+    &::-webkit-scrollbar{
+        display: none;
+    }
 }
 
 .img-info-scroll{
@@ -137,7 +142,7 @@ body{
 
 .img-container img{
     width: 100%;
-    height: 80%;
+    height: 85%;
     border-radius: 10px;
     object-fit: cover;
     position: absolute;
@@ -146,17 +151,40 @@ body{
 
 .sildeBtn{
     width: 100%;
-    max-height: 100%;
-    display: flex;
+    max-width: 100%;
+    display: none;
     justify-content: space-between;
     position: absolute;
-    z-index: 2;
-    top: 110px;
+    z-index: 5;
+    top: 160px;
 }
+
+.leftBtn, .rightBtn{
+    all: unset;
+    width: 25px;
+    height: 50px;
+    border-radius: 0 10px 10px 0;
+    background-color:rgba(255, 255, 255, 0.5);
+}
+
+.rightBtn{
+    border-radius: 10px 0 0 10px;
+}
+
+.leftBtn:hover, .rightBtn:hover{
+    background-color: #fff;
+}
+
+.leftBtn img, .rightBtn img{
+    padding-top: 8px;
+    width: 20px;
+    height: 30px;
+}
+
 
 .food-info{
     width: 100%;
-    height: 20%;
+    height: 15%;
     background-color: rgba(255, 255, 255, 0.3);
     border-radius: 0 0 10px 10px;
     position: absolute;
@@ -199,14 +227,16 @@ body{
     display: flex;
     gap: 5px;
     overflow: hidden;
-
-    cursor: pointer;
 }
 
 .love-btn img{
     width: 20px;
     height: 20px;
     object-fit: cover;
+}
+
+.like-btn, .favorite-btn{
+    cursor: pointer;
 }
 
 .collect-btn img{
@@ -220,7 +250,7 @@ body{
     height: 100%;
     display: grid;
     grid-template-columns: 1fr;
-    grid-template-rows: 70px 3fr;
+    grid-template-rows: 70px minmax(0, 1fr);
 }
 
 .user-info{
@@ -259,7 +289,8 @@ body{
 
 .post-comment{
     width: 100%;
-    height: 100%;
+    height: 320px;
+    padding-left: 5px;
     padding-right: 5px;
     box-sizing: border-box;
 
@@ -268,19 +299,26 @@ body{
 
     display: grid;
     grid-template-columns: 1fr;
-    grid-template-rows: 1fr 1fr;
+    grid-template-rows: 0.5fr 1fr 1fr;
     gap: 10px;
-
-    overflow-y: auto;
 }
 
-.food-experience, .dining-area{
+.store-name-add, .food-experience, .dining-area{
     width: 100%;
     height: 100%;
     display: grid;
     grid-template-columns: 1fr;
     grid-template-rows: 0.1fr 1fr;
     gap: 5px;
+
+    font-size: 16px;
+    font-family: "Taipei Sans TC", "Zen Maru Gothic";
+    white-space: pre-line;
+}
+
+.obj-title{
+    font-size: 18px;
+    font-weight: 600;
 }
 
 .space{
@@ -303,19 +341,28 @@ body{
 @media (600px < width <= 1200px){
     .view-one-post{
         width: 100%;
+        height: 650px;
     }
 
     .posts-container{
         grid-template-columns: 1fr;
-        grid-template-rows: repeat(1, 500px);
+        grid-template-rows: repeat(1, 600px);
         gap: 5px;
     }
 
     .post-content-container{
         height: 100%;
         grid-template-columns: 1fr;
-        grid-template-rows: 300px 200px;
+        grid-template-rows: 400px 200px;
         gap: 5px;
+    }
+
+    .img-container img{
+        object-fit: contain;
+    }
+
+    .sildeBtn{
+        top: 140px;
     }
 
     .post-content-comment{
@@ -323,6 +370,10 @@ body{
         padding-right: 10px;
         padding-bottom: 10px;
         box-sizing: border-box;
+    }
+
+    .post-comment{
+        height: 100%;
     }
 }
 
@@ -345,10 +396,26 @@ body{
         gap: 5px;
     }
 
+    .sildeBtn{
+        top: 80px;
+    }
+
     .post-content-comment{
         padding-left: 10px;
         padding-right: 10px;
         padding-bottom: 10px;
         box-sizing: border-box;
+    }
+
+    .post-comment{
+        height: 100%;
+    }
+
+    .img-container img{
+        height: 80%;
+    }
+
+    .food-info{
+        height: 20%;
     }
 }

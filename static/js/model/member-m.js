@@ -25,6 +25,12 @@ class memberModel {
                 this.closePostDialog();
             });
         }
+
+        // 滑動圖片的按鈕
+        this.slideLeftBtn = document.getElementById("slideLeft");
+        this.slideRightBtn = document.getElementById("slideRight");
+        // 觀看圖片的容器
+        this.imgInfoCTN = document.querySelector(".food-img-info");
     }
 
     async settingMemberInfo() {
@@ -49,6 +55,7 @@ class memberModel {
 
             const dt = await response.json();
 
+            await new Promise(delay => setTimeout(delay, 200));
             if (dt.data !== undefined){
                 const trackerCount = dt.data.count;
                 return String(trackerCount);
@@ -71,6 +78,7 @@ class memberModel {
 
             const dt = await response.json();
 
+            await new Promise(delay => setTimeout(delay, 100));
             if (dt.data !== undefined){
                 const fansCount = dt.data.count;
                 return String(fansCount);
@@ -104,6 +112,7 @@ class memberModel {
 
                 const dt = await response.json();
 
+                await new Promise(delay => setTimeout(delay, 200));
                 if (dt.data !== undefined){
                     if (dt.data.post_id !== undefined){
                         return dt.data;
@@ -122,11 +131,13 @@ class memberModel {
         if (token !== null){
             try{
                 const response = await fetch(`/api/user/collect?user_id=${id}`, {
-                    method: "GET"
+                    method: "GET",
+                    headers: {"Authorization": `Bearer ${token}`}
                 });
 
                 const dt = await response.json();
 
+                await new Promise(delay => setTimeout(delay, 200));
                 if (dt.data !== undefined){
                     if (dt.data.post_id !== undefined){
                         return dt.data;
@@ -195,7 +206,8 @@ class memberModel {
                 });
 
                 const dt = await response.json();
-                console.log(dt);
+                
+                await new Promise(delay => setTimeout(delay, 100));
                 if (!response.ok || dt.error !== undefined){
                     console.log("大頭照更新失敗");
                     return null;
@@ -225,6 +237,7 @@ class memberModel {
 
             const dt = await response.json();
 
+            await new Promise(delay => setTimeout(delay, 200));
             if (!response.ok || dt.error !== undefined){
                 return null;
             }
@@ -236,17 +249,19 @@ class memberModel {
         }
     }
 
-    async getPostContent(post_id) {
+    async getPostContent(post_id, id) {
         // 取得post的資料
         const token = localStorage.getItem("token");
         try{
-            const response = await fetch(`/api/post/single?post_id=${post_id}`,{
+            // 
+            const response = await fetch(`/api/post/single?post_id=${post_id}&user_id=${id}`,{
                 method: "GET",
                 headers:{"Authorization": `Bearer ${token}`},
             });
 
             const dt = await response.json();
 
+            await new Promise(delay => setTimeout(delay, 200));
             if (!response.ok || dt.error !== undefined){
                 console.log("取發文內容發生錯誤");
                 return null;
@@ -254,11 +269,80 @@ class memberModel {
 
             return dt.data;
 
-        }catch{
+        }catch(error){
+            console.log(error);
             console.log("取發文內容發生錯誤");
             return null;
         }
     };
+
+    async slideBtnClick() {
+        this.slideLeftBtn.addEventListener("click", () => {
+            this.imgInfoCTN.scrollTo({
+                left: -this.imgInfoCTN.offsetWidth,
+                behavior: "smooth"
+            });
+        });
+
+        this.slideRightBtn.addEventListener("click", () => {
+            this.imgInfoCTN.scrollTo({
+                left: this.imgInfoCTN.offsetWidth,
+                behavior: "smooth"
+            });
+        });
+    }
+
+    async likeCountSubmit(user_id, post_id, action) {
+        const token = localStorage.getItem("token");
+        try{
+            const formData = new FormData();
+            formData.append("user_id", user_id);
+            formData.append("post_id", post_id);
+            formData.append("action", action);
+
+            // const response = await 
+            const response = fetch(`/api/post/likecount`,{
+                method: "POST",
+                headers:{"Authorization": `Bearer ${token}`},
+                body:formData,
+            });
+
+            // const dt = await response.json();
+
+            // console.error(dt);
+            // if (!response.ok || dt.error !== undefined){
+            //     console.log("按讚動作發生錯誤");
+            // };
+        }catch{
+            console.log("按讚動作發生錯誤");
+        }
+    }
+
+    async collectCountSubmit(user_id, post_id, action) {
+        const token = localStorage.getItem("token");
+        try{
+            const formData = new FormData();
+            formData.append("user_id", user_id);
+            formData.append("post_id", post_id);
+            formData.append("action", action);
+
+            // const response = await 
+            const response = fetch(`/api/post/collectcount`,{
+                method: "POST",
+                headers:{"Authorization": `Bearer ${token}`},
+                body:formData,
+            });
+
+            // const dt = await response.json();
+
+            // console.error(dt);
+            // if (!response.ok || dt.error !== undefined){
+            //     console.log("按讚動作發生錯誤");
+            // };
+        }catch{
+            console.log("按讚動作發生錯誤");
+        }
+    }
 }
 
 const memberM = new memberModel();
