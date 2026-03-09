@@ -11,6 +11,15 @@ class memberView {
         this.postArea = document.querySelector(".area-text");
         this.postLikeCount = document.querySelector(".like-count");
         this.postCollectCount = document.querySelector(".collect-count");
+        this.storeName = document.querySelector(".store-name");
+        
+        // 取得post有幾則
+        this.postCount=0;
+        this.collectCount = 0;
+
+        // 控制按讚按鈕與收藏按鈕
+        this.loveBtn = document.getElementById("like-btn");
+        this.favoriteBtn = document.getElementById("favorite-btn");
     }
 
     settingHeadshot(img) {
@@ -50,6 +59,8 @@ class memberView {
                 postItemTag.appendChild(postImgTag);
                 this.postsCTN.appendChild(postItemTag);
             }
+
+            this.postCount = postIdArr.length;
         }
     }
 
@@ -67,21 +78,28 @@ class memberView {
             for(let i=0; i<collectIdArr.length; i++){
                 const collectItemTag = document.createElement("div");
                 collectItemTag.classList.add("post-img");
-                collectItemTag.dataset.collectId=collectIdArr[i];
+                collectItemTag.dataset.postId=collectIdArr[i];
                 const collectImgTag = document.createElement("img");
                 collectImgTag.src = imgArr[i];
 
                 collectItemTag.appendChild(collectImgTag);
                 this.collectCTN.appendChild(collectItemTag);
             }
+            this.collectCount = collectIdArr.length;
         }
     }
 
     modifyPostInfoInDialog(dt) {
         // 清除之前的內容
-        // while (this.imgCTN.firstChild){
-        //     this.imgCTN.removeChild(this.imgCTN.firstChild);
-        // }
+        while (this.imgCTN.firstChild){
+            this.imgCTN.removeChild(this.imgCTN.firstChild);
+        }
+
+        if (dt.img.length > 1){
+            // 滑動的按鈕容器
+            const slideCTN = document.querySelector(".sildeBtn");
+            slideCTN.style.display = "flex";
+        }
 
         // 建立圖片的內容
         for (let i=0; i<dt.img.length; i++){
@@ -101,28 +119,63 @@ class memberView {
             const foodInfoTag = document.createElement("div");
             foodInfoTag.classList.add("food-info");
             const infoContainerTag = document.createElement("div");
-            infoContainerTag.classList.add("info-container");
+            infoContainerTag.classList.add("food-info-container");
             const imgNameTag = document.createElement("div");
             imgNameTag.classList.add("img-name");
+            imgNameTag.textContent = String(dt.food_name[i]);
             const imgPriceTag = document.createElement("div");
             imgPriceTag.classList.add("img-price");
+            imgPriceTag.textContent = String(dt.food_price[i])+"元";
             infoContainerTag.appendChild(imgNameTag);
             infoContainerTag.appendChild(imgPriceTag);
             foodInfoTag.appendChild(infoContainerTag);
 
+            imgscrollTag.appendChild(imgSlidesTag);
+            imgscrollTag.appendChild(foodInfoTag);
+
+            this.imgCTN.appendChild(imgscrollTag);
         }
-        
-        console.log(dt);
 
         if (dt.headshot !== ""){
             this.postHeadshot.src = dt.headshot;
+        }else{
+            this.postHeadshot.src= "/static/img/user.png";
         }
+        this.postHeadshot.dataset.userId = dt.user_id;
         this.postName.textContent = String(dt.name);
         this.postExperience.textContent = String(dt.comment);
         this.postArea.textContent = String(dt.environment);
         this.postLikeCount.textContent = String(dt.like_count);
         this.postCollectCount.textContent = String(dt.collect_count);
+        this.storeName.textContent = String(dt.store_name);
+
+        const foodImgInfoCTN = document.querySelector(".food-img-info");
+        // 滑到最左邊
+        foodImgInfoCTN.scrollTo({
+            left: 0,
+            behavior: 'smooth' 
+        });
+
+        this.setLoveBtnAndCollectBtn(dt.liked, dt.collected);
     }
+
+    async setLoveBtnAndCollectBtn(liked, collected) {
+        if (liked === "yes"){
+            this.loveBtn.src="/static/img/heart-color.png";
+            this.loveBtn.dataset.like="yes";
+        }else{
+            this.loveBtn.src = "/static/img/heart-nocolor.png";
+            this.loveBtn.dataset.like="no";
+        };
+
+        if (collected === "yes"){
+            this.favoriteBtn.src="/static/img/bookmark-color.png";
+            this.favoriteBtn.dataset.collect="yes";
+        }else{
+            this.favoriteBtn.src="/static/img/bookmark-nocolor.png";
+            this.favoriteBtn.dataset.collect="no";
+        };
+    };
 }
 
 const memberV = new memberView();

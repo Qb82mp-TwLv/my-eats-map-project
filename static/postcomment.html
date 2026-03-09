@@ -11,6 +11,10 @@
         <title>My Eats Map</title>
     </head>
     <body>
+        <div class="loading-container">
+            <div class="load-animation"></div>
+        </div>
+
         <nav class="navbar">
             <div class="navbar-container">
                 <div class="navbar-title">My Eats Map</div>
@@ -22,31 +26,40 @@
             <div class="secondblock">
                 <div class="post-block-container">
                     <div class="post-img-container">
-                        <div class="preview-img-slide">
-                            
+                        <div class="img-slide-container">
+                            <div class="preview-img-slide">
+                                
+                            </div>
+
+                            <div class="sildeBtn">
+                                <button type="button" class="leftBtn" id="slideLeft"><img src="/static/img/left-button.png"></button>
+                                <button type="button" class="rightBtn" id="slideRight"><img src="/static/img/right-button.png"></button>
+                            </div>
                         </div>
+                        
                         <div class="upload-img-file">
                             <input type="file" id="image-upload" class="upload-img-btn" multiple accept="image/*">
                             <label for="image-upload" class="add-img">
                                 <img src="/static/img/add-image.png">
                             </label>
                         </div>
+                        <div class="remark-str">注意:圖片最多上傳7張，請勿上傳超過。</div>
                     </div>
                     <div class="post-input-container">
                         <div class="store-address">
                             <div class="rest-name-info">
-                                <div class="rest-name-title">餐廳名稱</div>
+                                <div class="rest-name-title">餐廳名稱(必填)</div>
                                 <input type="text" class="rest-name-text">
                             </div>
                             <div class="address-info">
-                                <div class="rest-name-title">餐廳地址</div>
+                                <div class="rest-name-title">餐廳地址(必填->請使用同一種語言輸入)</div>
                                 <input type="text" class="address-text">
                             </div>
                         </div>
 
                         <div class="store-position-type">
                             <div class="country-info">
-                                    <div class="rest-name-title">地區(國家)</div>
+                                    <div class="rest-name-title">地區(國家->必選)</div>
                                     <div class="item-country">
                                         <button type="button" class="country-select">選擇地區</button>
                                         <div class="country-droplist">
@@ -58,7 +71,7 @@
                             </div>
 
                             <div class="city-info">
-                                    <div class="rest-name-title">城市</div>
+                                    <div class="rest-name-title">城市(必選)</div>
                                     <div class="item-city">
                                         <button type="button" class="city-select">選擇城市</button>
                                         <div class="city-droplist">
@@ -70,7 +83,7 @@
                             </div>
                             
                             <div class="type-info">
-                                    <div class="rest-name-title">餐廳種類</div>
+                                    <div class="rest-name-title">餐廳種類(必選)</div>
                                     <div class="item-type">
                                         <button type="button" class="type-select">選擇種類</button>
                                         <div class="type-droplist">
@@ -84,7 +97,7 @@
 
                         <div class="food-experience-container">
                             <div class="experience-comment">
-                                <div class="rest-name-title">餐點評價</div>
+                                <div class="rest-name-title">餐點評價(必填)</div>
                                 <textarea type="text" class="comment-info" maxlength="500"></textarea>
                             </div>
                         </div>
@@ -103,6 +116,8 @@
                                     <img src="/static/img/additionPosts.png">
                                 </button>
                             </div>
+
+                            <div class="remark-str">注意:餐點的名稱與價格輸入框為一組，最多再新增6組，且要跟上傳的圖片張數一樣多組。</div>
                             
                             <form class="food-block">
                                 <div class="food-content-container">

@@ -11,7 +11,15 @@ async function verify_user_token() {
 
             const dt = await response.json();
             if (dt.data !== null){
-                window.location.href = "/eatsmap";
+                loginM.loaderUI.classList.toggle(`active`);
+                requestAnimationFrame(() => {
+                    requestAnimationFrame(() => {
+                        setTimeout(() => {
+                            window.location.replace("/eatsmap");
+                        }, 300);
+                        
+                    })
+                });
             }
         }catch(error){
             console.log("請先登入");

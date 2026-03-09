@@ -4,7 +4,7 @@ from jwt.exceptions import InvalidTokenError, ExpiredSignatureError
 from cryptography.hazmat.primitives import serialization
 import jwt
 import os
-import re
+
 
 def jwtEncode(user_data):
     if isinstance(user_data, dict):

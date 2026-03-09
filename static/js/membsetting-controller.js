@@ -1,6 +1,8 @@
 import settingM from './model/membersetting-m.js';
 import settingV from './view/membersetting-v.js';
 
+
+const loaderUI = document.querySelector(".loading-container");
 async function verify_user_token() {
     try{
         const token = localStorage.getItem("token");
@@ -12,14 +14,29 @@ async function verify_user_token() {
 
         const dt = await response.json();
         if (dt.data === null){
-            window.location.href = "/login";
+            loaderUI.classList.toggle('active');
+            requestAnimationFrame(() => {
+                requestAnimationFrame(() => {
+                    setTimeout(() => {
+                        window.location.replace("/login");
+                    }, 300);
+                    
+                });
+            });
         }
 
         memberInfo(dt.data);
         saveUserUpdate(dt.data.id)
         updatePw(dt.data.id);
     }catch(error){
-        window.location.href = "/login";
+        loaderUI.classList.toggle('active');
+        requestAnimationFrame(() => {
+            requestAnimationFrame(() => {
+                setTimeout(() => {
+                    window.location.replace("/login");
+                }, 300);
+            });
+        });
     }
 };
 
@@ -34,6 +51,7 @@ async function saveUserUpdate(id) {
             if (confirm("請確認是否要更新使用者資訊，謝謝您。")){
                 const result = await settingM.updateMemberInfo(id);
                 alert(String(result));
+                settingM.logOutSubmit();
             }
         });
     }
@@ -46,6 +64,7 @@ async function updatePw(id) {
             if (confirm("請確認是否要更新密碼，謝謝您。")){
                 const result = await settingM.updateMemberPw(id);
                 alert(String(result));
+                settingM.logOutSubmit();
             }
         });
     }

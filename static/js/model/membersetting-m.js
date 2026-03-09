@@ -2,19 +2,47 @@ class memberSettingModel {
     constructor() {
         this.memberName = document.querySelector(".name-view");
         this.memberNickname = document.querySelector(".nickname-view");
+
+        // loading
+        this.loaderUI = document.querySelector(".loading-container");
     }
 
     async memberCenter() {
-        window.location.href = "/member";
+        this.loaderUI.classList.toggle('active');
+        requestAnimationFrame(() => {
+            requestAnimationFrame(() => {
+                setTimeout(() => {
+                    window.location.replace("/member");
+                }, 300);
+                
+            });
+        });
     }
 
     async homePage() {
-        window.location.href = "/eatsmap";
+        this.loaderUI.classList.toggle('active');
+        requestAnimationFrame(() => {
+            requestAnimationFrame(() => {
+                setTimeout(() => {
+                    window.location.replace("/eatsmap");
+                }, 300);
+                
+            });
+        });
     }
 
     async logOutSubmit() {
+        this.loaderUI.classList.toggle('active');
         localStorage.removeItem("token");
-        window.location.href = "/login";
+        sessionStorage.clear();
+        requestAnimationFrame(() => {
+            requestAnimationFrame(() => {
+                setTimeout(() => {
+                    window.location.replace("/login");
+                }, 300);
+                
+            });
+        });
     }
 
     async updateMemberInfo(id) {
@@ -48,7 +76,7 @@ class memberSettingModel {
                 const data = await response.json();
 
                 if (data.ok !== undefined){
-                    return "更新個人資料成功。"
+                    return "更新個人資料成功，請重新登入，謝謝。"
                 }
                     
                 return "更新過程中發生錯誤，請稍後再更新。";
@@ -95,7 +123,7 @@ class memberSettingModel {
                 if (data.ok !== undefined){
                     oldPwInout.value="";
                     newPwInput.value="";
-                    return "更新密碼成功。";
+                    return "更新密碼成功，請重新登入，謝謝。";
                 }                   
                 return "更新密碼過程中發生錯誤，請稍後再更新。";
 

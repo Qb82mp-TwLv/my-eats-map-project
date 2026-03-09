@@ -1,6 +1,9 @@
 import postCommentM from './model/postcomment-m.js';
 import postCommentV from './view/postcomment-v.js';
 
+
+
+const loaderUI = document.querySelector(".loading-container");
 async function verify_user_token() {
     try{
         const token = localStorage.getItem("token");
@@ -12,12 +15,27 @@ async function verify_user_token() {
 
         const dt = await response.json();
         if (dt.data === null){
-            window.location.href = "/login";
+            loaderUI.classList.toggle('active');
+            requestAnimationFrame(() => {
+                requestAnimationFrame(() => {
+                    setTimeout(() => {
+                        window.location.replace("/login");
+                    }, 300);
+                    
+                });
+            });
         }
 
-        postAction(dt.id);
+        postAction(dt.data.id);
     }catch(error){
-        window.location.href = "/login";
+        loaderUI.classList.toggle('active');
+        requestAnimationFrame(() => {
+            requestAnimationFrame(() => {
+                setTimeout(() => {
+                    window.location.replace("/login");
+                }, 300);
+            });
+        });
     }
 };
 
@@ -101,33 +119,41 @@ async function optionInit() {
     });
 };
 
-const selectFoodImgBtn = document.querySelector(".add-img");
-if (selectFoodImgBtn){
-    selectFoodImgBtn.addEventListener("click", () => {
-        const fileUpload = document.getElementById("image-upload");
-        const maxImgFileSum = 7;
-        fileUpload.addEventListener("change", async function() {         
-            if (this.files.length > maxImgFileSum){
-                this.value="";
-                alert("最多只能選取7張圖，請重新選擇。");
-                return;
-            }
+async function postBtnSetting() {
+    const selectFoodImgBtn = document.querySelector(".add-img");
+    if (selectFoodImgBtn){
+        selectFoodImgBtn.addEventListener("click", () => {
+            const fileUpload = document.getElementById("image-upload");
+            const maxImgFileSum = 7;
+            fileUpload.addEventListener("change", async function() {         
+                if (this.files.length > maxImgFileSum){
+                    this.value="";
+                    alert("最多只能選取7張圖，請重新選擇。");
+                    return;
+                }
 
-            if (this.files.length > 0){
-                postCommentM.imgFiles = this.files;
-            }else{
-                postCommentM.imgFiles = null;
-            }
+                if (this.files.length > 0){
+                    postCommentM.imgFiles = this.files;
+                    if (this.files.length > 1){
+                        // 滑動的按鈕容器
+                        const slideCTN = document.querySelector(".sildeBtn");
+                        slideCTN.style.display = "flex";
+                    }
+                }else{
+                    postCommentM.imgFiles = null;
+                }
 
-            await postCommentV.deletePreviewImgTag();
-            // 使用for迴圈將圖片依序帶出來
-            for (const img of this.files){
-                postCommentV.createPriviewImg(img);
-            }
+                await postCommentV.deletePreviewImgTag();
+                // 使用for迴圈將圖片依序帶出來
+                for (const img of this.files){
+                    postCommentV.createPriviewImg(img);
+                }
+            });
+            
         });
-        
-    });
+    }
 }
+
 
 const addFoodNmPriceBtn = document.querySelector(".add-object");
 let addCount = 0;
@@ -147,14 +173,26 @@ async function postAction(id) {
     if (postSubmitBtn){
         postSubmitBtn.addEventListener("click", async () => {
             const result = await postCommentM.submitPostInfo(id);
-            // if (result !== true){
-            //     alert(result);
-            //     return;
-            // }
+            if (result.ok !== true){
+                alert(result);
+                return;
+            }
 
-            alert(result);
+            postCommentM.loaderUI.classList.toggle('active');
+            requestAnimationFrame(() => {
+                requestAnimationFrame(() => {
+                    setTimeout(() => {
+                        window.location.replace("/member");
+                    }, 500);
+                });
+            });
+            
         });
     }
+}
+
+async function setSlideBtn() {
+    postCommentM.slideBtnClick();
 }
 
 
@@ -162,3 +200,5 @@ verify_user_token();
 createPostOptionItem();
 createPortCityOptionItem("");
 optionInit();
+setSlideBtn();
+postBtnSetting();

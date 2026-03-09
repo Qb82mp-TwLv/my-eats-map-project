@@ -3,26 +3,17 @@ class indexView {
         this.countryOption = document.querySelector(".country-option");
         this.cityOption = document.querySelector(".city-option");
         this.typeOption = document.querySelector(".types-option");
-
+        this.followOption = document.querySelector(".tracker-option");
     }
 
-    async marker(map, position, title) {
+    async marker(map, position, img) {
     // 只有在執行到這行時，才會向 Google 請求載入 marker 函式庫
         const { AdvancedMarkerElement, PinElement } = await google.maps.importLibrary("marker");
 
         const bgMarker = document.createElement("button");
         bgMarker.classList.add("marker-btn");
-        // bgMarker.style.appearance = "none";
-        // bgMarker.style.width = "52px";
-        // bgMarker.style.height = "52px";
-        // bgMarker.style.backgroundColor = "#fff";
-        // bgMarker.style.borderRadius = "5px";
-        // bgMarker.style.overflow = "hidden";
-        // bgMarker.style.cursor = "pointer";
-        // bgMarker.style.position = "absolute";
-        // bgMarker.style.zIndex = "5";
         const beachFlagImg = document.createElement("img");
-        beachFlagImg.src = "./img/caffeine.jpg";
+        beachFlagImg.src = img;
         beachFlagImg.style.width = "40px";
         beachFlagImg.style.height = "40px";
         beachFlagImg.style.borderRadius = "5px";
@@ -41,7 +32,6 @@ class indexView {
         return new AdvancedMarkerElement({
             map,
             position,
-            title,
             content: pin.element,
         });
 
@@ -72,6 +62,32 @@ class indexView {
 
         this.typeOption.appendChild(optionTag);
         return optionTag;
+    };
+
+    followDropList(followId, followName) {
+        const optionTag = document.createElement("li");
+        optionTag.classList.add("option");
+        optionTag.textContent = String(followName);
+        optionTag.dataset.followId = followId;
+
+        this.followOption.appendChild(optionTag);
+        return optionTag;
+    };
+
+    async setHeadshotImg(img) {
+        const headshot_obj = document.querySelector(".headshot-item-img");
+        switch (img){
+            case null:
+                headshot_obj.src = "/static/img/user.png";
+                break;
+            default:
+                headshot_obj.src = img;
+        }
+    };
+
+    settingName(name) {
+        const nameText = document.querySelector(".user-name");
+        nameText.textContent = String(name);
     };
 };
 

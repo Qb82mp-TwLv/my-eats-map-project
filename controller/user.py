@@ -10,7 +10,7 @@ from view.memberV import user_follows_people, user_fans_people, user_posts_data,
 from view.get_image import get_CDN_image, clear_CDN_cache
 from model.user_validation import jwtDecode
 from datetime import datetime
-import re, os, hashlib, boto3
+import re, os, hashlib, boto3, asyncio
 
 
 router = APIRouter()
@@ -103,6 +103,7 @@ async def get_user_posts(user_id: int, token: Optional[str]=Depends(oauth2)):
         confirm_token = jwtDecode(token)
         if isinstance(confirm_token, dict):
             get_dt = await db.user_posts_info(user_id)
+            await clear_CDN_cache()
             dt_json = user_posts_data(get_dt)
             return JSONResponse(dt_json)
         
@@ -128,15 +129,17 @@ async def get_user_headshot_url(headshot_name: str):
 
         await clear_CDN_cache()
         imgUrl = url+headshot_name
+
+        await asyncio.sleep(0.1)
         return JSONResponse({"data": {
             "img": imgUrl
         }})
     except Exception as e:
-        print(e)
+        print("大頭照: %s",str(e))
         return JSONResponse({"data": None})
 
 @router.post("/api/user/headshot")
-async def upload_headshot_img(user_id: int=Form(), headshot: str=Form(), image: UploadFile=File(...), token: Optional[str]=Depends(oauth2)):
+async def upload_headshot_img(user_id: int=Form(), headshot: str=Form(None), image: UploadFile=File(...), token: Optional[str]=Depends(oauth2)):
     load_dotenv()
     if (token != None):
         confirm_token = jwtDecode(token)
@@ -156,16 +159,15 @@ async def upload_headshot_img(user_id: int=Form(), headshot: str=Form(), image: 
                     image.file.seek(0)
 
                     _result = False
-                    if headshot != "":
+                    if "mapImg_" in headshot:
                         headshot_name = headshot
                         await clear_CDN_cache()
                         _result = True
                     else:
                         _result = await db.user_headshot_info(user_id, headshot_name)
-                    
+
                     if _result != False:
                         img_backet_name = os.getenv("API_AWS_BUCKET_NAME")
-                        
                         s3=boto3.client("s3")
                         s3.upload_fileobj(
                             Fileobj=image.file,

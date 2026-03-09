@@ -14,6 +14,10 @@
         <title>My Eats Map</title>
     </head>
     <body>
+        <div class="loading-container">
+            <div class="load-animation"></div>
+        </div>
+
         <nav class="navbar">
             <div class="navbar-container">
                 <div class="navbar-title">My Eats Map</div>
@@ -40,7 +44,6 @@
                             <div class="name-info-container">
                                 <div class="info-container">
                                     <div class="name-view"></div>
-                                    <div class="follow-btn">追蹤</div>
                                 </div>
                                 
                                 <div class="people-number">
@@ -68,26 +71,12 @@
                                 <button class="post-add">
                                     <img src="/static/img/additionPosts.png">
                                 </button>
-                                <div class="post-img">
-                                    <img src="/static/img/photo.png">
-                                </div>
-                                
-                                <div class="post-img">
-                                    <img src="/static/img/photo.png">
-                                </div>
 
                                
                             </div>
 
                             <div class="collect-content-hidden"  id="collect-eachone-container">
-                                <div class="post-img">
-                                    <img src="/static/img/photo.png">
-                                </div>
-                                
-                                <div class="post-img">
-                                    <img src="/static/img/photo.png">
-                                </div>
-
+                               
                                
                             </div>
                         </div>
@@ -147,23 +136,28 @@
                             
                                     <div class="food-info">
                                         <div class="food-info-container">
-                                            <div class="img-name">奶油義大利麵佐松露</div>
-                                            <div class="img-price">280元</div>
+                                            <div class="img-name"></div>
+                                            <div class="img-price"></div>
                                         </div>
                                     </div>
                                 </div>
+                            </div>
+
+                            <div class="sildeBtn">
+                                <button type="button" class="leftBtn" id="slideLeft"><img src="/static/img/left-button.png"></button>
+                                <button type="button" class="rightBtn" id="slideRight"><img src="/static/img/right-button.png"></button>
                             </div>
                         </div>
 
                         <div class="post-evaluate-action">
                             <div class="love-btn">
-                                <img src="/static/img/heart-nocolor.png">
-                                <div class="like-count">102</div>
+                                <img src="/static/img/heart-nocolor.png" data-like="no" id="like-btn">
+                                <div class="like-count">0</div>
                             </div>
 
                             <div class="collect-btn">
-                                <img src="/static/img/bookmark-nocolor.png">
-                                <div class="collect-count">32</div>
+                                <img src="/static/img/bookmark-nocolor.png" data-collect="no" id="favorite-btn">
+                                <div class="collect-count">0</div>
                             </div>
                         </div>
                     </div>
@@ -172,21 +166,22 @@
                             <div class="user-headshot">
                                 <img src="/static/img/user.png" class="post-user-headshot">
                             </div>
-                            <div class="user-nickname">Tina</div>
+                            <div class="user-nickname">user</div>
                         </div>
                         <div class="post-comment">
+                            <div class="store-name-add">
+                                <div class="obj-title">店家名稱</div>
+                                <p class="store-name"></p>
+                            </div>
+
                             <div class="food-experience">
-                                <div>食物體驗</div>
-                                <p class="experience-text">要吃好吃的冰餅，終於不用跑到台南或斗六，高雄鹽埕區建國路 斗六冰城 上就有❤️❤️
-                                小小低調的店面，已經默默營業10幾年，入門就聞到療癒咖啡香
-                                裡面販賣的冰淇淋、冰餅、冰棒、雪糕都是由高雄旗津營業超過40年的傳統冰店—斗六冰城總店配送</p>
+                                <div class="obj-title">食物體驗</div>
+                                <p class="experience-text"></p>
                             </div>
                             
                             <div class="dining-area">
-                                <div>用餐環境</div>
-                                <p class="area-text">獨家自製的冰品甜點，堅持都是純天然手工製作，不加乳化劑，無添加人工香料及色素
-                                走純粹天然的冰品店，另外還有獨特的紅茶冰淇淋、梅汁冰淇淋等，都是熟客招牌首選
-                                冰淇淋及飲料口味很多，每次都可以迸出新吃法好滋味</p>
+                                <div class="obj-title">用餐環境</div>
+                                <p class="area-text"></p>
                             </div>   
                         </div>
                     </div>
