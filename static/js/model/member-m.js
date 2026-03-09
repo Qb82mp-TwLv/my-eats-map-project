@@ -31,18 +31,45 @@ class memberModel {
         this.slideRightBtn = document.getElementById("slideRight");
         // 觀看圖片的容器
         this.imgInfoCTN = document.querySelector(".food-img-info");
+
+        // loading頁面
+        this.loaderUI = document.querySelector(".loading-container");
     }
 
     async settingMemberInfo() {
-        window.location.href = "/setting";
+        this.loaderUI.classList.toggle(`active`);
+        requestAnimationFrame(() => {
+            requestAnimationFrame(() => {
+                setTimeout(() => {
+                    window.location.replace("/setting");
+                }, 300);
+                
+            });
+        });
     }
 
     async homePage() {
-        window.location.href = "/eatsmap";
+        this.loaderUI.classList.toggle(`active`);
+        requestAnimationFrame(() => {
+            requestAnimationFrame(() => {
+                setTimeout(() => {
+                    window.location.replace("/eatsmap");
+                }, 300);
+                
+            });
+        });
     }
 
     async postAPost() {
-        window.location.href = "/postcomment";
+        this.loaderUI.classList.toggle(`active`);
+        requestAnimationFrame(() => {
+            requestAnimationFrame(() => {
+                setTimeout(() => {
+                    window.location.replace("/postcomment");
+                }, 300);
+                
+            });
+        });
     }
 
     async get_tracker_number(id) {
@@ -307,12 +334,6 @@ class memberModel {
                 body:formData,
             });
 
-            // const dt = await response.json();
-
-            // console.error(dt);
-            // if (!response.ok || dt.error !== undefined){
-            //     console.log("按讚動作發生錯誤");
-            // };
         }catch{
             console.log("按讚動作發生錯誤");
         }
@@ -333,12 +354,6 @@ class memberModel {
                 body:formData,
             });
 
-            // const dt = await response.json();
-
-            // console.error(dt);
-            // if (!response.ok || dt.error !== undefined){
-            //     console.log("按讚動作發生錯誤");
-            // };
         }catch{
             console.log("按讚動作發生錯誤");
         }

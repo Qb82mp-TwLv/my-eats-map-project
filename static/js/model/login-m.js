@@ -13,6 +13,8 @@ class loginModel {
         // 登入或註冊出現錯誤，使用顯示文字的物件
         this.errorLoginText = document.querySelector(".error-login-text");
         this.errorSigninText = document.querySelector(".error-signin-text");
+
+        this.loaderUI = document.querySelector(".loading-container");
     }
 
     async switchToSignin() {
@@ -75,7 +77,15 @@ class loginModel {
                     }else{
                         localStorage.setItem("token", data.token);
                         this.errorLoginTextHidden();
-                        window.location.href = "/eatsmap";
+                        this.loaderUI.classList.toggle(`active`);
+                        requestAnimationFrame(() => {
+                            requestAnimationFrame(() => {
+                                 setTimeout(() => {
+                                    window.location.replace("/eatsmap");
+                                }, 300);
+                            });
+                        });
+                       
                     }
                 }catch(error){
                     this.errorLoginTextView("電子信箱或密碼有錯誤");

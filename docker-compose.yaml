@@ -1,0 +1,19 @@
+services:
+  web:
+    image: eats-map-web:1.0
+    ports:
+      - "8000:8000"
+    volumes:
+      - (檔案位置)/private_key.pem:/app/certs/private_key.pem:ro
+      - (檔案位置)/public_key.pem:/app/certs/public_key.pem:ro
+      - (檔案位置)/.aws:/root/.aws:ro
+    env_file:
+      - ./.env
+
+  
+  nginx:
+    image: nginx:latest
+    ports:
+      - "443:443"
+    volumes:
+      - (檔案位置)/nginx/nginx.conf:/etc/nginx/conf.d/eatsmap.conf:ro

@@ -13,7 +13,10 @@ def post_content_data(dt):
         user_liked = "no" if dt[14] == None else "yes"
         user_collected = "no" if dt[13] == None else "yes"
 
-        user_headshot = url+dt[3]
+        if (dt[3] == None):
+            user_headshot = ""
+        else:
+            user_headshot = url+dt[3]
         dt_json = {
             "data":{
                 "user_id": dt[0],

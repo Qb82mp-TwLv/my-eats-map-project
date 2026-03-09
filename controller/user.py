@@ -139,7 +139,7 @@ async def get_user_headshot_url(headshot_name: str):
         return JSONResponse({"data": None})
 
 @router.post("/api/user/headshot")
-async def upload_headshot_img(user_id: int=Form(), headshot: str=Form(), image: UploadFile=File(...), token: Optional[str]=Depends(oauth2)):
+async def upload_headshot_img(user_id: int=Form(), headshot: str=Form(None), image: UploadFile=File(...), token: Optional[str]=Depends(oauth2)):
     load_dotenv()
     if (token != None):
         confirm_token = jwtDecode(token)
@@ -159,16 +159,15 @@ async def upload_headshot_img(user_id: int=Form(), headshot: str=Form(), image: 
                     image.file.seek(0)
 
                     _result = False
-                    if headshot != "":
+                    if "mapImg_" in headshot:
                         headshot_name = headshot
                         await clear_CDN_cache()
                         _result = True
                     else:
                         _result = await db.user_headshot_info(user_id, headshot_name)
-                    
+
                     if _result != False:
                         img_backet_name = os.getenv("API_AWS_BUCKET_NAME")
-                        
                         s3=boto3.client("s3")
                         s3.upload_fileobj(
                             Fileobj=image.file,

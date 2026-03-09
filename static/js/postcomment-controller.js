@@ -1,6 +1,9 @@
 import postCommentM from './model/postcomment-m.js';
 import postCommentV from './view/postcomment-v.js';
 
+
+
+const loaderUI = document.querySelector(".loading-container");
 async function verify_user_token() {
     try{
         const token = localStorage.getItem("token");
@@ -12,12 +15,27 @@ async function verify_user_token() {
 
         const dt = await response.json();
         if (dt.data === null){
-            window.location.href = "/login";
+            loaderUI.classList.toggle('active');
+            requestAnimationFrame(() => {
+                requestAnimationFrame(() => {
+                    setTimeout(() => {
+                        window.location.replace("/login");
+                    }, 300);
+                    
+                });
+            });
         }
 
         postAction(dt.data.id);
     }catch(error){
-        window.location.href = "/login";
+        loaderUI.classList.toggle('active');
+        requestAnimationFrame(() => {
+            requestAnimationFrame(() => {
+                setTimeout(() => {
+                    window.location.replace("/login");
+                }, 300);
+            });
+        });
     }
 };
 
@@ -155,12 +173,20 @@ async function postAction(id) {
     if (postSubmitBtn){
         postSubmitBtn.addEventListener("click", async () => {
             const result = await postCommentM.submitPostInfo(id);
-            if (result !== true){
+            if (result.ok !== true){
                 alert(result);
                 return;
             }
 
-            window.location.replace("/member");
+            postCommentM.loaderUI.classList.toggle('active');
+            requestAnimationFrame(() => {
+                requestAnimationFrame(() => {
+                    setTimeout(() => {
+                        window.location.replace("/member");
+                    }, 500);
+                });
+            });
+            
         });
     }
 }
@@ -168,6 +194,7 @@ async function postAction(id) {
 async function setSlideBtn() {
     postCommentM.slideBtnClick();
 }
+
 
 verify_user_token();
 createPostOptionItem();

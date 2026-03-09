@@ -17,7 +17,7 @@ oauth2 = OAuth2PasswordBearer(tokenUrl="token", auto_error=False)
 async def post_rest_content(user_id:int = Form(...),rest_name:str = Form(...),rest_address:str = Form(...),
                             rest_country:str = Form(...),rest_city:str = Form(...),rest_lat:Decimal = Form(...),
                             rest_lon:Decimal = Form(...),rest_type:str = Form(...),rest_comment:str = Form(...),
-                            rest_area:str = Form(...),rest_foodname:str = Form(...),rest_foodprice:str = Form(...),
+                            rest_area:str = Form(""),rest_foodname:str = Form(...),rest_foodprice:str = Form(...),
                             image: list[UploadFile]=File(...), token: Optional[str]=Depends(oauth2)):
     if (token != None):
         confirm_token = jwtDecode(token)
@@ -115,5 +115,15 @@ async def post_like_count_action(user_id: int=Form(...), post_id: int=Form(...),
         if isinstance(confirm_token, dict):
             # 不需要回傳的值，所以不用等待
             background_tasks.add_task(db.post_collect_action,user_id, post_id, action)
+
+    return Response(status_code=status.HTTP_204_NO_CONTENT)
+
+@router.post("/api/post/follow")
+async def post_like_count_action(post_user_id: int=Form(...), user_id: int=Form(...), action: str=Form(...), token: Optional[str]=Depends(oauth2), background_tasks: BackgroundTasks=None):
+    if (token != None):
+        confirm_token = jwtDecode(token)
+        if isinstance(confirm_token, dict):
+            # 不需要回傳的值，所以不用等待
+            background_tasks.add_task(db.user_follow_action, post_user_id,user_id, action)
 
     return Response(status_code=status.HTTP_204_NO_CONTENT)

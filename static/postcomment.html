@@ -11,6 +11,10 @@
         <title>My Eats Map</title>
     </head>
     <body>
+        <div class="loading-container">
+            <div class="load-animation"></div>
+        </div>
+
         <nav class="navbar">
             <div class="navbar-container">
                 <div class="navbar-title">My Eats Map</div>
@@ -38,8 +42,8 @@
                             <label for="image-upload" class="add-img">
                                 <img src="/static/img/add-image.png">
                             </label>
-                            <div class="remark-str">注意:圖片最多上傳7張，請勿上傳超過。</div>
                         </div>
+                        <div class="remark-str">注意:圖片最多上傳7張，請勿上傳超過。</div>
                     </div>
                     <div class="post-input-container">
                         <div class="store-address">
@@ -111,8 +115,9 @@
                                 <button class="add-object">
                                     <img src="/static/img/additionPosts.png">
                                 </button>
-                                <div class="remark-str">注意:餐點的名稱與價格輸入框為一組，最多再新增6組，且要跟上傳的圖片張數一樣多組。</div>
                             </div>
+
+                            <div class="remark-str">注意:餐點的名稱與價格輸入框為一組，最多再新增6組，且要跟上傳的圖片張數一樣多組。</div>
                             
                             <form class="food-block">
                                 <div class="food-content-container">

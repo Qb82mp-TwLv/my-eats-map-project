@@ -16,7 +16,7 @@ class connection_database:
                     "user": os.getenv("API_SQL_USER"),
                     "password": os.getenv("API_SQL_PW"),
                     "database": os.getenv("API_SQL_DB"),
-                    #"port": os.getenv("API_SQL_PORT"),
+                    "port": os.getenv("API_SQL_PORT"),
                 }
 
                 self._cnx = mysql.connector.connect(pool_name="db_pooling",
@@ -26,7 +26,8 @@ class connection_database:
                 print("超過連線時間")
             except errors.PoolError:
                 print("連線池發生錯誤")
-            except Exception:
+            except Exception as e:
+                print(e)
                 print("連線異常")
 
     def db_cnx(self):

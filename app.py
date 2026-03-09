@@ -4,7 +4,6 @@ from fastapi.staticfiles import StaticFiles
 from controller.index import router as index_router
 from controller.user import router as user_router
 from controller.post import router as post_router
-from starlette.middleware.sessions import SessionMiddleware
 from starlette.middleware.cors import CORSMiddleware
 from dotenv import load_dotenv
 import os
@@ -16,14 +15,9 @@ app.include_router(post_router)
 
 app.mount("/static", StaticFiles(directory="static"), name="static")
 
-app.add_middleware(SessionMiddleware,
-                   secret_key=os.getenv("API_SECRET_KEY"),
-                   max_age=1800,
-                   https_only=True)
-
 # 避免其他人直接偷換殼
 app.add_middleware(CORSMiddleware,
-                   allow_origins=["http://127.0.0.1"],
+                   allow_origins=["(網站網址)"],
                    allow_credentials=True,
                    allow_methods=[
                        "GET",

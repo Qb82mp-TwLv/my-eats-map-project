@@ -19,22 +19,38 @@ class postCommentModel {
         this.commentInfoText = document.querySelector(".comment-info");
         this.diningAreaInfoText = document.querySelector(".dining-area-info");
     
-        this.mapkey="";
         this.getMapValue();
 
         // 滑動圖片的按鈕
         this.slideLeftBtn = document.getElementById("slideLeft");
         this.slideRightBtn = document.getElementById("slideRight");
-        // 預覽圖片容器
-        this.previewImgCTN = document.querySelector(".preview-img-slide");
+        
+        // loading
+        this.loaderUI = document.querySelector(".loading-container");
     }
 
     async memberCenter() {
-        window.location.href = "/member";
+        this.loaderUI.classList.toggle('active');
+        requestAnimationFrame(() => {
+            requestAnimationFrame(() => {
+                setTimeout(() => {
+                    window.location.replace("/member");
+                }, 300);
+                
+            });
+        });
     }
 
     async homePage() {
-        window.location.href = "/eatsmap";
+        this.loaderUI.classList.toggle('active');
+        requestAnimationFrame(() => {
+            requestAnimationFrame(() => {
+                setTimeout(() => {
+                    window.location.replace("/eatsmap");
+                }, 300);
+                
+            });
+        });
     }
 
     async getCityOptionName(country) {
@@ -112,27 +128,6 @@ class postCommentModel {
         }
     };
 
-    // changeImg() {
-    //     const fileUpload = document.getElementById("image-upload");
-    //     const maxImgFileSum = 7;
-    //     fileUpload.addEventListener("change", function(e) {
-    //         console.log(this.files.length);
-    //         if (this.files.length > maxImgFileSum){
-    //             this.value="";
-    //             alert("最多只能選取7張圖，請重新選擇。");
-    //             return;
-    //         }
-
-    //         if (this.files.length > 0){
-    //             this.imgFiles = this.files;
-    //         }else{
-    //             this.imgFiles = null;
-    //         }
-
-    //         return this.files;
-    //     });
-    // };
-
     joinText(arr) {
         let textAdd = "";
         for (let i=0; i < arr.length; i++){
@@ -154,9 +149,9 @@ class postCommentModel {
         if (this.imgFiles !== null){
             try{
                 const imgFilesLength = this.imgFiles.length;
-                console.log(`輸入數量:${imgFilesLength}`);
+                // console.log(`輸入數量:${imgFilesLength}`);
                 const foodNameAndPriceObjLength = this.formObj.querySelectorAll("input").length;
-                console.log(`輸入數量:${foodNameAndPriceObjLength}`);
+                // console.log(`輸入數量:${foodNameAndPriceObjLength}`);
                 if ((foodNameAndPriceObjLength % 2) !== 0){
                     return "請根據新增的圖片數量，新增對應的餐點名稱與價格。";
                 }
@@ -184,6 +179,7 @@ class postCommentModel {
 
                 // 取得地址的經緯度
                 const addCoordinate = await this.getAddressCoordinates(restaurantAddress);
+                console.log(addCoordinate);
                 if (addCoordinate === "error"){
                     console.log("找經緯度")
                     return "建立貼文失敗，請稍後再執行。";
@@ -192,9 +188,9 @@ class postCommentModel {
                 if (addCoordinate.data.country !== restaurantCountry){
                     return "請確認地址是否為選擇的地區選項，或是選項中並沒有該地區，\n請根據有的地區進行發文動作，謝謝。";
                 };
-                if (!addCoordinate.data.city.includes(restaurantCity)){
-                    return "請確認地址是否為選擇的城市選項，或是選項中並沒有該城市，\n請根據有的城市進行發文動作，謝謝。";
-                }
+                // if (!addCoordinate.data.city.includes(restaurantCity)){
+                //     return "請確認地址是否為選擇的城市選項，或是選項中並沒有該城市，\n請根據有的城市進行發文動作，謝謝。";
+                // }
 
                 const latCoordinate = parseFloat(addCoordinate.data.lat);
                 const lonCoordinate = parseFloat(addCoordinate.data.lon);
@@ -220,12 +216,6 @@ class postCommentModel {
                         formData.append("image", this.imgFiles[i]);
                     };
                     
-                    // formData.forEach((value, key) => {
-                    //     console.log(`欄位名稱: ${key}`);
-                    //     console.log(`數值內容: "${value}"`); // 加上引號方便觀察有無空白
-                    //     console.log(`資料型別: ${typeof value}`);
-                    //     console.log('---');
-                    // });
                     const response = await fetch("/api/post/single", {
                         method: "POST",
                         headers: {"Authorization": `Bearer ${token}`},
@@ -239,7 +229,7 @@ class postCommentModel {
                         return "建立貼文失敗，請稍後再執行。";
                     }
                     console.error(dt);
-                    return "建立貼文成功。";
+                    return dt;
                 }
 
                 return "建立貼文失敗，請稍後再執行。";
@@ -251,17 +241,15 @@ class postCommentModel {
         return "請選擇需要發文的圖片，謝謝您。";
     }
 
-    async getAddressCoordinates(address) {
-        console.log(address);
-        const addressCoordinate = `https://maps.googleapis.com/maps/api/geocode/json?address=${address}&key=${this.mapkey}&language=zh-TW`
+    async getAddressCoordinates(address_) {
+        const addressCoordinate = new google.maps.Geocoder();
         try{
-            const response = await fetch(addressCoordinate);
-            const dt = await response.json();
-
-            if (dt.status === "OK"){
+            const response = await addressCoordinate.geocode({address: address_});
+            if (response.results && response.results.length){
                 // 先將資料用到子層的Array位置，再透過foreach迴圈，找對應的資料
-                const componentsArr = dt.results[0].address_components;
-                const geometryLocation= dt.results[0].geometry.location;
+                const componentsArr = response.results[0].address_components;
+                const lat = response.results[0].geometry.location.lat();
+                const lng = response.results[0].geometry.location.lng();
                 let country = null;
                 let city = [];
 
@@ -283,11 +271,13 @@ class postCommentModel {
                     };
                 });
 
+                console.log(lat);
+                console.log(lng);
                 return {"data": {
                     "country": country,
                     "city": city,
-                    "lat": geometryLocation.lat,
-                    "lon": geometryLocation.lng
+                    "lat": lat,
+                    "lon": lng
                 }};
             }
 
@@ -305,26 +295,41 @@ class postCommentModel {
             if (!response.ok || value.error!== undefined){
                 console.log("地圖發生錯誤。");
             }else{
-                this.mapkey = value.data;
+                const mapkey = value.data;
+
+                const mapScript = document.createElement("script");
+                mapScript.src = `https://maps.googleapis.com/maps/api/js?key=${mapkey}&loading=async&language=zh-TW`;
+                mapScript.async = true;
+                mapScript.defer = true;
+                document.body.appendChild(mapScript);
             }
-        }catch{
+        }catch(error){
+            console.log(error);
             console.log("地圖發生錯誤。");
         };
-
-        return this.mapkey;
     }
 
     async slideBtnClick() {
         this.slideLeftBtn.addEventListener("click", () => {
-            this.previewImgCTN.scrollTo({
-                left: -this.previewImgCTN.offsetWidth,
+            // 預覽圖片容器
+            const previewImgCTN = document.querySelector(".preview-img-slide");
+            
+            // 當下取得位置
+            const posImg = previewImgCTN.scrollLeft;
+            const imgCTNAllWidth = previewImgCTN.offsetWidth;
+            
+            previewImgCTN.scrollTo({
+                // 需要使用當下位置扣掉總圖片容器寬度ㄋ
+                left: posImg - imgCTNAllWidth,
                 behavior: "smooth"
             });
         });
 
         this.slideRightBtn.addEventListener("click", () => {
-            this.previewImgCTN.scrollTo({
-                left: this.previewImgCTN.offsetWidth,
+            // 預覽圖片容器
+            const previewImgCTN = document.querySelector(".preview-img-slide");
+            previewImgCTN.scrollBy({
+                left: previewImgCTN.offsetWidth,
                 behavior: "smooth"
             });
         });

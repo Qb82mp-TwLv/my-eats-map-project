@@ -1,3 +1,14 @@
+:root{
+    --bg-color: aliceblue; 
+    --search-bar-option-hover: #f0eeee;
+    --search-border: 1px solid #cfcdcd;
+    --search-border-radius: 10px;
+    --btn-bg-color: #9b9a9a;
+    /* 當使用者移到我、追蹤者或收藏時，會hover的背景 */
+    --user-info-btn-bg-color: #000;
+    --user-info-btn-text-color: #fff;
+}
+
 *{
     padding: 0;
     margin: 0;
@@ -16,7 +27,7 @@ body{
     background-color: rgb(233, 233, 233);
 
     margin:  auto;
-
+    outline: none;
     overflow-y: auto;
     &::-webkit-scrollbar{
         width: 6px;
@@ -63,18 +74,17 @@ body{
 
 .posts-container{
     width: 100%;
-    height: 100%;
     padding: 2px 10px 10px 10px;
 
     display: grid;
     grid-template-columns: 1fr;
-    grid-template-rows: repeat(auto-fill, 290px);
+    grid-template-rows: repeat(auto-fill, 350px);
     gap: 5px;
 }
 
 .post-content-container{
     width: 100%;
-    height: 290px;
+    height: 350px;
     border: 1px solid #000;
     border-radius: 10px;
     background-color: #fff;
@@ -115,11 +125,11 @@ body{
     scroll-snap-type: x mandatory;
     scroll-behavior: smooth;
 
-    /* &::-webkit-scrollbar{
-        display: none;
-    } */
-
     cursor: pointer;
+
+    &::-webkit-scrollbar{
+        display: none;
+    }
 }
 
 .img-info-scroll{
@@ -133,8 +143,6 @@ body{
     width: 100%;
     height: 100%;
     display: flex;
-    transform: translateX(0px);
-    transition: transform 500ms ease-in-out;
     border-radius: 10px;
 }
 
@@ -170,6 +178,28 @@ body{
     top: 110px;
 }
 
+.leftBtn, .rightBtn{
+    all: unset;
+    width: 25px;
+    height: 50px;
+    border-radius: 0 10px 10px 0;
+    background-color:rgba(255, 255, 255, 0.5);
+}
+
+.rightBtn{
+    border-radius: 10px 0 0 10px;
+}
+
+.leftBtn:hover, .rightBtn:hover{
+    background-color: #fff;
+}
+
+.leftBtn img, .rightBtn img{
+    padding-top: 8px;
+    width: 20px;
+    height: 30px;
+}
+
 .food-info{
     width: 100%;
     height: 20%;
@@ -179,21 +209,21 @@ body{
     z-index: 3;
     bottom: 0;
     right: 0;
-
-    transform: translateX(0px);
-    transition: transform 500ms ease-in-out;
 }
 
-.info-container{
+.food-info-container{
     width: 100%;
     height: 100%;
 
     font-size: 15px;
     font-weight: 500;
     text-align: center;
-    color: #fff;
     padding-left: 10px;
     line-height: 25px;
+}
+
+.food-info-container div{
+    color: #fff;
 }
 
 .post-evaluate-action{
@@ -207,8 +237,10 @@ body{
 }
 
 .love-btn, .collect-btn{
-    width: 20px;
+    width: auto;
     height: 20px;
+    display: flex;
+    gap: 5px;
     overflow: hidden;
 }
 
@@ -216,6 +248,10 @@ body{
     width: 20px;
     height: 20px;
     object-fit: cover;
+}
+
+#like-btn, #favorite-btn{
+    cursor: pointer;
 }
 
 .collect-btn img{
@@ -229,7 +265,7 @@ body{
     height: 100%;
     display: grid;
     grid-template-columns: 1fr;
-    grid-template-rows: 70px 120px;
+    grid-template-rows: 70px 200px;
 }
 
 .user-info{
@@ -258,12 +294,34 @@ body{
     object-fit: cover;
 }
 
-.user-nickname{
+.usernickname-CTN{
     width: 100%;
     height: 100%;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: 0.5fr 0.5fr;
+}
+
+.follow-btn{
+    all: unset;
+    width: 100px;
+    height: 25px;
+    border: var(--search-border);
+    border-radius: var(--search-border-radius);
+
+    font-size: 16px;
+    font-weight: 500;
+    text-align: center;
+    font-family: 'Taipei Sans TC', 'Noto Sans TC';
+    cursor: pointer;
+}
+
+.user-nickname{
+    width: 100%;
     font-size: 18px;
     font-weight: 500;
-    line-height: 70px;
+    font-family: 'Taipei Sans TC', 'Noto Sans TC';
+    line-height: 20px;
     padding-left: 10px;
 }
 
@@ -273,16 +331,17 @@ body{
     padding-right: 5px;
     box-sizing: border-box;
 
-    font-size: 15px;
+    font-size: 16px;
+    font-family: 'Taipei Sans TC', 'Noto Sans TC';
     overflow-y: auto;
 
     display: grid;
     grid-template-columns: 1fr;
-    grid-template-rows: 1fr 1fr;
+    grid-template-rows: 0.5fr 1fr 1fr;
     gap: 10px;
 }
 
-.food-experience, .dining-area{
+.store-name-add, .food-experience, .dining-area{
     width: 100%;
     height: 100%;
     display: grid;
@@ -290,7 +349,15 @@ body{
     grid-template-rows: 0.1fr 1fr;
     gap: 5px;
 
-    box-sizing: border-box;
+    font-size: 16px;
+    font-family: "Taipei Sans TC", "Zen Maru Gothic";
+    white-space: pre-line;
+}
+
+.obj-title{
+    font-size: 18px;
+    font-weight: 600;
+    font-family: 'Taipei Sans TC', 'Noto Sans TC';
 }
 
 .space{
@@ -317,18 +384,28 @@ body{
 
     .posts-container{
         grid-template-columns: 1fr;
-        grid-template-rows: repeat(auto-fill, 500px);
+        grid-template-rows: repeat(auto-fill, 600px);
         gap: 5px;
     }
 
     .post-content-container{
-        height: 100%;
+        height: 600px;
         grid-template-columns: 1fr;
         grid-template-rows: 300px 200px;
         gap: 5px;
     }
 
+    .img-container img{
+        width: 40%;
+        height: 80%;
+        border-radius: 10px;
+        object-fit: cover;
+        position: absolute;
+        z-index: 1;
+    }
+
     .post-content-comment{
+        grid-template-rows: 70px 200px;
         padding-left: 10px;
         padding-right: 10px;
         padding-bottom: 10px;
@@ -344,18 +421,19 @@ body{
 
     .posts-container{
         grid-template-columns: 1fr;
-        grid-template-rows: repeat(auto-fill, 510px);
+        grid-template-rows: repeat(auto-fill, 610px);
         gap: 5px;
     }
 
     .post-content-container{
-        height: 100%;
+        height: 610px;
         grid-template-columns: 1fr;
         grid-template-rows: 300px 200px;
         gap: 5px;
     }
 
     .post-content-comment{
+        grid-template-rows: 70px 200px;
         padding-left: 10px;
         padding-right: 10px;
         padding-bottom: 10px;

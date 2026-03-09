@@ -138,6 +138,8 @@ class memberView {
 
         if (dt.headshot !== ""){
             this.postHeadshot.src = dt.headshot;
+        }else{
+            this.postHeadshot.src= "/static/img/user.png";
         }
         this.postHeadshot.dataset.userId = dt.user_id;
         this.postName.textContent = String(dt.name);

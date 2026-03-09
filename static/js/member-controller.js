@@ -1,7 +1,9 @@
 import memberM from './model/member-m.js';
 import memberV from './view/member-v.js';
 
+
 let userId = null;
+const loaderUI = document.querySelector(".loading-container");
 async function verify_user_token() {
     try{
         const token = localStorage.getItem("token");
@@ -13,15 +15,29 @@ async function verify_user_token() {
 
         const dt = await response.json();
         if (dt.data === null){
-            window.location.href = "/login";
+            loaderUI.classList.toggle('active');
+            requestAnimationFrame(() => {
+                requestAnimationFrame(() => {
+                    setTimeout(() => {
+                        window.location.replace("/login");
+                    }, 300);
+                    
+                });
+            });
         }
 
         set_member_info(dt.data);
         userId = dt.data.id;
         console.log(userId);
     }catch(error){
-        window.location.href = "/login";
-        //console.log(error);
+        loaderUI.classList.toggle('active');
+        requestAnimationFrame(() => (
+            requestAnimationFrame(()=> {
+                setTimeout(() => {
+                    window.location.replace("/login");
+                }, 300);
+            })
+        ));
     }
 };
 
@@ -34,7 +50,7 @@ async function set_member_info(dt) {
         memberV.settingName(name);
     }
     
-    if (dt.headshot === ""){
+    if (dt.headshot === null){
         memberV.settingHeadshot(null);
     }else{
         const headshotUrl = await memberM.getHeadshotUrl(dt.headshot)
@@ -82,9 +98,13 @@ function memberPostAndCollectSwitchButton(id) {
             memberM.switchToPostsCTN();
         };
 
-        await mutationPostObs();
-        const postData = await memberM.getAllPosts(id);
-        memberV.genPostsInMember(postData);     
+        if (memberM.postCTN.querySelector(".post-img") === null){
+            setTimeout(async () => {
+                await mutationPostObs();
+                const postData = await memberM.getAllPosts(id);
+                memberV.genPostsInMember(postData); 
+            }, 200);
+        };
     });
 
     // 收藏按鈕要使用active
@@ -96,9 +116,13 @@ function memberPostAndCollectSwitchButton(id) {
             memberM.switchToCollectCTN();
         };
 
-        await mutationCollectObs();
-        const collectData = await memberM.getAllCollect(id);
-        memberV.genCollectInMember(collectData);
+        if (memberM.collectCTN.querySelector(".post-img") === null){
+            setTimeout(async () => {
+                await mutationCollectObs();
+                const collectData = await memberM.getAllCollect(id);
+                memberV.genCollectInMember(collectData);
+            }, 300);
+        };
     });
 }
 
@@ -195,10 +219,6 @@ async function mutationPostObs() {
             getTagCount++;
             const count = memberV.postCount;
 
-            // tag.addedNodes.forEach((node) => {
-            //     console.log("偵測到新節點：", node);
-            // });
-
             if (getTagCount === count){
                 observerPost.disconnect();
                 try{
@@ -223,10 +243,6 @@ async function mutationCollectObs() {
         tags.forEach(function (tag) {
             getTagCount++;
             const count = memberV.collectCount;
-
-            // tag.addedNodes.forEach((node) => {
-            //     console.log("偵測到新節點：", node);
-            // });
 
             if (getTagCount === count){
                 observerPost.disconnect();

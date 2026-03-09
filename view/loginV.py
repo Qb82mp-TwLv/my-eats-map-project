@@ -1,6 +1,5 @@
 from model.user_validation import jwtEncode
-from dotenv import load_dotenv
-import os
+
 
 def signin_info(dt):
     try:

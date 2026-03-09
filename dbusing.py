@@ -350,7 +350,7 @@ class db_interaction:
     
     async def update_user_headshot(self, user_id, img_name):
         dt_json = False
-        
+
         cursor = self.db_operate.cursor()
         upload_img = """UPDATE `member_info`
                         SET headshot_img=%s
@@ -658,4 +658,275 @@ class db_interaction:
             return False
         
         return _result
+    
+    def add_or_del_follow(self, post_user_id, user_id, action):
+        dt_json = False
+        
+        cursor = self.db_operate.cursor()
+        action_like=""
+        follow_data = ""
+
+        if action == "yes":
+            action_like = """INSERT INTO `tracker_info` (user_id, tracker_id, tracker_name)
+                            SELECT %s, %s, user.name
+                            FROM `member_info` AS m
+                            LEFT JOIN `member_info` AS user ON user.user_id=%s
+                            GROUP BY user.user_id;"""
+            follow_data = (user_id, post_user_id, post_user_id)
+        if action == "no":
+            action_like = """DELETE FROM `tracker_info` WHERE user_id=%s AND tracker_id=%s;"""
+            follow_data = (user_id, post_user_id)
+
+        cursor.execute(action_like, follow_data)      
+        if cursor.rowcount == 1:
+            self.db_operate.commit()
+            dt_json = True
+        else:
+            self.db_operate.rollback()
+
+        if cursor is not None:
+            cursor.close()
+        return dt_json
+
+    def user_follow_action(self, post_user_id,user_id, action):  
+        _result = False
+        try:
+            _result = self.add_or_del_follow(post_user_id,user_id, action)
+        except OperationalError:
+            self.db_conf.restart_connect()
+            try:
+                _result = self.add_or_del_follow(post_user_id,user_id, action)
+            except Exception as e:
+                print("user follow action error,"+str(e))
+                return False
+        except Exception as e:
+            print("user follow action error,"+str(e))
+            return False
+        
+        return _result
+
+    async def query_posts_data(self, country, city, types, keyword):
+        dt_json = []
+        
+        cursor = self.db_operate.cursor()
+        query_posts=""
+        query_data=""
+        # 只找經緯度沒有重複的貼文，且以第一個符合貼文進行撈取
+        if (types != "全部種類" and keyword == None):
+            query_posts = """SELECT MIN(post.post_id), post.lat, post.lon, MIN(post.food_img) FROM `posts_info` AS post 
+                            WHERE post.position_id IN (SELECT id FROM `position_info` AS pos WHERE pos.country = %s AND (pos.city = %s OR pos.city = %s OR pos.city = %s)) 
+                            AND post.types_id IN (SELECT types_id FROM `store_types` AS ty WHERE ty.types_name = %s) 
+                            GROUP BY post.lat, post.lon;"""
+            query_data = (country, city[0], city[1], city[2], types)
+        if (types == "全部種類" and keyword == None):
+            query_posts = """SELECT MIN(post.post_id), post.lat, post.lon, MIN(post.food_img) FROM `posts_info` AS post 
+                            WHERE post.position_id IN (SELECT id FROM `position_info` AS pos WHERE pos.country = %s AND (pos.city = %s OR pos.city = %s OR pos.city = %s)) 
+                            GROUP BY post.lat, post.lon;"""
+            query_data = (country, city[0], city[1], city[2])
+        if (types != "全部種類" and keyword != None):
+            query_posts = """SELECT MIN(post.post_id), post.lat, post.lon, MIN(post.food_img) FROM `posts_info` AS post 
+                            WHERE post.position_id IN (SELECT id FROM `position_info` AS pos WHERE pos.country = %s AND (pos.city = %s OR pos.city = %s OR pos.city = %s)) 
+                            AND post.types_id IN (SELECT types_id FROM `store_types` AS ty WHERE ty.types_name = %s) 
+                            AND post.store_name = %s GROUP BY post.lat, post.lon;"""
+            query_data = (country, city[0], city[1], city[2], types, keyword)
+        if (types == "全部種類" and keyword != None):
+            query_posts = """SELECT MIN(post.post_id), post.lat, post.lon, MIN(post.food_img) FROM `posts_info` AS post 
+                            WHERE post.position_id IN (SELECT id FROM `position_info` AS pos WHERE pos.country = %s AND (pos.city = %s OR pos.city = %s OR pos.city = %s)) 
+                            AND post.store_name = %s GROUP BY post.lat, post.lon;"""
+            query_data = (country, city[0], city[1], city[2], keyword)
+
+        cursor.execute(query_posts, query_data)
+        findAll = cursor.fetchall()
+
+        if findAll != []:
+            dt_json = findAll
+
+        if cursor is not None:
+            cursor.close()
+        return dt_json
+
+    async def get_posts_info(self, country, city, types, keyword):
+        _result = False
+        try:
+            _result = await self.query_posts_data(country, city, types, keyword)
+        except OperationalError:
+            self.db_conf.restart_connect()
+            try:
+                _result = await self.query_posts_data(country, city, types, keyword)
+            except Exception as e:
+                print("search post error,"+str(e))
+                return False
+        except Exception as e:
+            print("search post error,"+str(e))
+            return False
+        
+        return _result
+
+    async def query_own_posts_data(self, country, city, types, user_id, search):
+        dt_json = []
+        
+        cursor = self.db_operate.cursor()
+        query_posts=""
+        query_data=""
+        # 只找經緯度沒有重複的貼文，且以第一個符合貼文進行撈取
+        if (search == "own"):
+            if (types != "全部種類"):
+                query_posts = """SELECT MIN(post.post_id), post.lat, post.lon, MIN(post.food_img) FROM `posts_info` AS post 
+                                WHERE post.position_id IN (SELECT id FROM `position_info` AS pos WHERE pos.country = %s AND (pos.city = %s OR pos.city = %s OR pos.city = %s)) 
+                                AND post.types_id IN (SELECT types_id FROM `store_types` AS ty WHERE ty.types_name = %s) 
+                                AND post.user_id=%s 
+                                GROUP BY post.lat, post.lon;"""
+                query_data = (country, city[0], city[1], city[2], types, user_id)
+            if (types == "全部種類"):
+                query_posts = """SELECT MIN(post.post_id), post.lat, post.lon, MIN(post.food_img) FROM `posts_info` AS post 
+                                WHERE post.position_id IN (SELECT id FROM `position_info` AS pos WHERE pos.country = %s AND (pos.city = %s OR pos.city = %s OR pos.city = %s)) 
+                                AND post.user_id=%s 
+                                GROUP BY post.lat, post.lon;"""
+                query_data = (country, city[0], city[1], city[2], user_id)
+        else:
+            if (types != "全部種類"):
+                query_posts = """SELECT MIN(post.post_id), post.lat, post.lon, MIN(post.food_img) FROM `posts_info` AS post
+                                LEFT JOIN (SELECT post_id FROM `collect_info` WHERE user_id=%s) AS coll ON post.post_id=coll.post_id
+                                WHERE post.position_id IN (SELECT id FROM `position_info` AS pos WHERE pos.country = %s AND (pos.city = %s OR pos.city = %s OR pos.city = %s)) 
+                                AND post.types_id IN (SELECT types_id FROM `store_types` AS ty WHERE ty.types_name = %s)
+                                AND post.post_id=coll.post_id
+                                GROUP BY post.lat, post.lon;"""
+                query_data = (user_id, country, city[0], city[1], city[2], types)
+            if (types == "全部種類"):
+                query_posts = """SELECT MIN(post.post_id), post.lat, post.lon, MIN(post.food_img) FROM `posts_info` AS post
+                                LEFT JOIN (SELECT post_id FROM `collect_info` WHERE user_id=%s) AS coll ON post.post_id=coll.post_id
+                                WHERE post.position_id IN (SELECT id FROM `position_info` AS pos WHERE pos.country = %s AND (pos.city = %s OR pos.city = %s OR pos.city = %s)) 
+                                AND post.post_id=coll.post_id
+                                GROUP BY post.lat, post.lon;"""
+                query_data = (user_id, country, city[0], city[1], city[2])
+       
+        cursor.execute(query_posts, query_data)
+        findAll = cursor.fetchall()
+
+        if findAll != []:
+            dt_json = findAll
+
+        if cursor is not None:
+            cursor.close()
+        return dt_json
+
+    async def get_own_posts_info(self, country, city, types, user_id, search):
+        _result = False
+        try:
+            _result = await self.query_own_posts_data(country, city, types, user_id, search)
+        except OperationalError:
+            self.db_conf.restart_connect()
+            try:
+                _result = await self.query_own_posts_data(country, city, types, user_id, search)
+            except Exception as e:
+                print("search own post error,"+str(e))
+                return False
+        except Exception as e:
+            print("search own post error,"+str(e))
+            return False
+        
+        return _result
+
+    async def query_marker_posts(self, user_id, lat, lon):
+        dt_json = []
+        
+        cursor = self.db_operate.cursor()
+        query_post = """SELECT p.post_id, m.user_id, m.name, m.nickname, m.headshot_img, 
+                        p.store_name, p.food_img, p.food_name, p.food_price, p.food_comment, p.dining_area,
+                        IFNULL(collect.c_count, 0) AS collect_total,
+                        IFNULL(lk.l_count, 0) AS like_total,
+                        co.post_id, li.post_id, follow.user_id
+                        FROM `posts_info` AS p
+                        LEFT JOIN `member_info` AS m ON m.user_id=p.user_id 
+                        LEFT JOIN (
+                            SELECT post_id, COUNT(*) AS c_count
+                            FROM `collect_info`
+                            GROUP BY post_id
+                        ) AS collect ON p.post_id = collect.post_id
+                        LEFT JOIN (
+                            SELECT post_id, COUNT(*) AS l_count
+                            FROM `like_info`
+                            GROUP BY post_id
+                        ) AS lk ON p.post_id=lk.post_id
+                        LEFT JOIN (
+                            SELECT post_id
+                            FROM `collect_info`
+                            WHERE user_id=%s
+                            GROUP BY post_id
+                        ) AS co ON p.post_id=co.post_id
+                        LEFT JOIN (
+                            SELECT post_id
+                            FROM `like_info`
+                            WHERE user_id=%s
+                            GROUP BY post_id
+                        ) AS li ON p.post_id=li.post_id
+                        LEFT JOIN (
+                            SELECT user_id, tracker_id
+                            FROM `tracker_info`
+			                GROUP BY user_id, tracker_id
+                        ) AS follow ON p.user_id=follow.tracker_id AND follow.user_id=%s
+                        WHERE lat=%s AND lon=%s;"""
+        query_data = (user_id, user_id, user_id, lat, lon)
+
+        cursor.execute(query_post, query_data)
+        findAll = cursor.fetchall()
+
+        if findAll != []:
+            dt_json = findAll
+
+        if cursor is not None:
+            cursor.close()
+        return dt_json
+
+    async def marker_post_info(self, user_id, lat, lon):
+        _result = False
+        try:
+            _result = await self.query_marker_posts(user_id, lat, lon)
+        except OperationalError:
+            self.db_conf.restart_connect()
+            try:
+                _result = await self.query_marker_posts(user_id, lat, lon)
+            except Exception as e:
+                print("marker post error,"+str(e))
+                return False
+        except Exception as e:
+            print("marker post error,"+str(e))
+            return False
+        
+        return _result
+
+    async def query_user_follow_data(self, user_id):
+        dt_json = False
+        
+        cursor = self.db_operate.cursor()
+        query_info = """SELECT tracker_id, tracker_name FROM `tracker_info` WHERE user_id=%s;"""
+        query_data = (user_id,)
+
+        cursor.execute(query_info, query_data)
+        findAll = cursor.fetchall()
+
+        if findAll != []:
+            dt_json = findAll
+
+        if cursor is not None:
+            cursor.close()
+        return dt_json
+
+    async def get_user_follow_info(self, user_id):
+        _result = False
+        try:
+            _result = await self.query_user_follow_data(user_id)
+        except OperationalError:
+            self.db_conf.restart_connect()
+            try:
+                _result = await self.query_user_follow_data(user_id)
+            except Exception as e:
+                print("marker post error,"+str(e))
+                return False
+        except Exception as e:
+            print("marker post error,"+str(e))
+            return False
+        
+        return _result
+
 db = db_interaction()
