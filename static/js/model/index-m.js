@@ -45,7 +45,10 @@ class indexModel {
     }
 
     async getCountryOptionName() {
-        const response = await fetch("/api/countryname", {method: "GET"});
+        const response = await fetch("/api/countryname", {
+            method: "GET",
+            credentials: "include"
+        });
         const dt = await response.json();
 
         await new Promise(delay => setTimeout(delay, 100));
@@ -59,6 +62,7 @@ class indexModel {
     async getCityOptionName(country) {
         const response = await fetch(`/api/cityname?country=${country}`, {
             method: "GET",
+            credentials: "include"
         });
         const dt = await response.json();
 
@@ -71,9 +75,10 @@ class indexModel {
         } 
     }
 
-    async getTypesOptionName() {
-        const response = await fetch(`/api/typesname`, {
+    async getTypesOptionName(country, city) {
+        const response = await fetch(`/api/typesname?country=${country}&city=${city}`, {
             method: "GET",
+            credentials: "include"
         });
         const dt = await response.json();
 
@@ -131,17 +136,17 @@ class indexModel {
         }
     };
 
-    cityOptionItemClick(optionTag) {
-        optionTag.addEventListener("click", async () => {
-            this.citySelect.textContent = optionTag.textContent;
-            const isPositionResult = await this.currentUserPositionOpen();
-            this.cityName=[];
-            if (isPositionResult === "denied"){
-                this.cityName.push(this.citySelect.textContent);
-                this.cityName.push("無");
-                this.cityName.push("無");
-            }
-        });
+    async cityOptionItemClick(optionTag) {
+        // optionTag.addEventListener("click", async () => {
+        this.citySelect.textContent = optionTag.textContent;
+        const isPositionResult = await this.currentUserPositionOpen();
+        this.cityName=[];
+        if (isPositionResult === "denied"){
+            this.cityName.push(this.citySelect.textContent);
+            this.cityName.push("無");
+            this.cityName.push("無");
+        }
+        // });
     };
 
     typesOptionItemClick(optionTag) {
@@ -152,11 +157,10 @@ class indexModel {
     }
 
     async getFollowOptionName(user_id) {
-        const token = localStorage.getItem("token");
         try{
             const response = await fetch(`/api/user/followmember?user_id=${user_id}`, {
                 method: "GET",
-                headers: {"Authorization": `Bearer ${token}`},
+                credentials: "include",
             });
             const dt = await response.json();
 
@@ -173,7 +177,10 @@ class indexModel {
 
     async getMapValue() { 
         try{
-            const response = await fetch("/api/mapvalue");
+            const response = await fetch("/api/mapvalue", {
+                method: "GET",
+                credentials: "include"
+            });
             const value = await response.json();
 
             if (!response.ok || value.error!== undefined){
@@ -193,7 +200,10 @@ class indexModel {
     async getMapId() {
         let mapid = "";
         try{
-            const response = await fetch("/api/mapid");
+            const response = await fetch("/api/mapid", {
+                method: "GET",
+                credentials: "include"
+            });
             const value = await response.json();
 
             await new Promise(delay => setTimeout(delay, 100));
@@ -242,8 +252,6 @@ class indexModel {
         this.lon = lon_pos;
 
         this.getCountryAndCityCoordinates(lat_pos, lon_pos);
-        console.log(`緯度：${lat_pos}，經度：${lon_pos}`);
-        //alert(`成功取得位置！\n緯度：${lat_pos}\n經度：${lon_pos}`);
     }
 
     async get_position_error(error) {
@@ -314,7 +322,6 @@ class indexModel {
 
             console.log("取得經緯度的國家城市有錯誤");
         }catch(error){
-            console.log(error);
             console.log("取得經緯度的國家城市有錯誤");
         }
     };
@@ -329,6 +336,7 @@ class indexModel {
         try{
             const response = await fetch(`/api/user/headshoturl?headshot_name=${imgNM}`,{
                 method: "GET",
+                credentials: "include"
             });
 
             const dt = await response.json();
@@ -347,79 +355,66 @@ class indexModel {
 
     // 使用search的button執行搜尋
     async searchPosts(country, city, storeType, keyword) {
-        const token = localStorage.getItem("token");
-        if (token !== null && token !== ""){
-            try{
-                const paraEncode = new URLSearchParams();
-                paraEncode.set("city", city.join(","));
+        try{
+            const paraEncode = new URLSearchParams();
+            paraEncode.set("city", city.join(","));
 
-                let urlPara = "";
-                // 判斷是否有關鍵字
-                if (keyword !== ""){
-                    urlPara = `?country=${country}&${paraEncode.toString()}&types=${storeType}&keyword=${keyword}`;
-                }else{
-                    urlPara = `?country=${country}&${paraEncode.toString()}&types=${storeType}`;
-                }
+            let urlPara = "";
+            // 判斷是否有關鍵字
+            if (keyword !== ""){
+                urlPara = `?country=${country}&${paraEncode.toString()}&types=${storeType}&keyword=${keyword}`;
+            }else{
+                urlPara = `?country=${country}&${paraEncode.toString()}&types=${storeType}`;
+            }
 
-                const response = await fetch(`/api/search/post${urlPara}`,{
-                    method: "GET",
-                    headers: {"Authorization": `Bearer ${token}`},
-                });
+            const response = await fetch(`/api/search/post${urlPara}`,{
+                method: "GET",
+                credentials: "include"
+            });
 
-                const dt = await response.json();
+            const dt = await response.json();
 
-                await new Promise(delay => setTimeout(delay, 200));
-                if (!response.ok || dt.error !== undefined){
-                    console.log("搜尋發生錯誤");
-                    return null;
-                }
-
-                return dt.data;
-            }catch(error){
-                // console.log(error);
-                // console.log("搜尋發生錯誤");
+            await new Promise(delay => setTimeout(delay, 200));
+            if (!response.ok || dt.error !== undefined){
+                console.log("搜尋發生錯誤");
                 return null;
             }
+
+            return dt.data;
+        }catch(error){
+            return null;
         }
     }
 
     async getStorePosts(user_id , lat, lon) {
-        const token = localStorage.getItem("token");
-        if (token !== null && token !== ""){
-            try{
-                const response = await fetch(`/api/marker/posts?user_id=${user_id}&lat=${lat}&lon=${lon}`,{
-                    method: "GET",
-                    headers: {"Authorization": `Bearer ${token}`},
-                });
+        try{
+            const response = await fetch(`/api/marker/posts?user_id=${user_id}&lat=${lat}&lon=${lon}`,{
+                method: "GET",
+                credentials: "include"
+            });
 
-                const dt = await response.json();
+            const dt = await response.json();
 
-                await new Promise(delay => setTimeout(delay, 200));
-                if (!response.ok || dt.error !== undefined){
-                    console.log("搜尋發生錯誤");
-                    return null;
-                }
-
-                return dt.data;
-            }catch(error){
-                // console.log(error);
-                // console.log("取得marker發生錯誤");
+            await new Promise(delay => setTimeout(delay, 200));
+            if (!response.ok || dt.error !== undefined){
+                console.log("搜尋發生錯誤");
                 return null;
             }
+
+            return dt.data;
+        }catch(error){
+            return null;
         }
     }
 
     async postLikeAndFavoriteBtn(user_id, likeBtn, collectBtn, likeBtnImg, collectBtnImg) {
         if (likeBtn){
             likeBtn.addEventListener("click", () => {
-                console.log("案讚");
                 // 切換圖片顯示
                 const imgName = likeBtnImg.dataset.like == "yes";
                 const likeCountNum = likeBtn.querySelector(".like-count");
                 let likeCount=0;
-                console.log(likeCountNum);
                 if (!imgName){
-                    console.log(likeBtn);
                     likeBtnImg.src = "/static/img/heart-color.png";
                     likeBtnImg.dataset.like="yes";
                     likeCount = parseInt(likeCountNum.textContent) + 1;
@@ -428,7 +423,6 @@ class indexModel {
                     const postId = parseInt(likeCountNum.dataset.postId);
                     this.likeCountSubmit(user_id, postId, "yes");
                 }else{
-                    console.log(likeBtn);
                     likeBtnImg.src = "/static/img/heart-nocolor.png";
                     likeBtnImg.dataset.like="no";
                     likeCount = parseInt(likeCountNum.textContent) - 1;
@@ -445,7 +439,6 @@ class indexModel {
                 // 切換收藏圖片
                 const imgName = collectBtnImg.dataset.collect == "yes";
                 const collectCountNum = collectBtn.querySelector(".collect-count");
-                console.log("收藏");
                 let collectCount = 0;
                 if (!imgName){
                     collectBtnImg.src = "/static/img/bookmark-color.png";
@@ -469,7 +462,6 @@ class indexModel {
     };
 
     async likeCountSubmit(user_id, post_id, action) {
-        const token = localStorage.getItem("token");
         try{
             const formData = new FormData();
             formData.append("user_id", user_id);
@@ -479,23 +471,16 @@ class indexModel {
             // const response = await 
             const response = fetch(`/api/post/likecount`,{
                 method: "POST",
-                headers:{"Authorization": `Bearer ${token}`},
+                credentials: "include",
                 body:formData,
             });
 
-            // const dt = await response.json();
-
-            // console.error(dt);
-            // if (!response.ok || dt.error !== undefined){
-            //     console.log("按讚動作發生錯誤");
-            // };
         }catch{
             console.log("按讚動作發生錯誤");
         }
     };
 
     async collectCountSubmit(user_id, post_id, action) {
-        const token = localStorage.getItem("token");
         try{
             const formData = new FormData();
             formData.append("user_id", user_id);
@@ -505,12 +490,12 @@ class indexModel {
             // const response = await 
             const response = fetch(`/api/post/collectcount`,{
                 method: "POST",
-                headers:{"Authorization": `Bearer ${token}`},
+                credentials: "include",
                 body:formData,
             });
 
         }catch{
-            console.log("按讚動作發生錯誤");
+            console.log("收藏動作發生錯誤");
         }
     };
 
@@ -567,74 +552,67 @@ class indexModel {
 
     // 使用者自己的貼文資料搜尋
     async ownSearchPosts(userId) {
-        const token = localStorage.getItem("token");
-        if (token !== null && token !== ""){
-            try{
-                const paraEncode = new URLSearchParams();
-                paraEncode.set("city", this.cityName.join(","));
+        try{
+            const paraEncode = new URLSearchParams();
+            paraEncode.set("city", this.cityName.join(","));
 
-                let urlPara = "";
-                // 判斷是否有關鍵字
-                urlPara = `?country=${this.countryName}&${paraEncode.toString()}&types=${this.typeName}&user_id=${userId}&search=own`;
+            let urlPara = "";
+            // 判斷是否有關鍵字
+            urlPara = `?country=${this.countryName}&${paraEncode.toString()}&types=${this.typeName}&user_id=${userId}&search=own`;
 
-                const response = await fetch(`/api/search/own/post${urlPara}`,{
-                    method: "GET",
-                    headers: {"Authorization": `Bearer ${token}`},
-                });
+            const response = await fetch(`/api/search/own/post${urlPara}`,{
+                method: "GET",
+                credentials: "include"
+            });
 
-                const dt = await response.json();
+            const dt = await response.json();
 
-                await new Promise(delay => setTimeout(delay, 200));
-                if (!response.ok || dt.error !== undefined){
-                    console.log("搜尋發生錯誤");
-                    return null;
-                }
-
-                return dt.data;
-            }catch(error){
-                console.log(error);
+            await new Promise(delay => setTimeout(delay, 200));
+            if (!response.ok || dt.error !== undefined){
                 console.log("搜尋發生錯誤");
                 return null;
             }
+
+            return dt.data;
+        }catch(error){
+            console.log("搜尋發生錯誤");
+            return null;
         }
+        
     };
 
     async collectSearchPosts(userId) {
-        const token = localStorage.getItem("token");
-        if (token !== null && token !== ""){
-            try{
-                const paraEncode = new URLSearchParams();
-                paraEncode.set("city", this.cityName.join(","));
+        try{
+            const paraEncode = new URLSearchParams();
+            paraEncode.set("city", this.cityName.join(","));
 
-                let urlPara = "";
-                // 判斷是否有關鍵字
-                urlPara = `?country=${this.countryName}&${paraEncode.toString()}&types=${this.typeName}&user_id=${userId}&search=collect`;
+            let urlPara = "";
+            // 判斷是否有關鍵字
+            urlPara = `?country=${this.countryName}&${paraEncode.toString()}&types=${this.typeName}&user_id=${userId}&search=collect`;
 
-                const response = await fetch(`/api/search/own/post${urlPara}`,{
-                    method: "GET",
-                    headers: {"Authorization": `Bearer ${token}`},
-                });
+            const response = await fetch(`/api/search/own/post${urlPara}`,{
+                method: "GET",
+                credentials: "include"
+            });
 
-                const dt = await response.json();
+            const dt = await response.json();
 
-                await new Promise(delay => setTimeout(delay, 200));
-                if (!response.ok || dt.error !== undefined){
-                    console.log("搜尋發生錯誤");
-                    return null;
-                }
-
-                return dt.data;
-            }catch(error){
-                console.log(error);
+            await new Promise(delay => setTimeout(delay, 200));
+            if (!response.ok || dt.error !== undefined){
                 console.log("搜尋發生錯誤");
                 return null;
             }
+
+            return dt.data;
+        }catch(error){
+            console.log("搜尋發生錯誤");
+            return null;
         }
+        
     };
 
     async setPostFollowBtn(followBtnObj, user_id) {
         const postUserId = followBtnObj.dataset.userId;
-        console.log(followBtnObj.dataset.follow);
         if (followBtnObj.dataset.follow === "no"){
             followBtnObj.textContent = "取消追蹤";
             followBtnObj.dataset.follow = "yes";
@@ -647,7 +625,6 @@ class indexModel {
     }
 
     async setFollowUser(postUserId, user_id, action) {
-        const token = localStorage.getItem("token");
         try{
             const formData = new FormData();
             formData.append("post_user_id", postUserId);
@@ -657,7 +634,7 @@ class indexModel {
             // const response = await 
             const response = fetch(`/api/post/follow`,{
                 method: "POST",
-                headers:{"Authorization": `Bearer ${token}`},
+                credentials: "include",
                 body:formData,
             });
 
@@ -665,6 +642,16 @@ class indexModel {
             console.log("追蹤動作發生錯誤");
         }
     }
+
+    async changeImg() {
+        const fileUpload = document.getElementById("image-upload");
+        fileUpload.addEventListener("change", (e) => {
+            this.imgFile = e.target.files[0];
+
+            this.previewImg.src = URL.createObjectURL(this.imgFile);
+        });
+    };
+
 }
 
 const indexM = new indexModel();

@@ -315,16 +315,14 @@ body{
 .posts-content-container{
     width: 100%;
     min-height: 100%;
-    border: var(--search-border);
     box-sizing: border-box;
-    border-radius: var(--search-border-radius);
 
     display: grid;
-    grid-template-columns: repeat(auto-fill, 100px);
-    grid-template-rows: repeat(auto-fit, 100px);
-    gap: 10px;
+    grid-template-columns: repeat(auto-fit, 111px);
+    grid-template-rows: repeat(auto-fit, 111px);
+    gap: 7.5px;
 
-    justify-content: center;
+    justify-content: start;
 }
 
 .collect-content-hidden{
@@ -334,30 +332,14 @@ body{
 .collect-content-container{
     width: 100%;
     min-height: 100%;
-    border: var(--search-border);
     box-sizing: border-box;
-    border-radius: var(--search-border-radius);
 
     display: grid;
-    grid-template-columns: repeat(auto-fill, 100px);
-    grid-template-rows: repeat(auto-fit, 100px);
-    gap: 10px;
+    grid-template-columns: repeat(auto-fit, 111px);
+    grid-template-rows: repeat(auto-fit, 111px);
+    gap: 7.5px;
 
-    justify-content: center;
-}
-
-.post-add{
-    all: unset;
-    border-radius: var(--search-border-radius);
-    overflow: hidden;
-    cursor: pointer;
-    box-sizing: border-box;
-}
-
-.post-add img{
-    width: 100px;
-    height: 100px;
-    object-fit: cover;
+    justify-content: start;
 }
 
 .post-img{
@@ -370,8 +352,8 @@ body{
 }
 
 .post-img img{
-    width: 100px;
-    height: 100px;
+    width: 111px;
+    height: 111px;
     object-fit: cover;
 }
 

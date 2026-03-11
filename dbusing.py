@@ -43,7 +43,7 @@ class db_interaction:
         dt_info = False
 
         cursor = self.db_operate.cursor()
-        # 使用DISTINCT可以去掉重複的值
+
         query_city = """SELECT city FROM `position_info` WHERE country=%s;"""
         cursor.execute(query_city, (country,))
         findAll = cursor.fetchall()
@@ -71,13 +71,26 @@ class db_interaction:
         
         return _result
     
-    async def types_name_data(self):
+    async def types_name_data(self, country, city):
         dt_info = False
 
         cursor = self.db_operate.cursor()
-        # 使用DISTINCT可以去掉重複的值
-        query_types = """SELECT types_name FROM `store_types`;"""
-        cursor.execute(query_types)
+        if (country == None and city == None):
+            query_types = """SELECT types_name FROM `store_types`;"""
+            cursor.execute(query_types)
+        else:
+            query_types = """SELECT DISTINCT types_name FROM `store_types` AS types
+                            INNER JOIN (
+                                SELECT types_id FROM `posts_info`
+                                WHERE position_id IN (
+                                    SELECT id
+                                    FROM `position_info`
+                                    WHERE country=%s AND city=%s
+                                )
+                            ) AS posts
+                            ON types.types_id=posts.types_id;"""
+            cursor.execute(query_types, (country, city))
+        
         findAll = cursor.fetchall()
 
         if findAll != []:
@@ -87,14 +100,14 @@ class db_interaction:
 
         return dt_info
 
-    async def query_types_name(self):
+    async def query_types_name(self, country, city):
         _result = False
         try:
-            _result = await self.types_name_data()
+            _result = await self.types_name_data(country, city)
         except OperationalError:
             self.db_conf.restart_connect()
             try:
-                _result = await self.types_name_data()
+                _result = await self.types_name_data(country, city)
             except Exception:
                 return False
         except Exception as e:

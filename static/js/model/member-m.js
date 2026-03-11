@@ -60,24 +60,12 @@ class memberModel {
         });
     }
 
-    async postAPost() {
-        this.loaderUI.classList.toggle(`active`);
-        requestAnimationFrame(() => {
-            requestAnimationFrame(() => {
-                setTimeout(() => {
-                    window.location.replace("/postcomment");
-                }, 300);
-                
-            });
-        });
-    }
 
     async get_tracker_number(id) {
-        const token = localStorage.getItem("token");
         try{
             const response = await fetch(`/api/user/follow?user_id=${id}`, {
                 method: "GET",
-                headers: {"Authorization": `Bearer ${token}`}
+                credentials: "include",
             });
 
             const dt = await response.json();
@@ -96,11 +84,10 @@ class memberModel {
     };
 
     async get_fans_number(id) {
-        const token = localStorage.getItem("token");
         try{
             const response = await fetch(`/api/user/fans?user_id=${id}`, {
                 method: "GET",
-                headers: {"Authorization": `Bearer ${token}`}
+                credentials: "include",
             });
 
             const dt = await response.json();
@@ -129,53 +116,48 @@ class memberModel {
     };
 
     async getAllPosts(id) {
-        const token = localStorage.getItem("token");
-        if (token !== null){
-            try{
-                const response = await fetch(`/api/user/posts?user_id=${id}`, {
-                    method: "GET",
-                    headers: {"Authorization": `Bearer ${token}`}
-                });
+        try{
+            const response = await fetch(`/api/user/posts?user_id=${id}`, {
+                method: "GET",
+                credentials: "include",
+            });
 
-                const dt = await response.json();
+            const dt = await response.json();
 
-                await new Promise(delay => setTimeout(delay, 200));
-                if (dt.data !== undefined){
-                    if (dt.data.post_id !== undefined){
-                        return dt.data;
-                    }
+            await new Promise(delay => setTimeout(delay, 200));
+            if (dt.data !== undefined){
+                if (dt.data.post_id !== undefined){
+                    return dt.data;
                 }
-
-                return null;
-            }catch(error) {
-                console.log("取發文的貼文資料發生錯誤");
             }
+
+            return null;
+        }catch(error) {
+            console.log("取發文的貼文資料發生錯誤");
         }
     };
 
     async getAllCollect(id) {
-        const token = localStorage.getItem("token");
-        if (token !== null){
-            try{
-                const response = await fetch(`/api/user/collect?user_id=${id}`, {
-                    method: "GET",
-                    headers: {"Authorization": `Bearer ${token}`}
-                });
+        try{
+            const response = await fetch(`/api/user/collect?user_id=${id}`, {
+                method: "GET",
+                credentials: "include",
+            });
 
-                const dt = await response.json();
+            const dt = await response.json();
 
-                await new Promise(delay => setTimeout(delay, 200));
-                if (dt.data !== undefined){
-                    if (dt.data.post_id !== undefined){
-                        return dt.data;
-                    }
+            await new Promise(delay => setTimeout(delay, 200));
+            if (dt.data !== undefined){
+                if (dt.data.post_id !== undefined){
+                    return dt.data;
                 }
-
-                return null;
-            }catch(error) {
-                console.log("取收藏的貼文資料發生錯誤");
             }
+
+            return null;
+        }catch(error) {
+            console.log("取收藏的貼文資料發生錯誤");
         }
+        
     };
 
     async openSelectHeadshot(id){
@@ -208,27 +190,16 @@ class memberModel {
         }
     }
 
-    async changeImg() {
-        const fileUpload = document.getElementById("image-upload");
-        fileUpload.addEventListener("change", (e) => {
-            this.imgFile = e.target.files[0];
-
-            this.previewImg.src = URL.createObjectURL(this.imgFile);
-        });
-    };
-
     async submitHeadshotImg(imgNM) {
-        const token = localStorage.getItem("token");
         if (this.imgFile !== null){
             const formData = new FormData();
             formData.append("user_id", this.user_id);
             formData.append("headshot", imgNM);
             formData.append("image", this.imgFile); 
-            console.log(imgNM);
             try{
                 const response = await fetch("/api/user/headshot",{
                     method: "POST",
-                    headers:{"Authorization": `Bearer ${token}`},
+                    credentials: "include",
                     body:formData,
                 });
 
@@ -256,10 +227,20 @@ class memberModel {
         return null;
     }
 
+    async changeImg() {
+        const fileUpload = document.getElementById("image-upload");
+        fileUpload.addEventListener("change", (e) => {
+            this.imgFile = e.target.files[0];
+
+            this.previewImg.src = URL.createObjectURL(this.imgFile);
+        });
+    };
+
     async getHeadshotUrl(imgNM) {
         try{
             const response = await fetch(`/api/user/headshoturl?headshot_name=${imgNM}`,{
                 method: "GET",
+                credentials: "include",
             });
 
             const dt = await response.json();
@@ -278,12 +259,10 @@ class memberModel {
 
     async getPostContent(post_id, id) {
         // 取得post的資料
-        const token = localStorage.getItem("token");
         try{
-            // 
             const response = await fetch(`/api/post/single?post_id=${post_id}&user_id=${id}`,{
                 method: "GET",
-                headers:{"Authorization": `Bearer ${token}`},
+                credentials: "include",
             });
 
             const dt = await response.json();
@@ -297,7 +276,6 @@ class memberModel {
             return dt.data;
 
         }catch(error){
-            console.log(error);
             console.log("取發文內容發生錯誤");
             return null;
         }
@@ -320,7 +298,6 @@ class memberModel {
     }
 
     async likeCountSubmit(user_id, post_id, action) {
-        const token = localStorage.getItem("token");
         try{
             const formData = new FormData();
             formData.append("user_id", user_id);
@@ -330,7 +307,7 @@ class memberModel {
             // const response = await 
             const response = fetch(`/api/post/likecount`,{
                 method: "POST",
-                headers:{"Authorization": `Bearer ${token}`},
+                credentials: "include",
                 body:formData,
             });
 
@@ -340,7 +317,6 @@ class memberModel {
     }
 
     async collectCountSubmit(user_id, post_id, action) {
-        const token = localStorage.getItem("token");
         try{
             const formData = new FormData();
             formData.append("user_id", user_id);
@@ -350,12 +326,12 @@ class memberModel {
             // const response = await 
             const response = fetch(`/api/post/collectcount`,{
                 method: "POST",
-                headers:{"Authorization": `Bearer ${token}`},
+                credentials: "include",
                 body:formData,
             });
 
         }catch{
-            console.log("按讚動作發生錯誤");
+            console.log("收藏動作發生錯誤");
         }
     }
 }

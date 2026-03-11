@@ -11,13 +11,19 @@ class postCommentModel {
 
         // 取得選取的圖片
         this.imgFiles=null;
-        // 取得form物件
-        this.formObj = document.querySelector(".food-block");
+
         // 取得其他物件
-        this.restNameText = document.querySelector(".rest-name-text");
-        this.addressText = document.querySelector(".address-text");
+        this.searchAddress = document.querySelector(".search-address");
+        this.storeDatail = document.querySelector(".name-address-text");
+        this.restNameText = null;
+        this.addressText = null;
+        // this.restNameText = document.querySelector(".rest-name-text");
+        // this.addressText = document.querySelector(".address-text");
         this.commentInfoText = document.querySelector(".comment-info");
         this.diningAreaInfoText = document.querySelector(".dining-area-info");
+        // 貼文的餐廳經緯度
+        this.latCoordinate = null;
+        this.lonCoordinate = null;
     
         this.getMapValue();
 
@@ -56,6 +62,7 @@ class postCommentModel {
     async getCityOptionName(country) {
         const response = await fetch(`/api/cityname?country=${country}`, {
             method: "GET",
+            credentials: "include",
         });
         const dt = await response.json();
 
@@ -66,6 +73,21 @@ class postCommentModel {
             return dt.data;
         } 
     }
+
+    async getTypesOptionName() {
+        const response = await fetch(`/api/typesname`, {
+            method: "GET",
+            credentials: "include",
+        });
+        const dt = await response.json();
+
+        await new Promise(delay => setTimeout(delay, 100));
+        if (!response.ok || dt.error !== undefined){
+            console.log("取得地區資料出現錯誤。");
+        }else{
+            return dt;
+        } 
+    };
 
     citySelectText() {
         this.citySelect.textContent = "選擇城市";
@@ -142,62 +164,44 @@ class postCommentModel {
     }
 
     async submitPostInfo(id) {
-        const token = localStorage.getItem("token");
-        console.log(id);
-        console.log(`資料型別: ${typeof id}`);
         // 先取得圖片
         if (this.imgFiles !== null){
             try{
                 const imgFilesLength = this.imgFiles.length;
-                // console.log(`輸入數量:${imgFilesLength}`);
-                const foodNameAndPriceObjLength = this.formObj.querySelectorAll("input").length;
-                // console.log(`輸入數量:${foodNameAndPriceObjLength}`);
-                if ((foodNameAndPriceObjLength % 2) !== 0){
-                    return "請根據新增的圖片數量，新增對應的餐點名稱與價格。";
-                }
 
-                const foodInfoObjRowLength = (foodNameAndPriceObjLength / 2);
-                if (imgFilesLength !== foodInfoObjRowLength){
-                    return "請根據新增的圖片數量，新增對應的餐點名稱與價格。";
-                }
-
-                const formArr = new FormData(this.formObj);
-                // 取得input name的方式，撈取所有的值
-                const foodNameArr = formArr.getAll("nametext");
-                const foodPriceArr = formArr.getAll("pricetext");
-                const foodNameText = this.joinText(foodNameArr);
-                const foodPriceText = this.joinText(foodPriceArr);
-
+                let foodNameText = "";
+                let foodPriceText = "";
+                // 取得form物件
+                const formObj = document.querySelectorAll(".food-block");
+                formObj.forEach((form, idx) => {
+                    const formArr = new FormData(form);
+                    // 取得input name的方式，撈取所有的值
+                    const foodNameArr = formArr.getAll("nametext");
+                    const foodPriceArr = formArr.getAll("pricetext");
+                    const nameText = this.joinText(foodNameArr);
+                    const priceText = this.joinText(foodPriceArr);
+                    if (idx !== 0){
+                        foodNameText += "," + nameText;
+                        foodPriceText += "," + priceText;
+                    }else{
+                        foodNameText = nameText;
+                        foodPriceText = priceText;
+                    }
+                })
+                
                 // 取得其他值
-                const restaurantName = this.restNameText.value.trim();
-                const restaurantAddress = this.addressText.value.trim();
+                const restaurantName = this.restNameText;
+                const restaurantAddress = this.addressText;
                 const restaurantCountry = this.countrySelect.textContent;
                 const restaurantCity = this.citySelect.textContent;
                 const restaurantTypes = this.typesSelect.textContent;
                 const restaurantComment = this.commentInfoText.value;
                 const restaurantArea = this.diningAreaInfoText.value;
-
-                // 取得地址的經緯度
-                const addCoordinate = await this.getAddressCoordinates(restaurantAddress);
-                console.log(addCoordinate);
-                if (addCoordinate === "error"){
-                    console.log("找經緯度")
-                    return "建立貼文失敗，請稍後再執行。";
-                }
-
-                if (addCoordinate.data.country !== restaurantCountry){
-                    return "請確認地址是否為選擇的地區選項，或是選項中並沒有該地區，\n請根據有的地區進行發文動作，謝謝。";
-                };
-                // if (!addCoordinate.data.city.includes(restaurantCity)){
-                //     return "請確認地址是否為選擇的城市選項，或是選項中並沒有該城市，\n請根據有的城市進行發文動作，謝謝。";
-                // }
-
-                const latCoordinate = parseFloat(addCoordinate.data.lat);
-                const lonCoordinate = parseFloat(addCoordinate.data.lon);
+        
 
                 if (foodNameText !== "" && foodPriceText !== "" && restaurantName !== "" &&
                     restaurantAddress !== "" && restaurantCountry !== "選擇地區" && restaurantCity !== "選擇城市" &&
-                    restaurantTypes !== "選擇種類" && restaurantComment !== ""){
+                    restaurantTypes !== "全部種類" && restaurantComment !== ""){
 
                     const formData = new FormData();
                     formData.append("user_id", id);
@@ -205,8 +209,8 @@ class postCommentModel {
                     formData.append("rest_address", restaurantAddress);
                     formData.append("rest_country", restaurantCountry);
                     formData.append("rest_city", restaurantCity);
-                    formData.append("rest_lat", latCoordinate);
-                    formData.append("rest_lon", lonCoordinate);
+                    formData.append("rest_lat", this.latCoordinate);
+                    formData.append("rest_lon", this.lonCoordinate);
                     formData.append("rest_type", restaurantTypes);
                     formData.append("rest_comment", restaurantComment);
                     formData.append("rest_area", restaurantArea);
@@ -218,7 +222,7 @@ class postCommentModel {
                     
                     const response = await fetch("/api/post/single", {
                         method: "POST",
-                        headers: {"Authorization": `Bearer ${token}`},
+                        credentials: "include",
                         body: formData,
                     });
 
@@ -228,68 +232,24 @@ class postCommentModel {
                         console.error("後端報錯詳情:", dt);
                         return "建立貼文失敗，請稍後再執行。";
                     }
-                    console.error(dt);
+
                     return dt;
                 }
 
                 return "建立貼文失敗，請稍後再執行。";
             }catch(error){
-                console.log(error);
                 return "建立貼文失敗，請稍後再執行。";
             }
         }
         return "請選擇需要發文的圖片，謝謝您。";
     }
 
-    async getAddressCoordinates(address_) {
-        const addressCoordinate = new google.maps.Geocoder();
-        try{
-            const response = await addressCoordinate.geocode({address: address_});
-            if (response.results && response.results.length){
-                // 先將資料用到子層的Array位置，再透過foreach迴圈，找對應的資料
-                const componentsArr = response.results[0].address_components;
-                const lat = response.results[0].geometry.location.lat();
-                const lng = response.results[0].geometry.location.lng();
-                let country = null;
-                let city = [];
-
-                componentsArr.forEach(e => {
-                    if (e.types.includes("country")){
-                        country = e.long_name;
-                    };
-
-                    if (e.types.includes("locality")){
-                        city.push(e.long_name);
-                    };
-
-                    if (e.types.includes("administrative_area_level_2")){
-                        city.push(e.long_name);
-                    };
-
-                    if (e.types.includes("administrative_area_level_1")){
-                        city.push(e.long_name);
-                    };
-                });
-
-                console.log(lat);
-                console.log(lng);
-                return {"data": {
-                    "country": country,
-                    "city": city,
-                    "lat": lat,
-                    "lon": lng
-                }};
-            }
-
-            return "error";
-        }catch(error){
-            return "error";
-        }
-    }
-
     async getMapValue() { 
         try{
-            const response = await fetch("/api/mapvalue");
+            const response = await fetch("/api/mapvalue", {
+                method: "GET",
+                credentials: "include",
+            });
             const value = await response.json();
 
             if (!response.ok || value.error!== undefined){
@@ -298,13 +258,18 @@ class postCommentModel {
                 const mapkey = value.data;
 
                 const mapScript = document.createElement("script");
-                mapScript.src = `https://maps.googleapis.com/maps/api/js?key=${mapkey}&loading=async&language=zh-TW`;
+                mapScript.src = `https://maps.googleapis.com/maps/api/js?key=${mapkey}&libraries=places`;
                 mapScript.async = true;
                 mapScript.defer = true;
+
+                mapScript.onload= () => {
+                    this.autoSearchAddress();
+                };
+                
                 document.body.appendChild(mapScript);
+                
             }
         }catch(error){
-            console.log(error);
             console.log("地圖發生錯誤。");
         };
     }
@@ -332,6 +297,43 @@ class postCommentModel {
                 left: previewImgCTN.offsetWidth,
                 behavior: "smooth"
             });
+        });
+    }
+
+    async autoSearchAddress() {
+        const placesComplete = new google.maps.places.Autocomplete(
+            this.searchAddress, {
+                fields:["name", "formatted_address", "geometry", "types"],
+                typws: ["establishment"]
+            }
+        );
+
+        placesComplete.addListener("place_changed", () => {
+            const selectPlace = placesComplete.getPlace();
+
+            if (!selectPlace.geometry || !selectPlace.name){
+                console.log("搜尋地點過程中，找不到輸入地點的相關資訊");
+                alert("請從建議列表欄中，選取要使用的地點。");
+                return;
+            }
+
+            if (selectPlace.types.includes("restaurant") || selectPlace.types.includes("cafe") 
+                || selectPlace.types.includes("bar") || selectPlace.types.includes("bakery")
+                || selectPlace.types.includes("meal_takeaway") || selectPlace.types.includes("meal_delivery")
+                || selectPlace.types.includes("food")){
+
+                this.storeDatail.textContent = `店家資訊：${selectPlace.name}；${selectPlace.formatted_address}`;
+                this.restNameText = String(`${selectPlace.name}`);
+                this.addressText = String(`${selectPlace.formatted_address}`);
+
+                this.latCoordinate = parseFloat(selectPlace.geometry.location.lat());
+                this.lonCoordinate = parseFloat(selectPlace.geometry.location.lng());
+                
+                this.searchAddress.value = String(`${selectPlace.name}`);
+            }else{
+                alert("請選擇餐飲相關的店家，謝謝。");
+                return;
+            }
         });
     }
 };

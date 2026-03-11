@@ -33,7 +33,11 @@ class memberSettingModel {
 
     async logOutSubmit() {
         this.loaderUI.classList.toggle('active');
-        localStorage.removeItem("token");
+        const response = await fetch(`/api/user/logout`, {
+            method: "POST",
+            credentials: "include",
+        });
+
         sessionStorage.clear();
         requestAnimationFrame(() => {
             requestAnimationFrame(() => {
@@ -64,12 +68,10 @@ class memberSettingModel {
             }
 
             try{
-                const token = localStorage.getItem("token");
                 const response = await fetch("/api/user/infoupdate", {
                     method: "PATCH",
-                    headers: {"Content-Type": "application/json",
-                            "Authorization": `Bearer ${token}`
-                            },
+                    credentials: "include",
+                    headers: {"Content-Type": "application/json"},
                     body: JSON.stringify(jsonInfo)
                 });
 
@@ -109,12 +111,10 @@ class memberSettingModel {
             }
 
             try{
-                const token = localStorage.getItem("token");
                 const response = await fetch("/api/uer/updatepw", {
                     method: "PATCH",
-                    headers: {"Content-Type": "application/json",
-                            "Authorization": `Bearer ${token}`
-                            },
+                    credentials: "include",
+                    headers: {"Content-Type": "application/json"},
                     body: JSON.stringify(jsonInfo)
                 });
 

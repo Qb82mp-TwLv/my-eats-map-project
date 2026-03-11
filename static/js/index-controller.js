@@ -7,11 +7,9 @@ let userId = null;
 const loaderUI = document.querySelector(".loading-container");
 async function verify_user_token() {
     try{
-        const token = localStorage.getItem("token");
-
         const response = await fetch("/api/user/auth", {
             method: "GET",
-            headers: {"Authorization": `Bearer ${token}`}
+            credentials: "include",
         });
 
         const dt = await response.json();
@@ -64,7 +62,7 @@ async function initMap() {
             lng: 121.56452, 
         },
         mapId: `${mapid}`,
-        zoom: 13,
+        zoom: 12,
         tilt:0,
         heading: 0,
         rotateControl: false,
@@ -73,8 +71,30 @@ async function initMap() {
         fullscreenControl: false,
         zoomControl: true,
     });
+
+    initMarker();
 }
 
+async function initMarker() {
+    const dtJson = await indexM.searchPosts("台灣", ["台北市", "", ""], "全部種類", "");
+    if (dtJson !== null){
+        clearMarker();
+
+        for(let i=0; i<dtJson.length; i++){
+            const markerObj = await indexV.marker(map, { lat: dtJson[i].lat, lng: dtJson[i].lon,}, dtJson[i].img);
+            markerObj.postId = dtJson[i].post_id;
+            markerObj.addEventListener("click", async () => {
+                const result = await indexM.getStorePosts(userId, markerObj.position.lat, markerObj.position.lng);
+                if (result !== null){
+                    indexM.openPostsContent();
+                    modifyPostInfoInDialog(result);
+                }
+            });
+
+            markerArr.push(markerObj);
+        }
+    }
+};
 
 async function createOptionItem() {
     // 取得地區(國家)
@@ -94,18 +114,9 @@ async function createOptionItem() {
                 indexM.countryName = countrySelect.textContent;
             }
             createCityOptionItem(country[i]);
-            console.log(optionTag.textContent);
         });
     };
 
-    const typesDt = await indexM.getTypesOptionName();
-    const typesArr = typesDt.data;
-    const types = typesArr.types;
-    sessionStorage.setItem("type", types);
-    for(let i=0; i< types.length; i++){
-        const optionTag = indexV.typesDropList(types[i]);
-        indexM.typesOptionItemClick(optionTag);
-    };
 }
 
 async function createCityOptionItem(country) {
@@ -121,11 +132,32 @@ async function createCityOptionItem(country) {
     const city = cityArr.city;
     for(let i=0; i< city.length; i++){
         const optionTag = indexV.cityDropList(city[i]);
-        indexM.cityOptionItemClick(optionTag);
-    };
-    
+        //indexM.cityOptionItemClick(optionTag);
+        optionTag.addEventListener("click", async () => {
+            await indexM.cityOptionItemClick(optionTag);
+            createTypesOptionItem(country, city[i]);
+        });
+    };  
     indexM.citySelectText();
-    
+}
+
+async function createTypesOptionItem(country, city) {
+    indexM.typesSelect.textContent = "全部種類";
+    const cityOption = document.querySelector(".types-option");
+    const childNode = cityOption.querySelectorAll("li");
+    if (childNode){
+        childNode.forEach(child => {
+            child.remove();
+        });
+    }
+
+    const typesDt = await indexM.getTypesOptionName(country, city);
+    const typesArr = typesDt.data;
+    const types = typesArr.types;
+    for(let i=0; i< types.length; i++){
+        const optionTag = indexV.typesDropList(types[i]);
+        indexM.typesOptionItemClick(optionTag);
+    };
 }
 
 async function searchBarOptionClick() {
@@ -169,12 +201,10 @@ async function createFollowUser(user_id) {
     }
 }
 
-
 const searchBtn = document.querySelector(".input-item-btn");
 if (searchBtn){
     searchBtn.addEventListener("click", () => {
         searchPosts();
-        console.log("搜尋");
     });
 }
 
@@ -185,7 +215,6 @@ async function searchPosts() {
     const storeType = indexM.typesSelect.textContent;
 
     if (city.length !== 0){
-        console.log(city);
         if (country!=="選擇地區" && city[0]!=="選擇城市" && storeType!==""){
             const keywordStr = document.querySelector(".input-item-keyword").value.trim();
             const dtJson = await indexM.searchPosts(indexM.countryName, indexM.cityName, storeType, keywordStr);
@@ -236,7 +265,8 @@ async function modifyPostInfoInDialog(dt) {
     // 顯示許多貼文的容器
     const postsCTNTag = document.querySelector(".posts-container");
     // 清除之前的內容
-    postsCTNTag.replaceChildren();
+    //postsCTNTag.replaceChildren();
+    postsCTNTag.textContent ="";
 
     // 建立圖片的內容
     for (let i=0; i<dt.length; i++){
@@ -394,7 +424,7 @@ async function modifyPostInfoInDialog(dt) {
         followBtn.type="button";
         const userNickname = document.createElement("div");
         userNickname.classList.add("user-nickname");
-        console.log(`暱稱:${String(dt[i].user.nickname)}`);
+
         if (String(dt[i].user.nickname) !== null){
             userNickname.textContent = String(dt[i].user.nickname);
         }else{
@@ -560,7 +590,6 @@ async function followPostSearch(id) {
     if (followBtn){
         followBtn.addEventListener("click", async () => {
             indexM.followBtnProcessing();
-            console.log("click");
         });
     }
 
@@ -599,9 +628,7 @@ async function genMarker(dtJson) {
                 const result = await indexM.getStorePosts(userId, markerObj.position.lat, markerObj.position.lng);
                 if (result !== null){
                     indexM.openPostsContent();
-                    console.log(result);
                     modifyPostInfoInDialog(result);
-                    console.log(markerObj.position);
                 }
             });
 
@@ -635,6 +662,28 @@ async function postFollowBtn(followBtnObj) {
     }
 }
 
+const selectImgBtn = document.querySelector(".add-img");
+if (selectImgBtn){
+    selectImgBtn.addEventListener("click", () => {
+        indexM.changeImg();
+    });
+}
+
+const postAddBtn = document.querySelector(".post-add");
+if (postAddBtn){
+    postAddBtn.addEventListener("click", () => {
+        loaderUI.classList.toggle(`active`);
+        requestAnimationFrame(() => {
+            requestAnimationFrame(() => {
+                setTimeout(() => {
+                    window.location.replace("/postcomment");
+                }, 300);
+                
+            });
+        });
+    });
+}
+
 verify_user_token();
 
 loadingMap();
@@ -655,4 +704,3 @@ window.addEventListener("load", () => {
     );
     
 });
-

@@ -17,7 +17,7 @@ app.mount("/static", StaticFiles(directory="static"), name="static")
 
 # 避免其他人直接偷換殼
 app.add_middleware(CORSMiddleware,
-                   allow_origins=["(網站網址)"],
+                   allow_origins=["(使用的網域位置)"],
                    allow_credentials=True,
                    allow_methods=[
                        "GET",

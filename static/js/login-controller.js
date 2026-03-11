@@ -1,29 +1,26 @@
 import loginM from "./model/login-m.js";
 
 async function verify_user_token() {
-    const token = localStorage.getItem("token");
-    if (token !== null){
-        try{
-            const response = await fetch("/api/user/auth", {
-                method: "GET",
-                headers: {"Authorization": `Bearer ${token}`}
-            });
+     try{
+        const response = await fetch("/api/user/auth", {
+            method: "GET",
+            credentials: "include"
+        });
 
-            const dt = await response.json();
-            if (dt.data !== null){
-                loginM.loaderUI.classList.toggle(`active`);
+        const dt = await response.json();
+        if (dt.data !== null){
+            loginM.loaderUI.classList.toggle(`active`);
+            requestAnimationFrame(() => {
                 requestAnimationFrame(() => {
-                    requestAnimationFrame(() => {
-                        setTimeout(() => {
-                            window.location.replace("/eatsmap");
-                        }, 300);
-                        
-                    })
-                });
-            }
-        }catch(error){
-            console.log("請先登入");
+                    setTimeout(() => {
+                        window.location.replace("/eatsmap");
+                    }, 300);
+                    
+                })
+            });
         }
+    }catch(error){
+        console.log("請先登入");
     }
 };
 

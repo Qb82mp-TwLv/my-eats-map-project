@@ -6,11 +6,9 @@ let userId = null;
 const loaderUI = document.querySelector(".loading-container");
 async function verify_user_token() {
     try{
-        const token = localStorage.getItem("token");
-
         const response = await fetch("/api/user/auth", {
             method: "GET",
-            headers: {"Authorization": `Bearer ${token}`}
+            credentials: "include"
         });
 
         const dt = await response.json();
@@ -28,7 +26,6 @@ async function verify_user_token() {
 
         set_member_info(dt.data);
         userId = dt.data.id;
-        console.log(userId);
     }catch(error){
         loaderUI.classList.toggle('active');
         requestAnimationFrame(() => (
@@ -171,14 +168,6 @@ const homePage = document.querySelector(".navbar-title");
 if (homePage){
     homePage.addEventListener("click", () => {
         memberM.homePage();
-        console.log("5執行");
-    });
-}
-
-const postAddBtn = document.querySelector(".post-add");
-if (postAddBtn){
-    postAddBtn.addEventListener("click", () => {
-        memberM.postAPost();
     });
 }
 
@@ -191,7 +180,6 @@ async function postEachOneClick() {
         if (postB){
             postB.addEventListener("click", async function(){
                 memberM.openPostDialog();
-                console.log(postB);
 
                 const likeCountNum = document.querySelector(".like-count");
                 const collectCountNum = document.querySelector(".collect-count");

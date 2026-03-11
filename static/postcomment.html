@@ -25,6 +25,7 @@
         <div class="content-container">
             <div class="secondblock">
                 <div class="post-block-container">
+
                     <div class="post-img-container">
                         <div class="img-slide-container">
                             <div class="preview-img-slide">
@@ -43,23 +44,18 @@
                                 <img src="/static/img/add-image.png">
                             </label>
                         </div>
-                        <div class="remark-str">注意:圖片最多上傳7張，請勿上傳超過。</div>
+                        <div class="remark-str">注意:請一次上傳所需圖片，勿上傳超過7張，謝謝。</div>
                     </div>
                     <div class="post-input-container">
                         <div class="store-address">
-                            <div class="rest-name-info">
-                                <div class="rest-name-title">餐廳名稱(必填)</div>
-                                <input type="text" class="rest-name-text">
-                            </div>
-                            <div class="address-info">
-                                <div class="rest-name-title">餐廳地址(必填->請使用同一種語言輸入)</div>
-                                <input type="text" class="address-text">
-                            </div>
+                            <input type="text" class="search-address" placeholder="📍(搜尋店家位置:例如「台北市 頂泰豐」)">
+                            <div class="name-address-text">店家資訊：</div>
+                            
                         </div>
 
                         <div class="store-position-type">
                             <div class="country-info">
-                                    <div class="rest-name-title">地區(國家->必選)</div>
+                                    <div class="rest-name-title">地區(必選)</div>
                                     <div class="item-country">
                                         <button type="button" class="country-select">選擇地區</button>
                                         <div class="country-droplist">
@@ -97,44 +93,16 @@
 
                         <div class="food-experience-container">
                             <div class="experience-comment">
-                                <div class="rest-name-title">餐點評價(必填)</div>
-                                <textarea type="text" class="comment-info" maxlength="500"></textarea>
+                                <div class="rest-name-title">餐點評價</div>
+                                <textarea type="text" class="comment-info" maxlength="500" placeholder="最多500個字(必填)"></textarea>
                             </div>
                         </div>
 
                         <div class="dining-area-container">
                             <div class="dining-area-comment">
                                 <div class="rest-name-title">用餐環境</div>
-                                <textarea type="text" class="dining-area-info" maxlength="255"></textarea>
+                                <textarea type="text" class="dining-area-info" maxlength="255" placeholder="最多255個字"></textarea>
                             </div>
-                        </div>
-
-                        <div class="food-info-container">
-                            <div class="food-title-container">
-                                <div class="rest-name-title">餐點</div>
-                                <button class="add-object">
-                                    <img src="/static/img/additionPosts.png">
-                                </button>
-                            </div>
-
-                            <div class="remark-str">注意:餐點的名稱與價格輸入框為一組，最多再新增6組，且要跟上傳的圖片張數一樣多組。</div>
-                            
-                            <form class="food-block">
-                                <div class="food-content-container">
-                                    <div class="food-name">
-                                        <div class="name-title">名稱</div>
-                                        <input type="text" name="nametext" class="name-text" maxlength="80"></input>
-                                    </div>
-                                    
-                                    <div class="food-price">
-                                        <div class="price-title">價格</div>
-                                        <input type="text" name="pricetext" class="price-text"></input>
-                                    </div>
-                                </div>
-                                
-                                
-                            </form>
-                            
                         </div>
 
                         <div class="submit-container">

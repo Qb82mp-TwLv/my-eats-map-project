@@ -66,16 +66,17 @@ class loginModel {
                 try{
                     const response = await fetch("/api/user/auth", {
                         method: "PUT",
+                        credentials: "include",
                         headers: {"Content-Type": "application/json"},
                         body: JSON.stringify(jsonLogin)
                     });
 
                     const data = await response.json();
-
+                    
                     if (!response.ok || data.error !== undefined){
                         this.errorLoginTextView("電子信箱或密碼有錯誤");
                     }else{
-                        localStorage.setItem("token", data.token);
+                        //localStorage.setItem("token", data.token);
                         this.errorLoginTextHidden();
                         this.loaderUI.classList.toggle(`active`);
                         requestAnimationFrame(() => {
@@ -84,8 +85,7 @@ class loginModel {
                                     window.location.replace("/eatsmap");
                                 }, 300);
                             });
-                        });
-                       
+                        }); 
                     }
                 }catch(error){
                     this.errorLoginTextView("電子信箱或密碼有錯誤");
@@ -146,6 +146,7 @@ class loginModel {
                 try{
                     const response = await fetch("/api/user", {
                         method: "POST",
+                        credentials: "include",
                         headers: {"Content-Type": "application/json"},
                         body: JSON.stringify(jsonSignin)
                     });

@@ -67,14 +67,6 @@ body{
     height: 600px;
     display: flex;
     position: relative;
-    /* grid-template-columns: minmax(0, 1fr);
-    grid-template-rows: minmax(0, 1fr);
-    justify-items: center;
-    align-items: center; */
-
-    /* padding-left: 50px;
-    padding-right: 50px;
-    padding-top: 50px; */
     box-sizing: border-box;
 }
 
@@ -194,7 +186,7 @@ body{
     width: 90%;
     height: 100%;
     border-radius: 5px;
-    background-color: #002060;
+    background-color: var(--btn-bg-color);
     color: #fff;
 
     font-size: 16px;

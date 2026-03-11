@@ -28,64 +28,76 @@
                         </button>
                         <div class="user-name">user</div>
                     </div>
+                    
                     <div class="position-item">
-                        <div class="item-country">
-                            <button type="button" class="country-select">選擇地區</button>
-                            <div class="country-droplist">
-                                <ul class="country-option">
-                                    
-                                </ul>
+                        <fieldset class="location-container">
+                            <legend class="location-title">定位</legend>
+                            
+                            <div class="item-country">
+                                <button type="button" class="country-select">選擇地區</button>
+                                <div class="country-droplist">
+                                    <ul class="country-option">
+                                        
+                                    </ul>
+                                </div>
                             </div>
-                        </div>
+                            
+                            <div class="item-city">
+                                <button type="button" class="city-select">選擇城市</button>
+                                <div class="city-droplist">
+                                    <ul class="city-option">
+                                    
+                                    </ul>
+                                </div>
+                            </div>
+                        </fieldset>
                         
-                        <div class="item-city">
-                            <button type="button" class="city-select">選擇城市</button>
-                            <div class="city-droplist">
-                                <ul class="city-option">
-                                   
-                                </ul>
+                        <fieldset class="types-container">
+                            <legend class="types-title">餐廳種類</legend>
+                        
+                            <div class="item-types">
+                                <button type="button" class="types-select">全部種類</button>
+                                <div class="types-droplist">
+                                    <ul class="types-option">
+                                        
+                                    </ul>
+                                </div>
                             </div>
-                        </div>
-
-                        <div class="item-types">
-                            <button type="button" class="types-select">全部種類</button>
-                            <div class="types-droplist">
-                                <ul class="types-option">
-                                    
-                                </ul>
-                            </div>
-                        </div>
+                        </fieldset>
                     </div>
                     <div class="search-input-item">
                         <div class="input-item-container">
                             <input class="input-item-keyword" type="text" placeholder="Search(店家名稱)">
-                            <button class="input-item-btn" type="button">
+                            <button class="input-item-btn" type="button" title="搜尋">
                                 <img src="/static/img/magnifying-glass.png">
                             </button>
                         </div>
                     </div>
                     <div class="search-btn-item">
-                        <button class="btn-own" type="button">我</button>
+                        <button class="btn-own" type="button" title="根據定位搜尋我的發文">我</button>
 
                         <div class="item-tracker">
-                            <button type="button" class="btn-tracker">追蹤者</button>
+                            <button type="button" class="btn-tracker"  title="根據定位搜尋選擇的追蹤者發文">追蹤者</button>
                             <div class="tracker-droplist">
                                 <ul class="tracker-option">
-                                   <!-- <li class="option">haha</li>
-                                    <li class="option">paggy</li>
-                                    <li class="option">IU</li>
-                                    <li class="option">qb</li> -->
+                                   
                                 </ul>
                             </div>
                         </div>
-<!-- 
-                        <button class="btn-tracker" type="button">追蹤者</button> -->
-                        <button class="btn-collect" type="button">收藏</button>
+
+                        <button class="btn-collect" type="button"  title="根據定位搜尋我收藏的發文">收藏</button>
                     </div>
                 </div>
             </div>
-        </div>
 
+            <div class="create-posts-btn">
+                <button class="post-add" title="新增發文">
+                    <img src="/static/img/additionPosts.png">
+                </button>
+            </div>
+            
+        </div>
+        
         <dialog class="view-posts">
             <nav class="nav">
                 <div class="close-btn">
@@ -93,71 +105,7 @@
                 </div>
             </nav>
             <div class="posts-container">
-                <!-- <div class="post-content-container">
-                    <div class="post-content-img">
-                        <div class="content-img-container">
-                            <div class="food-img-info">
-                                <div class="img-info-scroll">
-                                    <div class="imgSlides" id="imgItem">
-                                        <div class="img-container">
-                                            <img src="/static/img/photo.png">
-                                        </div>
-                                    </div>
-                            
-                                    <div class="food-info">
-                                        <div class="food-info-container">
-                                            <div class="img-name">奶油義大利麵佐松露</div>
-                                            <div class="img-price">280元</div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="sildeBtn">
-                                <button type="button" class="leftBtn" id="slideLeft"><img src="/static/img/left-button.png"></button>
-                                <button type="button" class="rightBtn" id="slideRight"><img src="/static/img/right-button.png"></button>
-                            </div>
-                        </div>
-
-                        <div class="post-evaluate-action">
-                            <div class="love-btn">
-                                <img src="/static/img/heart-nocolor.png" data-like="no" id="like-btn">
-                                <div class="like-count">0</div>
-                            </div>
-
-                            <div class="collect-btn">
-                                <img src="/static/img/bookmark-nocolor.png" data-collect="no" id="favorite-btn">
-                                <div class="collect-count">0</div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="post-content-comment">
-                        <div class="user-info">
-                            <div class="user-headshot">
-                                <img src="/static/img/user.png" class="post-user-headshot">
-                            </div>
-                            <div class="user-nickname">user</div>
-                        </div>
-                        <div class="post-comment">
-                            <div class="store-name-add">
-                                <div class="obj-title">店家名稱</div>
-                                <p class="store-name"></p>
-                            </div>
-
-                            <div class="food-experience">
-                                <div class="obj-title">食物體驗</div>
-                                <p class="experience-text"></p>
-                            </div>
-                            
-                            <div class="dining-area">
-                                <div class="obj-title">用餐環境</div>
-                                <p class="area-text"></p>
-                            </div>   
-                        </div>
-                    </div>
-                </div>
-
-                <div class="space"></div> -->
+                
             </div>
 
         </dialog>

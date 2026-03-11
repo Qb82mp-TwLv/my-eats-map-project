@@ -34,7 +34,7 @@ body{
     position: relative;
 }
 
-.web-view-container, .map-outside-container, .search-bar{
+.web-view-container, .map-outside-container, .search-bar, .create-posts-btn{
     display: grid;
     grid-template-columns: 1fr;
     grid-template-rows: 1fr;
@@ -51,7 +51,7 @@ body{
 
 /* 搜尋框設計 */
 .search-bar{
-    height: 190px;
+    height: 220px;
     background-color: var(--bg-color);
     border: var(--search-border);
     border-radius: var(--search-border-radius);
@@ -122,10 +122,39 @@ body{
 .position-item{
     width: 100%;
     display: grid;
-    grid-template-columns: 1fr 1fr 1fr;
+    grid-template-columns: 2fr 1fr;
     grid-template-rows: 1fr;
     gap: 5px;
 }
+
+.location-container{
+    width: 100%;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: 1fr;
+    gap: 5px;
+
+    border: var(--search-border);
+    border-radius: var(--search-border-radius);
+}
+
+.location-title, .types-title{
+    font-size: 16px;
+    font-family: "Taipei Sans TC", "Zen Maru Gothic";
+    font-family: 700;
+}
+
+.types-container{
+    width: 100%;
+    display: grid;
+    grid-template-columns: 1fr;
+    grid-template-rows: 1fr;
+    gap: 5px;
+
+    border: var(--search-border);
+    border-radius: var(--search-border-radius);
+}
+
 /* 地區選項 */
 .item-country, .item-city, .item-types{
     border-radius: var(--search-border-radius);
@@ -183,11 +212,11 @@ body{
     list-style: none;
     width: 100%;
     height: auto;
-    min-height: 40px;
-    max-height: 200px;
+    min-height: 70px;
+    max-height: 190px;
     display: grid;
     grid-template-columns: 1fr;
-    grid-template-rows: repeat(auto-fill, minmax(35px, 1fr));
+    grid-template-rows: repeat(auto-fit, minmax(35px, 1fr));
     background-color: var(--bg-color);
     border-radius: 7px;
 
@@ -436,6 +465,32 @@ body{
     z-index: 5;
 }
 
+.create-posts-btn{
+    height: 50px;
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    z-index: 5;
+}
+
+.post-add{
+    all: unset;
+    height: 100%;
+    border-radius: 14px;
+    overflow: hidden;
+    cursor: pointer;
+    box-sizing: border-box;
+    background-color: #fff;
+    
+}
+
+.post-add img{
+    width: 50px;
+    height: 50px;
+    object-fit: cover;
+}
+
+
 @media (1200px < width <= 1920px) {
     .search-bar{
         width: 600px;
@@ -444,7 +499,7 @@ body{
 
 @media (650px < width < 1200px) {
     .search-bar{
-        width: 600px;
+        width: 500px;
     }
 
     .country-droplist, .city-droplist, .types-droplist{
@@ -459,6 +514,12 @@ body{
 
     .country-droplist, .city-droplist, .types-droplist{
         width: 100%;
+    }
+
+    .create-posts-btn{
+        top: 245px;
+        right: auto;
+        left: 20px;
     }
 }
 
