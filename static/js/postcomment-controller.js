@@ -153,19 +153,6 @@ async function postBtnSetting() {
 }
 
 
-// const addFoodNmPriceBtn = document.querySelector(".add-object");
-// let addCount = 0;
-// if (addFoodNmPriceBtn){
-//     addFoodNmPriceBtn.addEventListener("click", () => {
-//         if (addCount < 6){
-//             postCommentV.addFoodNameAndPriceInput();
-//             addCount++;
-//             return;
-//         }
-//         console.log("最多只能新增6次。");
-//     });
-// }
-
 async function postAction(id) {
     const postSubmitBtn = document.querySelector(".submit-btn");
     if (postSubmitBtn){
