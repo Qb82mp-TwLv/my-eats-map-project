@@ -1,12 +1,10 @@
 from fastapi import *
 from fastapi.responses import JSONResponse
-from fastapi.security import OAuth2PasswordBearer
 from dbusing import db
 from pydantic import BaseModel
-from typing import Optional
 from dotenv import load_dotenv
 from view.loginV import signin_info, login_info, verify_user_info
-from view.memberV import user_follows_people, user_fans_people, user_posts_data, user_collect_data
+from view.memberV import user_follows_people, user_fans_people, user_posts_data, user_collect_data, other_member_info, fans_member_info
 from view.get_image import get_CDN_image, clear_CDN_cache
 from model.user_validation import jwtDecode
 from datetime import datetime
@@ -14,7 +12,6 @@ import re, os, hashlib, boto3, asyncio
 
 
 router = APIRouter()
-oauth2 = OAuth2PasswordBearer(tokenUrl="token", auto_error=False)
 
 class sign_in_info(BaseModel):
     name: str
@@ -70,6 +67,15 @@ async def log_in(user_data: log_in_info, response: Response):
                 samesite="lax",    
                 path="/"
             ) 
+            # 用在前端控制物件
+            response.set_cookie(
+                key="my_eatweb_isLogged_here",
+                value="true",
+                httponly=False,
+                secure=False,
+                samesite="lax",    
+                path="/"
+            )
 
             return {"ok": "True"}
     
@@ -91,10 +97,39 @@ def log_out(response: Response):
     # 刪除HttpOnly Cookie
     response.delete_cookie(
         key="session_token",
-        path="/"
+        path="/",
     )
 
+    response.delete_cookie(
+        key="my_eatweb_isLogged_here",    
+        path="/",
+    )
     return {"logOut": True}
+
+# 取得他人會員頁面的資訊
+@router.get("/api/user/other")
+async def get_other_user_info(memb_id: int, session_token: str=Cookie(None)):
+    if session_token != None:
+        confirm_token = jwtDecode(session_token)
+        if isinstance(confirm_token, dict):
+            get_dt = await db.other_memb_info(memb_id)
+            dt_json = other_member_info(get_dt)
+            return JSONResponse(dt_json)
+        
+    return JSONResponse({"data": None})
+
+# 取得粉絲的資訊
+@router.get("/api/user/fansinfo")
+async def member_fans_info(user_id: int, user_follow_id: int, session_token: str=Cookie(None)):  # user_follow_id指進到會員中心的人ID，要判斷他是否有追蹤他人的粉絲
+    if session_token != None:
+        confirm_token = jwtDecode(session_token)
+        if isinstance(confirm_token, dict):
+            get_dt = await db.get_member_fans_info(user_id, user_follow_id)
+            dt_json = fans_member_info(get_dt)
+            return JSONResponse(dt_json)
+        
+    return JSONResponse({"data": None})
+
 
 # 取得追蹤的人數
 @router.get("/api/user/follow")
@@ -130,7 +165,7 @@ async def get_user_posts(user_id: int, session_token: str=Cookie(None)):
             dt_json = user_posts_data(get_dt)
             return JSONResponse(dt_json)
         
-    return JSONResponse({"error": "取發文所有的貼文部分發生錯誤"})
+    return JSONResponse({"error": "取發的所有貼文部分發生錯誤"})
 
 @router.get("/api/user/collect")
 async def get_user_posts(user_id: int, session_token: str=Cookie(None)):

@@ -1,6 +1,6 @@
 services:
   web:
-    image: (在docker hub上的名稱)
+    image: eats-map-web:1.1
     ports:
       - "8000:8000"
     volumes:

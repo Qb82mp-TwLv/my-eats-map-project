@@ -1,55 +1,20 @@
 import loginM from "./model/login-m.js";
 
-async function verify_user_token() {
-     try{
-        const response = await fetch("/api/user/auth", {
-            method: "GET",
-            credentials: "include"
-        });
 
-        const dt = await response.json();
-        if (dt.data !== null){
-            loginM.loaderUI.classList.toggle(`active`);
-            requestAnimationFrame(() => {
-                requestAnimationFrame(() => {
-                    setTimeout(() => {
-                        window.location.replace("/eatsmap");
-                    }, 300);
-                    
-                })
-            });
-        }
-    }catch(error){
-        console.log("請先登入");
-    }
-};
-
-verify_user_token();
-
-// 切換登入與註冊
-const switchLogBtn = document.querySelector(".login-signin-btn");
-if (switchLogBtn){
-    switchLogBtn.addEventListener("click", () => {
-        const loginSigninText = {
-            "註冊": () => {
-                switchLogBtn.textContent = "登入";
-                loginM.switchToSignin();
-            },
-            "登入": () => {
-                switchLogBtn.textContent = "註冊";
-                loginM.switchToLoginin();
-            }
-        };
-
-        const switchLogBtnText = switchLogBtn.textContent;
-        if (loginSigninText[switchLogBtnText]){
-            loginSigninText[switchLogBtnText]();
-        }else{
-            console.log("找不到對應的執行動作");
-        }
-        
+// 切換至註冊
+const signinBtn = document.querySelector(".signin-top-btn");
+if (signinBtn){
+    signinBtn.addEventListener("click", () => {
+        loginM.switchToSignin();
     });
-};
+}
+
+const loginBtn = document.querySelector(".login-top-btn");
+if (loginBtn){
+    loginBtn.addEventListener("click", () => {
+        loginM.switchToLoginin();
+    });
+}
 
 const loginSubmitBtn = document.querySelector(".login-btn");
 if (loginSubmitBtn){

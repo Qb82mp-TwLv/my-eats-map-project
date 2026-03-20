@@ -52,3 +52,41 @@ def post_content_data(dt):
         return dt_json
     
     return {"error": "取發文的內容出現錯誤"}
+
+def edit_post_data(dt):
+    if type(dt) != bool:
+        load_dotenv()
+        CDN_path = os.getenv("API_AWS_CDN_PATH")
+        url = f"{CDN_path}/"
+
+        dt_json = {
+            "data":{
+                "name": dt[1],
+                "address": dt[0],
+                "country": dt[2],
+                "city": dt[3],
+                "type": dt[9],
+                "img": [],
+                "food_name": [],
+                "food_price": [],
+                "comment": dt[7],
+                "environment": dt[8],
+            }
+        }
+        if dt == []:
+            return {"data":"無資料"}
+
+        img_split = dt[4].split(",")
+        for img_item in img_split:
+            imgUrl = url+img_item
+            dt_json["data"]["img"].append(imgUrl)
+
+        for name_item in dt[5].split(","):
+            dt_json["data"]["food_name"].append(name_item)
+
+        for price_item in dt[6].split(","):
+            dt_json["data"]["food_price"].append(price_item)
+            
+        return dt_json
+    
+    return {"error": "取發文的內容出現錯誤"}

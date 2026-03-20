@@ -214,3 +214,5 @@ README_data.md
 sqlImg/
 private_key.pem
 public_key.pem
+docker-compose.yaml
+certs/

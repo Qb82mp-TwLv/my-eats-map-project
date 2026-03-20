@@ -1,22 +1,8 @@
-class memberModel {
+class othermemberModel {
     constructor() {
         this.postCTN = document.getElementById("post-eachone-container");
         this.collectCTN = document.getElementById("collect-eachone-container");
-        this.viewSelectHeadshot = document.querySelector(".view-select-headshot");
         this.viewPostContent = document.querySelector(".view-one-post");
-        this.closeSelectHeadshotBtn = document.querySelector(".close-btn");
-        if (this.closeSelectHeadshotBtn){
-            this.closeSelectHeadshotBtn.addEventListener("click", () => {
-                this.viewSelectHeadshot.close();
-            });
-        }
-
-        this.cancelSelectHeadshotBtn = document.querySelector(".cancel-btn");
-        this.cancelSelectHeadshot();
-
-        this.imgFile=null;
-        this.previewImg = document.querySelector(".preview-img");
-        this.user_id=null;
 
         // 貼文的dialog
         this.closePostDialogBtn = document.querySelector(".close-post-btn");
@@ -35,25 +21,8 @@ class memberModel {
         // loading頁面
         this.loaderUI = document.querySelector(".loading-container");
 
-        // 展開與收起(編輯或刪除貼文的下拉式功能)
-        this.postDropItem = document.querySelector(".post-droplist");
-        // 貼文是否要刪除的詢問視窗
-        this.viewAskContent = document.querySelector(".delete-ask-window");
-
         // 顯示粉絲資訊的區塊
         this.fansInfoItem = document.querySelector(".fans-info-droplist");
-    }
-
-    async settingMemberInfo() {
-        this.loaderUI.classList.toggle(`active`);
-        requestAnimationFrame(() => {
-            requestAnimationFrame(() => {
-                setTimeout(() => {
-                    window.location.replace("/setting");
-                }, 300);
-                
-            });
-        });
     }
 
     async homePage() {
@@ -68,6 +37,44 @@ class memberModel {
         });
     }
 
+    async membInfo(id) {
+        try{
+            const response = await fetch(`/api/user/other?memb_id=${id}`, {
+                method: "GET",
+                credentials: "include",
+            });
+
+            const dt = await response.json();
+            if(!response.ok || dt.error !== undefined){
+                return null;
+            }
+
+            return dt.data;
+        }catch{
+            return null;
+        }
+    }
+
+    async getHeadshotUrl(imgNM) {
+        try{
+            const response = await fetch(`/api/user/headshoturl?headshot_name=${imgNM}`,{
+                method: "GET",
+                credentials: "include",
+            });
+
+            const dt = await response.json();
+
+            await new Promise(delay => setTimeout(delay, 200));
+            if (!response.ok || dt.error !== undefined){
+                return null;
+            }
+
+            return dt.data.img;
+
+        }catch{
+            return null;
+        }
+    }
 
     async get_tracker_number(id) {
         try{
@@ -168,26 +175,6 @@ class memberModel {
         
     };
 
-    async openSelectHeadshot(id){
-        if (this.viewSelectHeadshot){
-            this.viewSelectHeadshot.showModal();
-        }
-
-        this.user_id = id;
-    }
-
-    async closeSelectHeadshot() {
-        this.viewSelectHeadshot.close();
-    }
-
-    async cancelSelectHeadshot() {
-        if (this.cancelSelectHeadshotBtn){
-            this.cancelSelectHeadshotBtn.addEventListener("click", () => {
-                this.closeSelectHeadshot();
-            });
-        }
-    }
-
     async closePostDialog() {
         this.viewPostContent.close();
     }
@@ -195,73 +182,6 @@ class memberModel {
     async openPostDialog(){
         if (this.viewPostContent){
             this.viewPostContent.showModal();
-        }
-    }
-
-    async submitHeadshotImg(imgNM) {
-        if (this.imgFile !== null){
-            const formData = new FormData();
-            formData.append("user_id", this.user_id);
-            formData.append("headshot", imgNM);
-            formData.append("image", this.imgFile); 
-            try{
-                const response = await fetch("/api/user/headshot",{
-                    method: "POST",
-                    credentials: "include",
-                    body:formData,
-                });
-
-                const dt = await response.json();
-                
-                await new Promise(delay => setTimeout(delay, 100));
-                if (!response.ok || dt.error !== undefined){
-                    console.log("大頭照更新失敗");
-                    return null;
-                }else{
-                    this.previewImg.onload = () => {
-                        URL.revokeObjectURL(this.src); 
-                    };
-                    const url = dt.data.img;
-                    return url;
-                };
-
-            }catch{
-                console.log("大頭照更新失敗");
-            }
-
-            return null;
-        }
-
-        return null;
-    }
-
-    async changeImg() {
-        const fileUpload = document.getElementById("image-upload");
-        fileUpload.addEventListener("change", (e) => {
-            this.imgFile = e.target.files[0];
-
-            this.previewImg.src = URL.createObjectURL(this.imgFile);
-        });
-    };
-
-    async getHeadshotUrl(imgNM) {
-        try{
-            const response = await fetch(`/api/user/headshoturl?headshot_name=${imgNM}`,{
-                method: "GET",
-                credentials: "include",
-            });
-
-            const dt = await response.json();
-
-            await new Promise(delay => setTimeout(delay, 200));
-            if (!response.ok || dt.error !== undefined){
-                return null;
-            }
-
-            return dt.data.img;
-
-        }catch{
-            return null;
         }
     }
 
@@ -351,54 +271,6 @@ class memberModel {
         }
     }
 
-    postOptionClick() {
-        if (!this.postDropItem.classList.contains('active')){
-            this.postDropItem.classList.toggle(`active`);
-        }
-    }
-
-    postOptionHidden() {
-        if (this.postDropItem && this.postDropItem.classList.contains(`active`)){
-            this.postDropItem.classList.remove(`active`);
-        }
-    }
-
-    closeAskDialog() {
-        this.viewAskContent.close();
-    }
-
-    openAskDialog(){
-        if (this.viewAskContent){
-            this.viewAskContent.showModal();
-        }
-    }
-
-    async askDelPost(post_id, user_id, postImageArr) {
-        try{
-            const formData = new FormData();
-            formData.append("post_id", post_id);
-            formData.append("user_id", user_id);
-            for(let i=0; i<postImageArr.length; i++){
-                formData.append("img_list[]", postImageArr[i]);
-            }
-
-            const response = await fetch(`/api/post/delete`, {
-                method: "DELETE",
-                credentials:"include",
-                body:formData,
-            });
-
-            const data = await response.json();
-            if (!response.ok || data.error !== undefined){
-                return null;
-            }
-
-            return true;
-        }catch{
-            return null;
-        }
-    }
-
     viewFansInfo() {
         if (!this.fansInfoItem.classList.contains('active')){
             this.fansInfoItem.classList.toggle('active');
@@ -471,7 +343,8 @@ class memberModel {
             return result;
         }; 
     }
+
 }
 
-const memberM = new memberModel();
-export default memberM;
+const othermemberM = new othermemberModel();
+export default othermemberM;

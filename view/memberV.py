@@ -81,3 +81,45 @@ def user_collect_data(dt):
         return dt_json
     
     return {"error": "收藏的資料發生錯誤"}
+
+def other_member_info(dt):
+    if dt != False:
+        dt_json = {
+            "data": {
+                "id": dt[0],
+                "name": dt[1],
+                "nickname": dt[2],
+                "headshot": dt[3]
+            }
+        }
+        return dt_json
+    
+    return {"data": None}
+
+def fans_member_info(dt):
+    load_dotenv()
+    CDN_path = os.getenv("API_AWS_CDN_PATH")
+    url = f"{CDN_path}/"
+
+    dt_json = {
+        "data": []
+    }
+
+    if dt != False:
+        for item in dt:
+            follow_result = "no" if item[3] == None else "yes"
+
+            if item[2] != None:
+                member_headshot = url+item[2]
+            else:
+                member_headshot = item[2]
+
+            dt_json["data"].append({
+                    "id": item[0],
+                    "name": item[1],
+                    "headshot": member_headshot,
+                    "follow": follow_result
+                })
+        return dt_json
+    
+    return {"data": None}

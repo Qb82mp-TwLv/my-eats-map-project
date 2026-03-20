@@ -12,7 +12,7 @@ class indexModel {
     
         // this.cityArr;
         this.mapkey = "";
-
+        // 顯示貼文
         this.viewPosts = document.querySelector(".view-posts");
         this.closePostsDialogBtn = document.querySelector(".close-btn");
         if (this.closePostsDialogBtn){
@@ -25,12 +25,6 @@ class indexModel {
         this.lat=null;
         this.lon=null;
 
-        this.options={
-            enableHighAccuracy: true,
-            timeout: 10000,
-            maximumAge:0
-        };
-
         // 儲存定位的國家與城市
         this.countryName = "選擇地區";
         this.cityName = [];
@@ -38,6 +32,17 @@ class indexModel {
 
         this.ownSearchBtn = document.querySelector(".btn-own");
         this.collectSearchBtn = document.querySelector(".btn-collect");
+
+        this.distanceOneBtn = document.querySelector(".btn-dis-onekm");
+        this.distanceThreeBtn = document.querySelector(".btn-dis-thrkm");
+        this.distanceFiveBtn = document.querySelector(".btn-dis-fivekm");
+        // 紀錄要搜尋的距離
+        this.searchDisNum = 1;
+        // 判斷是否拒絕了定位
+        this.rejectPosition = true;
+
+        // 顯示登入、註冊畫面
+        this.viewLoginSignin = document.querySelector(".view-login-dialog");
     };
 
     citySelectText() {
@@ -54,9 +59,10 @@ class indexModel {
         await new Promise(delay => setTimeout(delay, 100));
         if (!response.ok || dt.error !== undefined){
             console.log("取得地區資料出現錯誤。");
+            return null;
         }else{
             return dt;
-        } 
+        };
     }
 
     async getCityOptionName(country) {
@@ -85,6 +91,7 @@ class indexModel {
         await new Promise(delay => setTimeout(delay, 100));
         if (!response.ok || dt.error !== undefined){
             console.log("取得地區資料出現錯誤。");
+            return null;
         }else{
             return dt;
         } 
@@ -137,7 +144,6 @@ class indexModel {
     };
 
     async cityOptionItemClick(optionTag) {
-        // optionTag.addEventListener("click", async () => {
         this.citySelect.textContent = optionTag.textContent;
         const isPositionResult = await this.currentUserPositionOpen();
         this.cityName=[];
@@ -146,7 +152,6 @@ class indexModel {
             this.cityName.push("無");
             this.cityName.push("無");
         }
-        // });
     };
 
     typesOptionItemClick(optionTag) {
@@ -244,32 +249,11 @@ class indexModel {
         }
     }
 
-    async get_position_func(position) {
-        const lat_pos = position.coords.latitude;
-        const lon_pos = position.coords.longitude;
-
-        this.lat = lat_pos;
-        this.lon = lon_pos;
-
-        this.getCountryAndCityCoordinates(lat_pos, lon_pos);
-    }
-
-    async get_position_error(error) {
-        switch(error.code) {
-            case error.PERMISSION_DENIED:
-                console.error("使用者拒絕使用定位功能");
-                break;
-            case error.POSITION_UNAVAILABLE:
-                console.error("無取取得定位位置");
-                break;
-            case error.TIMEOUT:
-                console.error("取得定位的請求超時了");
-                break;
-            case error.UNKNOWN_ERROR:
-                console.error("發生其他錯誤");
-                break;
+    async closePostsContent() {
+        if (this.viewPosts){
+            this.viewPosts.close();
         }
-    };
+    }
 
     async getCountryAndCityCoordinates(lat, lon) {
         const addressCoordinate = new google.maps.Geocoder();
@@ -326,6 +310,24 @@ class indexModel {
         }
     };
 
+    async getDropCoordinates(country, city) {
+        const addressCoordinate = new google.maps.Geocoder();
+        const address_ = `${city}, ${country}`;
+        try{
+            const response = await addressCoordinate.geocode({address: address_});
+            if (response.results && response.results.length > 0){
+                const latlng = response.results[0].geometry.location;
+                this.lat = latlng.lat();
+                this.lon = latlng.lng();
+                return;
+            }
+
+            console.log("取得經緯度發生錯誤");
+        }catch(error){
+            console.log("取得經緯度發生錯誤");
+        }
+    };
+
     async currentUserPositionOpen() {
         // 使用promise避免非同步問題
         const response = await navigator.permissions.query({name: "geolocation"});
@@ -355,6 +357,7 @@ class indexModel {
 
     // 使用search的button執行搜尋
     async searchPosts(country, city, storeType, keyword) {
+        await this.getDropCoordinates(country, city[0]);
         try{
             const paraEncode = new URLSearchParams();
             paraEncode.set("city", city.join(","));
@@ -362,9 +365,9 @@ class indexModel {
             let urlPara = "";
             // 判斷是否有關鍵字
             if (keyword !== ""){
-                urlPara = `?country=${country}&${paraEncode.toString()}&types=${storeType}&keyword=${keyword}`;
+                urlPara = `?country=${country}&${paraEncode.toString()}&types=${storeType}&lat=${this.lat}&lon=${this.lon}&keyword=${keyword}&km=${this.searchDisNum}`;
             }else{
-                urlPara = `?country=${country}&${paraEncode.toString()}&types=${storeType}`;
+                urlPara = `?country=${country}&${paraEncode.toString()}&types=${storeType}&lat=${this.lat}&lon=${this.lon}&km=${this.searchDisNum}`;
             }
 
             const response = await fetch(`/api/search/post${urlPara}`,{
@@ -386,9 +389,48 @@ class indexModel {
         }
     }
 
+    async searchAgreePositionPosts(storeType, keyword) {
+        try{
+            let urlPara = "";
+            // 判斷是否有關鍵字
+            if (keyword !== ""){
+                urlPara = `?lat=${this.lat}&lon=${this.lon}&types=${storeType}&keyword=${keyword}&km=${this.searchDisNum}`;
+            }else{
+                urlPara = `?lat=${this.lat}&lon=${this.lon}&types=${storeType}&km=${this.searchDisNum}`;
+            }
+
+            const response = await fetch(`/api/search/locate/post${urlPara}`,{
+                method: "GET",
+                credentials: "include"
+            });
+
+            const dt = await response.json();
+
+            await new Promise(delay => setTimeout(delay, 200));
+            if (!response.ok || dt.error !== undefined){
+                console.log("搜尋發生錯誤");
+                return null;
+            }
+
+            return dt.data;
+        }catch(error){
+            return null;
+        }
+    }
+
     async getStorePosts(user_id , lat, lon) {
         try{
-            const response = await fetch(`/api/marker/posts?user_id=${user_id}&lat=${lat}&lon=${lon}`,{
+            let urlPara = "";
+            switch (user_id){
+                case null:
+                    urlPara=`?lat=${lat}&lon=${lon}`;
+                    break;
+                default:
+                    urlPara=`?lat=${lat}&lon=${lon}&user_id=${user_id}`;
+                    break;
+            }
+
+            const response = await fetch(`/api/marker/posts${urlPara}`,{
                 method: "GET",
                 credentials: "include"
             });
@@ -410,52 +452,64 @@ class indexModel {
     async postLikeAndFavoriteBtn(user_id, likeBtn, collectBtn, likeBtnImg, collectBtnImg) {
         if (likeBtn){
             likeBtn.addEventListener("click", () => {
-                // 切換圖片顯示
-                const imgName = likeBtnImg.dataset.like == "yes";
-                const likeCountNum = likeBtn.querySelector(".like-count");
-                let likeCount=0;
-                if (!imgName){
-                    likeBtnImg.src = "/static/img/heart-color.png";
-                    likeBtnImg.dataset.like="yes";
-                    likeCount = parseInt(likeCountNum.textContent) + 1;
-                    likeCountNum.textContent = String(likeCount);
+                const result = document.cookie.includes("my_eatweb_isLogged_here=true");
+                if (result){
+                    // 切換圖片顯示
+                    const imgName = likeBtnImg.dataset.like == "yes";
+                    const likeCountNum = likeBtn.querySelector(".like-count");
+                    let likeCount=0;
+                    if (!imgName){
+                        likeBtnImg.src = "/static/img/heart-color.png";
+                        likeBtnImg.dataset.like="yes";
+                        likeCount = parseInt(likeCountNum.textContent) + 1;
+                        likeCountNum.textContent = String(likeCount);
 
-                    const postId = parseInt(likeCountNum.dataset.postId);
-                    this.likeCountSubmit(user_id, postId, "yes");
+                        const postId = parseInt(likeCountNum.dataset.postId);
+                        this.likeCountSubmit(user_id, postId, "yes");
+                    }else{
+                        likeBtnImg.src = "/static/img/heart-nocolor.png";
+                        likeBtnImg.dataset.like="no";
+                        likeCount = parseInt(likeCountNum.textContent) - 1;
+                        likeCountNum.textContent = String(likeCount);
+
+                        const postId = parseInt(likeCountNum.dataset.postId);
+                        this.likeCountSubmit(user_id, postId, "no");
+                    }
                 }else{
-                    likeBtnImg.src = "/static/img/heart-nocolor.png";
-                    likeBtnImg.dataset.like="no";
-                    likeCount = parseInt(likeCountNum.textContent) - 1;
-                    likeCountNum.textContent = String(likeCount);
-
-                    const postId = parseInt(likeCountNum.dataset.postId);
-                    this.likeCountSubmit(user_id, postId, "no");
+                    // 顯示登入畫面
+                    this.openLoginAndSigninDialog();
                 }
             });
         };
 
         if (collectBtn){
             collectBtn.addEventListener("click",  () => {
-                // 切換收藏圖片
-                const imgName = collectBtnImg.dataset.collect == "yes";
-                const collectCountNum = collectBtn.querySelector(".collect-count");
-                let collectCount = 0;
-                if (!imgName){
-                    collectBtnImg.src = "/static/img/bookmark-color.png";
-                    collectBtnImg.dataset.collect="yes";
-                    collectCount = parseInt(collectCountNum.textContent) + 1;
-                    collectCountNum.textContent = String(collectCount);
+                const result = document.cookie.includes("my_eatweb_isLogged_here=true");
+                if (result){
+                    // 切換收藏圖片
+                    const imgName = collectBtnImg.dataset.collect == "yes";
+                    const collectCountNum = collectBtn.querySelector(".collect-count");
+                    let collectCount = 0;
+                    if (!imgName){
+                        collectBtnImg.src = "/static/img/bookmark-color.png";
+                        collectBtnImg.dataset.collect="yes";
+                        collectCount = parseInt(collectCountNum.textContent) + 1;
+                        collectCountNum.textContent = String(collectCount);
 
-                    const postId = parseInt(collectCountNum.dataset.postId);
-                    this.collectCountSubmit(user_id, postId, "yes");
+                        const postId = parseInt(collectCountNum.dataset.postId);
+                        this.collectCountSubmit(user_id, postId, "yes");
+                    }else{
+                        collectBtnImg.src = "/static/img/bookmark-nocolor.png";
+                        collectBtnImg.dataset.collect="no";
+                        collectCount = parseInt(collectCountNum.textContent) - 1;
+                        collectCountNum.textContent = String(collectCount);
+
+                        const postId = parseInt(collectCountNum.dataset.postId);
+                        this.collectCountSubmit(user_id, postId, "no");
+                    }
                 }else{
-                    collectBtnImg.src = "/static/img/bookmark-nocolor.png";
-                    collectBtnImg.dataset.collect="no";
-                    collectCount = parseInt(collectCountNum.textContent) - 1;
-                    collectCountNum.textContent = String(collectCount);
-
-                    const postId = parseInt(collectCountNum.dataset.postId);
-                    this.collectCountSubmit(user_id, postId, "no");
+                    // 顯示登入畫面
+                    this.openLoginAndSigninDialog();
                 }
             });
         };
@@ -487,7 +541,6 @@ class indexModel {
             formData.append("post_id", post_id);
             formData.append("action", action);
 
-            // const response = await 
             const response = fetch(`/api/post/collectcount`,{
                 method: "POST",
                 credentials: "include",
@@ -504,16 +557,26 @@ class indexModel {
             this.ownSearchBtn.classList.remove('active');
             return "取消";
         }else{
-            if (this.countryName !== "選擇地區" && this.cityName.length > 0 && this.typeName !== ""){
-                this.ownSearchBtn.classList.toggle('active');
-                this.followItem.classList.remove('active');
-                this.collectSearchBtn.classList.remove('active');
+            if (this.rejectPosition === true){
+                if (this.countryName !== "選擇地區" && this.cityName.length > 0 && this.typeName !== ""){
+                    this.ownSearchBtn.classList.toggle('active');
+                    this.followItem.classList.remove('active');
+                    this.collectSearchBtn.classList.remove('active');
 
-                // 要執行的搜尋
-                const dtJson = await this.ownSearchPosts(userId);
-                return dtJson;
+                    // 要執行的搜尋
+                    const dtJson = await this.ownSearchPosts(userId);
+                    return dtJson;
+                }
+                return null;
             }
-            return null;
+
+            this.ownSearchBtn.classList.toggle('active');
+            this.followItem.classList.remove('active');
+            this.collectSearchBtn.classList.remove('active');
+
+            // 要執行的搜尋
+            const dtJson = await this.ownSearchPosts(userId);
+            return dtJson;
         }
        
     };
@@ -537,30 +600,60 @@ class indexModel {
             this.collectSearchBtn.classList.remove('active');
             return "取消";
         }else{
-            if (this.countryName !== "選擇地區" && this.cityName.length > 0 && this.typeName !== ""){
-                this.ownSearchBtn.classList.remove('active');
-                this.followItem.classList.remove('active');
-                this.collectSearchBtn.classList.toggle('active');
+            if (this.rejectPosition === true){
+                if (this.countryName !== "選擇地區" && this.cityName.length > 0 && this.typeName !== ""){
+                    this.ownSearchBtn.classList.remove('active');
+                    this.followItem.classList.remove('active');
+                    this.collectSearchBtn.classList.toggle('active');
 
-                // 要執行的搜尋
-                const dtJson = await this.collectSearchPosts(userId);
-                return dtJson;
-            };
-            return null;
+                    // 要執行的搜尋
+                    const dtJson = await this.collectSearchPosts(userId);
+                    return dtJson;
+                };
+                return null;
+            }
+
+            this.ownSearchBtn.classList.remove('active');
+            this.followItem.classList.remove('active');
+            this.collectSearchBtn.classList.toggle('active');
+
+            // 要執行的搜尋
+            const dtJson = await this.collectSearchPosts(userId);
+            return dtJson;
+            
         }
     };
 
     // 使用者自己的貼文資料搜尋
     async ownSearchPosts(userId) {
         try{
-            const paraEncode = new URLSearchParams();
-            paraEncode.set("city", this.cityName.join(","));
-
             let urlPara = "";
             // 判斷是否有關鍵字
-            urlPara = `?country=${this.countryName}&${paraEncode.toString()}&types=${this.typeName}&user_id=${userId}&search=own`;
+            if (this.rejectPosition === true){
+                const paraEncode = new URLSearchParams();
+                paraEncode.set("city", this.cityName.join(","));
 
-            const response = await fetch(`/api/search/own/post${urlPara}`,{
+                urlPara = `?country=${this.countryName}&${paraEncode.toString()}&types=${this.typeName}&lat=${this.lat}&lon=${this.lon}&user_id=${userId}&search=own&km=${this.searchDisNum}`;
+
+                const response = await fetch(`/api/search/own/post${urlPara}`,{
+                    method: "GET",
+                    credentials: "include"
+                });
+
+                const dt = await response.json();
+
+                await new Promise(delay => setTimeout(delay, 200));
+                if (!response.ok || dt.error !== undefined){
+                    console.log("搜尋發生錯誤");
+                    return null;
+                }
+
+                return dt.data;
+            }
+
+            urlPara = `?lat=${this.lat}&lon=${this.lon}&types=${this.typeName}&user_id=${userId}&search=own&km=${this.searchDisNum}`;
+
+            const response = await fetch(`/api/search/locate/own/post${urlPara}`,{
                 method: "GET",
                 credentials: "include"
             });
@@ -574,6 +667,7 @@ class indexModel {
             }
 
             return dt.data;
+            
         }catch(error){
             console.log("搜尋發生錯誤");
             return null;
@@ -587,10 +681,28 @@ class indexModel {
             paraEncode.set("city", this.cityName.join(","));
 
             let urlPara = "";
-            // 判斷是否有關鍵字
-            urlPara = `?country=${this.countryName}&${paraEncode.toString()}&types=${this.typeName}&user_id=${userId}&search=collect`;
+            if (this.rejectPosition === true){
+                urlPara = `?country=${this.countryName}&${paraEncode.toString()}&types=${this.typeName}&lat=${this.lat}&lon=${this.lon}&user_id=${userId}&search=collect&km=${this.searchDisNum}`;
 
-            const response = await fetch(`/api/search/own/post${urlPara}`,{
+                const response = await fetch(`/api/search/own/post${urlPara}`,{
+                    method: "GET",
+                    credentials: "include"
+                });
+
+                const dt = await response.json();
+
+                await new Promise(delay => setTimeout(delay, 200));
+                if (!response.ok || dt.error !== undefined){
+                    console.log("搜尋發生錯誤");
+                    return null;
+                }
+
+                return dt.data;
+            }
+
+            urlPara = `?lat=${this.lat}&lon=${this.lon}&types=${this.typeName}&user_id=${userId}&search=collect&km=${this.searchDisNum}`;
+
+            const response = await fetch(`/api/search/locate/own/post${urlPara}`,{
                 method: "GET",
                 credentials: "include"
             });
@@ -604,6 +716,7 @@ class indexModel {
             }
 
             return dt.data;
+            
         }catch(error){
             console.log("搜尋發生錯誤");
             return null;
@@ -616,11 +729,13 @@ class indexModel {
         if (followBtnObj.dataset.follow === "no"){
             followBtnObj.textContent = "取消追蹤";
             followBtnObj.dataset.follow = "yes";
-            this.setFollowUser(postUserId, user_id, "yes");
+            const result = await this.setFollowUser(postUserId, user_id, "yes");
+            return result;
         }else if(followBtnObj.dataset.follow === "yes"){
             followBtnObj.textContent = "追蹤";
             followBtnObj.dataset.follow = "no";
-            this.setFollowUser(postUserId, user_id, "no");
+            const result = await this.setFollowUser(postUserId, user_id, "no");
+            return result;
         }; 
     }
 
@@ -631,15 +746,22 @@ class indexModel {
             formData.append("user_id", user_id);
             formData.append("action", action);
 
-            // const response = await 
-            const response = fetch(`/api/post/follow`,{
+            const response = await fetch(`/api/post/follow`,{
                 method: "POST",
                 credentials: "include",
                 body:formData,
             });
 
+            const data = await response.json();
+
+            if(!response.ok || data.error !== undefined){
+                return false;
+            }
+
+            return true;
         }catch{
             console.log("追蹤動作發生錯誤");
+            return false;
         }
     }
 
@@ -652,6 +774,88 @@ class indexModel {
         });
     };
 
+    async slideBtnClick() {
+        const contentImgCTN = document.querySelectorAll(".content-img-container");
+        contentImgCTN.forEach((item) => {
+            const slideLeftBtn = item.querySelector("#slideLeft");
+
+            slideLeftBtn.addEventListener("click", function() {
+                // 預覽圖片容器
+                const foodImgCTN = item.querySelector(".food-img-info");
+
+                // 當下取得位置
+                const posImg = foodImgCTN.scrollLeft;
+                const imgCTNAllWidth = foodImgCTN.offsetWidth;
+                
+                foodImgCTN.scrollTo({
+                    // 需要使用當下位置扣掉總圖片容器寬度
+                    left: posImg - imgCTNAllWidth,
+                    behavior: "smooth",
+                });
+            });
+
+            const slideRightBtn = item.querySelector("#slideRight");
+            slideRightBtn.addEventListener("click", function() {
+                // // 預覽圖片容器
+                const foodImgCTN = item.querySelector(".food-img-info");
+                foodImgCTN.scrollBy({
+                    left: foodImgCTN.offsetWidth,
+                    behavior: "smooth"
+                });
+            });
+            
+        })
+    }
+
+    // 切換按鈕的顏色
+    disOneClick() {
+        if (!this.distanceOneBtn.classList.contains('active')){
+            this.distanceOneBtn.classList.toggle('active');
+        }
+    }
+
+
+    disThreeClick() {
+        if (!this.distanceThreeBtn.classList.contains('active')){
+            this.distanceThreeBtn.classList.toggle("active");
+        }
+    }
+
+    disFiveClick() {
+        if (!this.distanceFiveBtn.classList.contains('active')){
+            this.distanceFiveBtn.classList.toggle('active');
+        }
+    }
+
+    distanceBtnHidden() {
+        switch (this.searchDisNum) {
+            case 1:
+                this.distanceThreeBtn.classList.remove('active');
+                this.distanceFiveBtn.classList.remove('active');
+                break;
+            case 5:
+                this.distanceOneBtn.classList.remove('active');
+                this.distanceFiveBtn.classList.remove('active');
+                break;
+            case 10:
+                this.distanceThreeBtn.classList.remove('active');
+                this.distanceOneBtn.classList.remove('active');
+                break;
+        }
+    }
+
+    async openLoginAndSigninDialog() {
+        if (this.viewLoginSignin){
+            this.viewLoginSignin.showModal();
+        }
+    }
+
+    async closeLoginAndSigninDialog() {
+        if (this.viewLoginSignin){
+            this.viewLoginSignin.close();
+        }
+    }
+    
 }
 
 const indexM = new indexModel();

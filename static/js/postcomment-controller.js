@@ -2,6 +2,12 @@ import postCommentM from './model/postcomment-m.js';
 import postCommentV from './view/postcomment-v.js';
 
 
+const explainToast = Swal.mixin({
+    toast: true,
+    position: 'center',
+    showConfirmButton: false,
+    timer: 2500,
+});
 
 const loaderUI = document.querySelector(".loading-container");
 async function verify_user_token() {
@@ -126,7 +132,10 @@ async function postBtnSetting() {
             fileUpload.addEventListener("change", async function() {         
                 if (this.files.length > maxImgFileSum){
                     this.value="";
-                    alert("最多只能選取7張圖，請重新選擇。");
+                    explainToast.fire({
+                        icon: "info",
+                        title: "抱歉，最多只能選取7張圖，請重新選擇。",
+                    });
                     return;
                 }
 
@@ -157,20 +166,40 @@ async function postAction(id) {
     const postSubmitBtn = document.querySelector(".submit-btn");
     if (postSubmitBtn){
         postSubmitBtn.addEventListener("click", async () => {
+            Swal.fire({
+                title: '建立貼文中...',
+                timer: 5000,
+                didOpen: () => {
+                    Swal.showLoading(); // 旋轉圖示
+                }
+            });
+
             const result = await postCommentM.submitPostInfo(id);
             if (result.ok !== true){
-                alert(result);
+                explainToast.fire({
+                    icon: "error",
+                    title: String(result),
+                });
                 return;
             }
 
-            postCommentM.loaderUI.classList.toggle('active');
-            requestAnimationFrame(() => {
-                requestAnimationFrame(() => {
-                    setTimeout(() => {
-                        window.location.replace("/member");
-                    }, 500);
-                });
+            Swal.close();
+            explainToast.fire({
+                icon: "success",
+                title: "成功建立貼文!",
             });
+
+            setTimeout(() => {
+                postCommentM.loaderUI.classList.toggle('active');
+                requestAnimationFrame(() => {
+                    requestAnimationFrame(() => {
+                        setTimeout(() => {
+                            window.location.replace("/");
+                        }, 500);
+                    });
+                });
+            }, 1500)
+            
             
         });
     }

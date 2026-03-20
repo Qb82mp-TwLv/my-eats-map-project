@@ -221,3 +221,4 @@ docker-compose.yaml
 .gitignore
 .dockerignore
 nginx/
+certs/

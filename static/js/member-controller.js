@@ -17,21 +17,21 @@ async function verify_user_token() {
             requestAnimationFrame(() => {
                 requestAnimationFrame(() => {
                     setTimeout(() => {
-                        window.location.replace("/login");
+                        window.location.replace("/");
                     }, 300);
                     
                 });
             });
         }
 
-        set_member_info(dt.data);
         userId = dt.data.id;
+        set_member_info(dt.data);
     }catch(error){
         loaderUI.classList.toggle('active');
         requestAnimationFrame(() => (
             requestAnimationFrame(()=> {
                 setTimeout(() => {
-                    window.location.replace("/login");
+                    window.location.replace("/");
                 }, 300);
             })
         ));
@@ -59,6 +59,7 @@ async function set_member_info(dt) {
     memberPostAndCollectSwitchButton(dt.id);
     setChangeImg(dt.id);
     headshotUpdate(dt.headshot);
+    fansOptionItem(dt.id);
 
     const postsData = await memberM.getAllPosts(dt.id);
     memberV.genPostsInMember(postsData);
@@ -171,7 +172,7 @@ if (homePage){
     });
 }
 
-
+let postImageArr = null;
 async function postEachOneClick() {
     const postImgBtn = document.querySelectorAll(".post-img");
     let i = 0;
@@ -183,6 +184,8 @@ async function postEachOneClick() {
 
                 const likeCountNum = document.querySelector(".like-count");
                 const collectCountNum = document.querySelector(".collect-count");
+                const askEditBtn = document.getElementById("post-edit");
+                const askDeleteBtn = document.querySelector(".ask-delete-btn");
 
                 const postId = postB.dataset.postId;
                 const postData = await memberM.getPostContent(postId, userId);
@@ -190,7 +193,25 @@ async function postEachOneClick() {
                     memberV.modifyPostInfoInDialog(postData);
                     likeCountNum.dataset.postId=postId;
                     collectCountNum.dataset.postId = postId;
+                    askEditBtn.dataset.postId = postId;
+                    askDeleteBtn.dataset.postId = postId;
+                    // 處理圖片的名稱
+                    const imgNameArr = [];
+                    postData.img.forEach((item, idx) => {
+                        const splitItem = item.split("/");
+                        imgNameArr.push(splitItem[3]);
+                    });
+                    postImageArr = imgNameArr;
+
+                    const postSetting = document.querySelector(".post-option-container");
+                    if (userId===postData.user_id){                   
+                        postSetting.style.display="flex";
+                    }else{
+                        postSetting.style.display="none";
+                    }
+                    memberV.viewSlideOrNot(imgNameArr.length);
                 }
+                setSlideBtn();
             });
         };
 
@@ -308,6 +329,207 @@ async function singlePostLikeAndFavoriteBtn(id) {
         });
     };
 }
+
+const postOptionCTNBtn = document.querySelector(".post-option-container");
+if (postOptionCTNBtn){
+    postOptionCTNBtn.addEventListener("click", () => {
+        memberM.postOptionClick();
+    });
+
+    document.addEventListener("click", (e) => {
+        if (!postOptionCTNBtn.contains(e.target)){
+            memberM.postOptionHidden();
+        }
+    });
+}
+
+
+// 編輯貼文的按鈕
+const postEditBtn = document.getElementById("post-edit");
+if (postEditBtn){
+    postEditBtn.addEventListener("click", function() {
+        const postId = postEditBtn.dataset.postId;
+        memberM.closePostDialog();
+        loaderUI.classList.toggle('active');
+        requestAnimationFrame(() => (
+            requestAnimationFrame(()=> {
+                setTimeout(() => {
+                    window.location.replace(`/editpost?post_id=${postId}`);
+                }, 300);
+            })
+        ));
+    });
+}
+
+// 刪除貼文的按鈕
+const postDelBtn = document.getElementById("post-delete");
+if (postDelBtn){
+    postDelBtn.addEventListener("click", function() {
+        memberM.openAskDialog();
+    });
+};
+
+const postAskDeleteBtn = document.querySelector(".ask-delete-btn");
+if (postAskDeleteBtn){
+    postAskDeleteBtn.addEventListener("click", async function() {
+        // 取得發文的ID
+        const postId = postAskDeleteBtn.dataset.postId;
+        
+        const explainToast = Swal.mixin({
+            toast: true,
+            position: 'center',
+            showConfirmButton: false,
+            timer: 3000,
+        });
+
+        memberM.closeAskDialog();
+        memberM.closePostDialog();
+        const result = await memberM.askDelPost(postId, userId, postImageArr);
+        if (result === null){
+            explainToast.fire({
+                icon: "error",
+                title: "貼文刪除失敗",
+                text: "請稍後再進行刪除，謝謝您的配合。",
+            });
+            return;
+        }
+
+        explainToast.fire({
+            icon: "success",
+            title: "貼文刪除成功",
+            text: "成功將此貼文刪除了!",
+        });
+        setTimeout(() => {
+            location.reload();
+        }, 3100);
+    });
+};
+
+const postAskCancelBtn = document.querySelector(".ask-cancel-btn");
+if (postAskCancelBtn){
+    postAskCancelBtn.addEventListener("click", function() {
+        memberM.closeAskDialog();
+    });
+};
+
+async function memberCenter() {
+    loaderUI.classList.toggle(`active`);
+    requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+            setTimeout(() => {
+                window.location.replace(`/member`);
+            }, 300);
+           
+        });
+    });
+}
+
+// 粉絲資訊顯示下拉式
+const fansInfoBtn = document.querySelector(".fans-info-select");
+if (fansInfoBtn){
+    fansInfoBtn.addEventListener("click", async function() {
+        memberM.viewFansInfo();
+    });
+}
+
+document.addEventListener("click", (e) => {
+    if (!fansInfoBtn.contains(e.target)){
+        memberM.droplistOptionHidden();
+    }
+}); 
+
+// 點擊貼文大頭照，可以進到會員中心
+async function otherMemberCenter(id) {
+    loaderUI.classList.toggle(`active`);
+    requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+            setTimeout(() => {
+                window.location.replace(`/othermember?memb_id=${id}`);
+            }, 300);
+           
+        });
+    });
+}
+
+function postHeadshotClcik(fansHeadshotTag) {
+    fansHeadshotTag.addEventListener("click", async function() {
+        if (parseInt(fansHeadshotTag.dataset.userNum) === userId){
+            memberCenter();
+        }else{
+            otherMemberCenter(fansHeadshotTag.dataset.userNum);
+        } 
+    });
+}
+
+async function postFollowBtn(followBtnObj) {
+    if (followBtnObj){
+        followBtnObj.addEventListener("click", async function() {
+            const result = await memberM.setPostFollowBtn(followBtnObj, userId);
+            if (result){
+                setTrackerNumber(userId);
+            }
+        });
+    }
+}
+
+function genFansOption(dt) {
+    const fansInfoOption = document.querySelector(".fans-info-option");
+    if (fansInfoOption){
+        // 清除原本的資料
+        fansInfoOption.textContent= "";
+
+        for(let i=0; i<dt.length; i++){
+            const fansOptionTag = document.createElement("li");
+            fansOptionTag.classList.add("fans-option");
+
+            const fansHeadshotTag = document.createElement("img");
+            fansHeadshotTag.classList.add("fans-headshot");
+            if (dt[i].headshot === null){
+                fansHeadshotTag.src= "/static/img/user.png";
+            }else{
+                fansHeadshotTag.src = String(dt[i].headshot);
+            }
+            
+            fansHeadshotTag.dataset.userNum = String(dt[i].id);
+            postHeadshotClcik(fansHeadshotTag);
+            const fansNameTag = document.createElement("div");
+            fansNameTag.classList.add("fans-name");
+            fansNameTag.textContent =  String(dt[i].name);
+
+            fansOptionTag.appendChild(fansHeadshotTag);
+            fansOptionTag.appendChild(fansNameTag);
+
+            // 追蹤的按鈕
+            const followBtnTag = document.createElement("button");
+            followBtnTag.type="button";
+            if (dt[i].id !== userId){
+                followBtnTag.classList.add("follow-btn");
+                followBtnTag.dataset.userId=String(dt[i].id);
+                followBtnTag.dataset.follow=String(dt[i].follow);
+                if (String(dt[i].follow) === "no"){
+                    followBtnTag.textContent="追蹤";
+                }else{
+                    followBtnTag.textContent="取消追蹤";
+                }
+                fansOptionTag.appendChild(followBtnTag);
+                postFollowBtn(followBtnTag);
+            }
+
+            fansInfoOption.appendChild(fansOptionTag);
+
+        }
+    }
+}
+
+// 取的粉絲資料，並將資料建置於下拉式中
+async function fansOptionItem(id) {
+    // 先取得粉絲的資訊
+    const fansInfo = await memberM.getFansInfo(id, userId);
+    if (fansInfo !== null){
+        genFansOption(fansInfo);
+    }
+}
+
 
 verify_user_token();
 setSlideBtn();

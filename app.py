@@ -17,7 +17,7 @@ app.mount("/static", StaticFiles(directory="static"), name="static")
 
 # 避免其他人直接偷換殼
 app.add_middleware(CORSMiddleware,
-                   allow_origins=["(使用的網域位置)"],
+                   allow_origins=[("網址位置")],
                    allow_credentials=True,
                    allow_methods=[
                        "GET",
@@ -27,13 +27,17 @@ app.add_middleware(CORSMiddleware,
                    ],
                    allow_headers=["Authorization", "Content-Type"])
 
-@app.get("/eatsmap", include_in_schema=False)
+@app.get("/", include_in_schema=False)
 async def index(request: Request):
     return FileResponse("./static/index.html", media_type="text/html")
 
 @app.get("/member", include_in_schema=False)
 async def member_center(request: Request):
     return FileResponse("./static/member.html", media_type="text/html")
+
+@app.get("/othermember", include_in_schema=False)
+async def other_member_center(request: Request):
+    return FileResponse("./static/othermember.html", media_type="text/html")
 
 @app.get("/setting", include_in_schema=False)
 async def member_setting(request: Request):
@@ -43,9 +47,9 @@ async def member_setting(request: Request):
 async def post_comment(request: Request):
     return FileResponse("./static/postcomment.html", media_type="text/html")
 
-@app.get("/login", include_in_schema=False)
-async def login_ui(request: Request):
-    return FileResponse("./static/login.html", media_type="text/html")
+@app.get("/editpost", include_in_schema=False)
+async def edit_post(post_id: int, request: Request):
+    return FileResponse("./static/editpost.html", media_type="text/html")
 
 @app.get("/api/mapvalue")
 async def map_value():

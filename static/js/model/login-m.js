@@ -1,5 +1,9 @@
 class loginModel {
     constructor() {
+        //登入與註冊的切換按鈕
+        this.signInBtn = document.querySelector(".signin-top-btn");
+        this.logInBtn = document.querySelector(".login-top-btn");
+
         this.loginUIObj = document.getElementById("login-block");
         this.siginUIObj = document.getElementById("signin-block"); 
         // 登入使用的輸入
@@ -22,6 +26,11 @@ class loginModel {
         this.loginUIObj.className = "login-second-hidden";
         this.siginUIObj.className = "sign-second-container";
         this.errorLoginTextHidden();
+        // 按鈕切換
+        if (!this.signInBtn.classList.contains('active')){
+            this.signInBtn.classList.toggle('active');
+            this.logInBtn.classList.remove('active');
+        }
     }
 
     async switchToLoginin() {
@@ -29,6 +38,11 @@ class loginModel {
         this.loginUIObj.className = "login-second-container";
         this.siginUIObj.className = "sign-second-hidden";
         this.errorSigninTextHidden();
+        // 按鈕切換
+        if (!this.logInBtn.classList.contains('active')){
+            this.logInBtn.classList.toggle('active');
+            this.signInBtn.classList.remove('active');
+        }
     }
 
     async errorLoginTextView(text) {
@@ -76,16 +90,8 @@ class loginModel {
                     if (!response.ok || data.error !== undefined){
                         this.errorLoginTextView("電子信箱或密碼有錯誤");
                     }else{
-                        //localStorage.setItem("token", data.token);
                         this.errorLoginTextHidden();
-                        this.loaderUI.classList.toggle(`active`);
-                        requestAnimationFrame(() => {
-                            requestAnimationFrame(() => {
-                                 setTimeout(() => {
-                                    window.location.replace("/eatsmap");
-                                }, 300);
-                            });
-                        }); 
+                        location.reload();
                     }
                 }catch(error){
                     this.errorLoginTextView("電子信箱或密碼有錯誤");
@@ -157,7 +163,7 @@ class loginModel {
                         this.signinName.value="";
                         this.signinEmail.value="";
                         this.signinPw.value="";
-                        this.signinNickname="";
+                        this.signinNickname.value="";
                         this.errorSigninTextView("註冊成功，現在可以登入了");
                     }else{
                         this.errorSigninTextView("電子信箱重複註冊，或發生其他錯誤");

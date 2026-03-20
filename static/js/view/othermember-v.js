@@ -1,4 +1,4 @@
-class memberView {
+class othermemberView {
     constructor() {
         this.postsCTN = document.getElementById("post-eachone-container");
         this.collectCTN = document.getElementById("collect-eachone-container");
@@ -156,7 +156,7 @@ class memberView {
         });
 
         this.setLoveBtnAndCollectBtn(dt.liked, dt.collected);
-    }
+    };
 
     async setLoveBtnAndCollectBtn(liked, collected) {
         if (liked === "yes"){
@@ -185,5 +185,7 @@ class memberView {
     }
 }
 
-const memberV = new memberView();
-export default memberV;
+
+
+const othermemberV = new othermemberView();
+export default othermemberV;

@@ -1,14 +1,11 @@
 from fastapi import *
 from fastapi.responses import JSONResponse
-from fastapi.security import OAuth2PasswordBearer
-from typing import Optional
 from dbusing import db
-from view.indexV import country_info, city_info, types_info, posts_marker_info, marker_posts_data, follow_user_info
+from view.indexV import country_info, city_info, types_info, posts_marker_info, marker_posts_data, marker_posts_data_visitor, follow_user_info
 from model.user_validation import jwtDecode
 from decimal import Decimal
 
 router = APIRouter()
-oauth2 = OAuth2PasswordBearer(tokenUrl="token", auto_error=False)
 
 @router.get("/api/countryname")
 async def get_country_name():
@@ -39,21 +36,43 @@ async def get_city_name(country: str = None, city: str = None):
     return JSONResponse({"error": "根據執行結果發生錯誤。"})
 
 @router.get("/api/search/post")
-async def search_post_info(country: str, city: str, types: str, keyword:str = None, session_token: str=Cookie(None)):
+async def search_post_info(country: str, city: str, types: str, lat: Decimal, lon: Decimal, keyword:str = None, km:int=1, session_token: str=Cookie(None)):
     if session_token != None:
         confirm_token = jwtDecode(session_token)
         if isinstance(confirm_token, dict):
             city_list = city.split(",")
-            get_dt = await db.get_posts_info(country, city_list, types, keyword)
+            get_dt = await db.get_posts_info(country, city_list, types, keyword, lat, lon, km)
             if get_dt != False:
                 dt_json = posts_marker_info(get_dt)
                 return JSONResponse(dt_json)
+    else:
+        city_list = city.split(",")
+        get_dt = await db.get_posts_info(country, city_list, types, keyword, lat, lon, km)
+        if get_dt != False:
+            dt_json = posts_marker_info(get_dt)
+            return JSONResponse(dt_json)
 
     return JSONResponse({"error": "取貼文資料發生錯誤。"})
 
+@router.get("/api/search/locate/post")
+async def search_locate_post_info(lat: Decimal, lon: Decimal, types: str, keyword:str = None, km:int=1, session_token: str=Cookie(None)):
+    if session_token != None:
+        confirm_token = jwtDecode(session_token)
+        if isinstance(confirm_token, dict):
+            get_dt = await db.get_locate_posts_info(lat, lon, types, keyword, km)
+            if get_dt != False:
+                dt_json = posts_marker_info(get_dt)
+                return JSONResponse(dt_json)
+    else:
+        get_dt = await db.get_locate_posts_info(lat, lon, types, keyword, km)
+        if get_dt != False:
+            dt_json = posts_marker_info(get_dt)
+            return JSONResponse(dt_json)
+
+    return JSONResponse({"error": "取定位相關的貼文資料發生錯誤。"})
 
 @router.get("/api/marker/posts")
-async def get_marker_posts(user_id: str, lat: Decimal, lon: Decimal, session_token: str=Cookie(None)):
+async def get_marker_posts(lat: Decimal, lon: Decimal, user_id: str=None, session_token: str=Cookie(None)):
     if session_token != None:
         confirm_token = jwtDecode(session_token)
         if isinstance(confirm_token, dict):
@@ -61,21 +80,39 @@ async def get_marker_posts(user_id: str, lat: Decimal, lon: Decimal, session_tok
             if get_dt != False:
                 dt_json = marker_posts_data(get_dt)
                 return JSONResponse(dt_json)
+    else:
+        get_dt = await db.marker_post_info_visitor(lat, lon)
+        if get_dt != False:
+            dt_json = marker_posts_data_visitor(get_dt)
+            return JSONResponse(dt_json)
 
     return JSONResponse({"error": "取標記圖示的貼文資料發生錯誤。"})
 
 @router.get("/api/search/own/post")
-async def search_own_posts(country: str, city: str, types: str, user_id: int, search: str, session_token: str=Cookie(None)):
+async def search_own_posts(country: str, city: str, types: str, lat: Decimal, lon: Decimal, user_id: int, search: str, km:int=1, session_token: str=Cookie(None)):
     if session_token != None:
         confirm_token = jwtDecode(session_token)
         if isinstance(confirm_token, dict):
             city_list = city.split(",")
-            get_dt = await db.get_own_posts_info(country, city_list, types, user_id, search)
+            get_dt = await db.get_own_posts_info(country, city_list, types, lat, lon, user_id, search, km)
             if get_dt != False:
                 dt_json = posts_marker_info(get_dt)
                 return JSONResponse(dt_json)
 
     return JSONResponse({"error": "取貼文資料發生錯誤。"})
+
+@router.get("/api/search/locate/own/post")
+async def search_locate_own_posts(lat: Decimal, lon: Decimal, types: str, user_id: int, search: str, km:int=1, session_token: str=Cookie(None)):
+    if session_token != None:
+        confirm_token = jwtDecode(session_token)
+        if isinstance(confirm_token, dict):
+            get_dt = await db.get_own_locate_posts_info(lat, lon, types, user_id, search, km)
+            if get_dt != False:
+                dt_json = posts_marker_info(get_dt)
+                return JSONResponse(dt_json)
+
+    return JSONResponse({"error": "取定位的貼文資料發生錯誤。"})
+
 
 @router.get("/api/user/followmember")
 async def get_user_follow(user_id: str, session_token: str=Cookie(None)):

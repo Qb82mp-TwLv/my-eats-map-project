@@ -24,7 +24,7 @@ class memberSettingModel {
         requestAnimationFrame(() => {
             requestAnimationFrame(() => {
                 setTimeout(() => {
-                    window.location.replace("/eatsmap");
+                    window.location.replace("/");
                 }, 300);
                 
             });
@@ -38,15 +38,22 @@ class memberSettingModel {
             credentials: "include",
         });
 
-        sessionStorage.clear();
-        requestAnimationFrame(() => {
+        const dt = await response.json();
+        if (dt.logOut === true){
+            sessionStorage.clear();
+            // 清除
+            document.cookie = "my_eatweb_isLogged_here=; max-age=0; path=/;";
+            
             requestAnimationFrame(() => {
-                setTimeout(() => {
-                    window.location.replace("/login");
-                }, 300);
-                
+                requestAnimationFrame(() => {
+                    setTimeout(() => {
+                        window.location.replace("/");
+                    }, 300);
+                    
+                });
             });
-        });
+        }
+        
     }
 
     async updateMemberInfo(id) {
