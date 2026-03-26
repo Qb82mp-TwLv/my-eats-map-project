@@ -214,6 +214,14 @@ body{
     display: grid;
 }
 
+.people-info-container{
+    display: grid;
+    grid-template-columns: 2fr 200px;
+    grid-template-rows: 1fr;
+    gap: 5px;
+    align-items: center;
+}
+
 .people-number-container{
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -248,6 +256,137 @@ body{
     font-size: 30px;
     color: #000;
     text-align: center;
+}
+
+.fans-info-types{
+    width: 100%;
+    height: 100%;
+    border: var(--search-border);
+    border-radius: var(--search-border-radius);
+    box-sizing: border-box;
+
+    display: grid;
+    grid-template-columns: 1fr;
+    grid-template-rows: 1fr;
+    align-items: center;
+
+    position: relative;
+}
+
+/* 粉絲資訊的下拉式 */
+.fans-info-select{
+    all:unset;
+    width: 100%;
+    height: 100%;
+    box-sizing: border-box;
+    font-size: 20px;
+    font-family: "Taipei Sans TC", "Zen Maru Gothic";
+    line-height: 32px;
+    text-align: center;
+    cursor: pointer;
+}
+
+.fans-info-droplist{
+    width: 100%;
+    position: absolute;
+    top: 90px;
+    display: none;
+}
+
+/* 下拉式動作 */
+.fans-info-droplist.active{
+    display: block;
+}
+
+.fans-info-droplist.invisible{
+    display: none;
+}
+
+.fans-info-option{
+    list-style: none;
+    width: 100%;
+    height: auto;
+    min-height: 5px;
+    max-height: 190px;
+    display: grid;
+    grid-template-columns: 1fr;
+    grid-template-rows: repeat(auto-fit, minmax(35px, 1fr));
+    background-color: var(--bg-color);
+    border-radius: 7px;
+
+    text-align: center;
+    align-items: center;
+    margin-top: 3px;
+
+    box-shadow: 0 0 3px 2px rgba(0, 0, 0, 0.3);
+    overflow-y: auto;
+
+    &::-webkit-scrollbar{
+        width: 6px;
+        border-radius: var(--search-border-radius);
+        background-color: #cfcdcd;
+    }
+
+    &::-webkit-scrollbar-thumb{
+        background: #9b9a9a;
+        border-radius: 10px;
+    }
+}
+
+.fans-option{
+    height: 35px;
+    font-size: 16px;
+    font-weight: 450;
+    font-family: "Taipei Sans TC", "Zen Maru Gothic";
+    align-items: center;
+    line-height: 35px;
+    align-content: start;
+
+    display: flex;
+    gap: 5px;
+
+    overflow: hidden;
+}
+
+.fans-headshot{
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    margin-left: 10px;
+    cursor: pointer;
+}
+
+.fans-name{
+    width: 100%;
+    height: 100%;
+    font-size: 16px;
+    font-family: "Taipei Sans TC", "Zen Maru Gothic";
+    text-align: left;
+    padding-left: 5px;
+    box-sizing: border-box;
+}
+
+.fans-option:hover{
+    background-color: var(--search-bar-option-hover);
+    border-radius: 5px;
+}
+
+.follow-btn{
+    all: unset;
+    width: 100%;
+    height: 28px;
+    border: var(--search-border);
+    border-radius: var(--search-border-radius);
+
+    font-size: 16px;
+    font-weight: 500;
+    line-height: 20px;
+    text-align: center;
+    font-family: 'Taipei Sans TC', 'Noto Sans TC';
+
+    margin-right: 5px;
+    box-sizing: border-box;
+    cursor: pointer;
 }
 
 .member-two{
@@ -315,16 +454,14 @@ body{
 .posts-content-container{
     width: 100%;
     min-height: 100%;
-    border: var(--search-border);
     box-sizing: border-box;
-    border-radius: var(--search-border-radius);
 
     display: grid;
-    grid-template-columns: repeat(auto-fill, 100px);
-    grid-template-rows: repeat(auto-fit, 100px);
-    gap: 10px;
+    grid-template-columns: repeat(auto-fit, 111px);
+    grid-template-rows: repeat(auto-fit, 111px);
+    gap: 7.5px;
 
-    justify-content: center;
+    justify-content: start;
 }
 
 .collect-content-hidden{
@@ -334,30 +471,14 @@ body{
 .collect-content-container{
     width: 100%;
     min-height: 100%;
-    border: var(--search-border);
     box-sizing: border-box;
-    border-radius: var(--search-border-radius);
 
     display: grid;
-    grid-template-columns: repeat(auto-fill, 100px);
-    grid-template-rows: repeat(auto-fit, 100px);
-    gap: 10px;
+    grid-template-columns: repeat(auto-fit, 111px);
+    grid-template-rows: repeat(auto-fit, 111px);
+    gap: 7.5px;
 
-    justify-content: center;
-}
-
-.post-add{
-    all: unset;
-    border-radius: var(--search-border-radius);
-    overflow: hidden;
-    cursor: pointer;
-    box-sizing: border-box;
-}
-
-.post-add img{
-    width: 100px;
-    height: 100px;
-    object-fit: cover;
+    justify-content: start;
 }
 
 .post-img{
@@ -370,8 +491,8 @@ body{
 }
 
 .post-img img{
-    width: 100px;
-    height: 100px;
+    width: 111px;
+    height: 111px;
     object-fit: cover;
 }
 
@@ -382,6 +503,65 @@ body{
     background-color: var(--footer-color);
     text-align: center;
     line-height: 100px;
+}
+
+.post-droplist{
+    width: 80px;
+    position: absolute;
+    top: 80px;
+    right: 10px;
+    cursor: pointer;
+
+    display: none;
+}
+
+.post-droplist.active{
+    display: block;
+}
+
+.post-droplist.invisible{
+    display: none;
+}
+
+.post-option{
+    width: 100%;
+    height: 70px;
+    display: grid;
+    grid-template-columns: 1fr;
+    grid-template-rows: repeat(auto-fit, minmax(35px, 1fr));
+    background-color: var(--bg-color);
+    border-radius: 7px;
+    list-style: none;
+}
+
+.option{
+    width: 100%;
+    height: 35px;
+    font-size: 16px;
+    font-weight: 450;
+    font-family: "Taipei Sans TC", "Zen Maru Gothic";
+    line-height: 35px;
+    cursor: pointer;
+    display: flex;
+    justify-self: center;
+    align-items: center;
+    gap: 5px;
+
+    overflow: hidden;
+}
+
+.option:hover{
+    background-color: var(--search-bar-option-hover);
+    border-radius: 5px;
+}
+
+.option img{
+    width: 16px;
+    height: 16px;
+    object-fit: cover;
+
+    margin-left: 8px;
+    box-sizing: border-box;
 }
 
 @media (1200px < width <= 1920px) {
@@ -401,6 +581,10 @@ body{
 
     .member-info{
         width: 100%;
+    }
+
+    .post-droplist{
+        top: 485px;
     }
 }
 
@@ -424,6 +608,15 @@ body{
     .headshot-img img{
         width: 80%;
         height: 100%;
+    }
+
+    .post-droplist{
+        top: 385px;
+    }
+
+    .people-info-container{
+        grid-template-columns: 1fr;
+        grid-template-rows: 1fr 1fr;
     }
 }
 

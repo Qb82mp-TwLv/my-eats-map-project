@@ -34,7 +34,7 @@ body{
     position: relative;
 }
 
-.web-view-container, .map-outside-container, .search-bar{
+.web-view-container, .map-outside-container, .search-bar, .create-posts-btn, .loggin-btn-container{
     display: grid;
     grid-template-columns: 1fr;
     grid-template-rows: 1fr;
@@ -51,7 +51,7 @@ body{
 
 /* 搜尋框設計 */
 .search-bar{
-    height: 190px;
+    height: 260px; /* 220px */
     background-color: var(--bg-color);
     border: var(--search-border);
     border-radius: var(--search-border-radius);
@@ -66,7 +66,7 @@ body{
     max-height: 95%;
     display: grid;
     grid-template-columns: 1fr;
-    grid-template-rows: repeat(4, minmax(35px, max-content));
+    grid-template-rows: repeat(5, minmax(35px, max-content));
     gap: 5px;
     box-sizing: border-box;
 }
@@ -122,10 +122,39 @@ body{
 .position-item{
     width: 100%;
     display: grid;
-    grid-template-columns: 1fr 1fr 1fr;
+    grid-template-columns: 2fr 1fr;
     grid-template-rows: 1fr;
     gap: 5px;
 }
+
+.location-container{
+    width: 100%;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: 1fr;
+    gap: 5px;
+
+    border: var(--search-border);
+    border-radius: var(--search-border-radius);
+}
+
+.location-title, .types-title{
+    font-size: 16px;
+    font-family: "Taipei Sans TC", "Zen Maru Gothic";
+    font-family: 700;
+}
+
+.types-container{
+    width: 100%;
+    display: grid;
+    grid-template-columns: 1fr;
+    grid-template-rows: 1fr;
+    gap: 5px;
+
+    border: var(--search-border);
+    border-radius: var(--search-border-radius);
+}
+
 /* 地區選項 */
 .item-country, .item-city, .item-types{
     border-radius: var(--search-border-radius);
@@ -183,11 +212,11 @@ body{
     list-style: none;
     width: 100%;
     height: auto;
-    min-height: 40px;
-    max-height: 200px;
+    min-height: 70px;
+    max-height: 190px;
     display: grid;
     grid-template-columns: 1fr;
-    grid-template-rows: repeat(auto-fill, minmax(35px, 1fr));
+    grid-template-rows: repeat(auto-fit, minmax(35px, 1fr));
     background-color: var(--bg-color);
     border-radius: 7px;
 
@@ -292,6 +321,76 @@ body{
     object-fit: cover;
 }
 
+/* 搜尋距離的CSS設定 */
+.search-btn-distance{
+    display: flex;
+    gap: 5px;
+    box-sizing: border-box;
+}
+
+.explain-search-distance{
+    width: 80px;
+    font-size: 16px;
+    font-weight: 450;
+    font-family: "Taipei Sans TC", "Zen Maru Gothic";
+    text-align: center;
+    line-height: 35px;
+}
+
+.btn-dis-onekm, .btn-dis-thrkm, .btn-dis-fivekm{
+    all: unset;
+    width: 65px;
+    height: 95%;
+    border: var(--search-border);
+    border-radius: var(--search-border-radius);
+
+    font-size: 16px;
+    font-weight: 450;
+    font-family: "Taipei Sans TC", "Zen Maru Gothic";
+    text-align: center;
+
+    cursor: pointer;
+}
+
+.btn-dis-onekm.active{
+    background-color: var(--user-info-btn-bg-color);
+    color: #fff;
+    font-weight: 600;
+}
+
+.btn-dis-onekm.invisible{
+    background-color: var(--bg-color);
+    color: #000;
+}
+
+.btn-dis-thrkm.active{
+    background-color: var(--user-info-btn-bg-color);
+    color: #fff;
+    font-weight: 600;
+}
+
+.btn-dis-thrkm.invisible{
+    background-color: var(--bg-color);
+    color: #000;
+}
+
+.btn-dis-fivekm.active{
+    background-color: var(--user-info-btn-bg-color);
+    color: #fff;
+    font-weight: 600;
+}
+
+.btn-dis-fivekm.invisible{
+    background-color: var(--bg-color);
+    color: #000;
+}
+
+.btn-dis-onekm:hover ,.btn-dis-thrkm:hover, .btn-dis-fivekm:hover{
+    background-color: var(--user-info-btn-bg-color);
+    color: #fff;
+    font-weight: 600;
+}
+
 .search-btn-item{
     display: flex;
     box-sizing: border-box;
@@ -341,17 +440,6 @@ body{
     color: #000;
 }
 
-/* .btn-tracker.active{
-    background-color: var(--user-info-btn-bg-color);
-    color: #fff;
-    font-weight: 600;
-}
-
-.btn-tracker.invisible{
-    background-color: var(--bg-color);
-    color: #000;
-} */
-
 .btn-collect.active{
     background-color: var(--user-info-btn-bg-color);
     color: #fff;
@@ -368,6 +456,9 @@ body{
     position: absolute;
     cursor: pointer;
     display: none;
+
+    margin-top: 140px;
+    box-sizing: border-box;
 }
 
 /* 店家種類選項的下拉式動作 */
@@ -384,13 +475,12 @@ body{
     height: 100px;
     display: grid;
     grid-template-columns: 1fr;
-    grid-template-rows: repeat(auto-fill, minmax(35px, 1fr));
+    grid-template-rows: repeat(auto-fit, 35px);
     background-color: var(--bg-color);
     border-radius: 7px;
 
     text-align: center;
     align-items: center;
-    margin-top: 140px;
 
     /* 陰影 */
     box-shadow: 0 0 3px 2px rgba(0, 0, 0, 0.3);
@@ -408,22 +498,6 @@ body{
     }
 }
 
-/* .option{
-    height: 35px;
-    font-size: 16px;
-    font-weight: 500;
-    align-items: center;
-    line-height: 35px;
-    cursor: pointer;
-}
-
-.option:hover{
-    background-color: var(--user-info-btn-bg-color);
-    color: #fff;
-    font-weight: 600;
-    border-radius: 5px;
-} */
-
 .marker-btn{
     appearance:none;
     width: 52px;
@@ -436,6 +510,262 @@ body{
     z-index: 5;
 }
 
+.create-posts-btn{
+    height: 50px;
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    z-index: 5;
+}
+
+.loggin-btn-container{
+    width: 80px;
+    height: 40px;
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    z-index: 5;
+}
+
+.post-add{
+    all: unset;
+    height: 100%;
+    border-radius: 14px;
+    overflow: hidden;
+    cursor: pointer;
+    box-sizing: border-box;
+    background-color: #fff;
+    
+}
+
+.post-add img{
+    width: 50px;
+    height: 50px;
+    object-fit: cover;
+}
+
+.log-in-btn{
+    all: unset;
+    width: 100%;
+    height: 100%;
+    border-radius: 14px;
+    font-size: 18px;
+    font-weight: 600;
+    font-family: "Taipei Sans TC", "Zen Maru Gothic";
+    color: #fff;
+    text-align: center;
+    line-height: 40px;
+    cursor: pointer;
+    box-sizing: border-box;
+    background-color: #000;
+}
+
+/* 登入註冊視窗的CSS設定 */
+.view-login-dialog{
+    width: 350px;
+    height: 460px;
+    border-radius: 5px;
+    background-color:rgba(255, 255, 255, 0.7);
+    margin: auto;
+    border: none;
+    outline: none;
+}
+
+.bg-color{
+    width: 350px;
+    height: 460px;
+    background-color:rgba(255, 255, 255, 0.7);
+    border-radius: var(--search-border-radius);
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    margin: auto;
+    z-index: 1;
+}
+
+.login-input-container{
+    width: 350px;
+    height: 100%; 
+
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: 30px 40px 1fr;
+    gap: 20px;
+
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    margin: auto;
+    z-index: 5;
+}
+
+.close-log-sign-btn{
+    width: 100%;
+    height: 100%;
+    display: flex;
+    padding-right: 10px;
+    justify-content: end;
+    align-items: center;
+    overflow: hidden;
+}
+
+.close-img-btn{
+    width: 15px;
+    height: 15px;
+    object-fit: cover;
+    cursor: pointer;
+}
+
+.login-first-container{
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content:flex-end;
+}
+
+.signin-top-btn{
+    all: unset;
+    width: 100%;
+    height: 100%;
+    border-radius: 5px  0 0 0;
+    font-size: 18px;
+    font-weight: 450;
+    font-family: "Taipei Sans TC", "Zen Maru Gothic";
+    text-align: center;
+    cursor: pointer;
+}
+
+.signin-top-btn:hover{
+    border-bottom: 2px solid black;
+    font-weight: 600;
+}
+
+.signin-top-btn.active{
+    border-bottom: 2px solid black;
+    font-weight: 600;
+}
+
+.signin-top-btn.invisible{
+    border-bottom: 0px;
+    font-weight: 450;
+}
+
+.login-top-btn{
+    all: unset;
+    width: 100%;
+    height: 100%;
+    border-radius: 0 5px 0 0;
+    font-size: 18px;
+    font-weight: 450;
+    font-family: "Taipei Sans TC", "Zen Maru Gothic";
+    text-align: center;
+    cursor: pointer;
+}
+
+.login-top-btn:hover{
+    border-bottom: 2px solid black;
+    font-weight: 600;
+}
+
+.login-top-btn.active{
+    border-bottom: 2px solid black;
+    font-weight: 600;
+}
+
+.login-top-btn.invisible{
+    border-bottom: 0px;
+    font-weight: 450;
+}
+
+.login-second-container{
+    width: 100%;
+    height: 100%;
+    display: grid;
+    grid-template-columns: 1fr;
+    grid-template-rows: repeat(auto-fill, 40px);
+    justify-items: center;
+    gap: 10px;
+
+    position: relative;
+}
+
+.login-second-hidden{
+    display: none;
+}
+
+.sign-second-hidden{
+    display: none;
+}
+
+.sign-second-container{
+    width: 100%;
+    height: 100%;
+    display: grid;
+    grid-template-columns: 1fr;
+    grid-template-rows: repeat(auto-fill, 40px);
+    justify-items: center;
+    gap: 10px;
+
+    position: relative;
+}
+
+.login-title, .signin-title{
+    width: 100%;
+    height: 100%;
+    font-size: 30px;
+    font-weight: bold;
+    font-family: "Kaushan Script", "Zen Maru Gothic";
+    text-align: center;
+    line-height: 30px;
+}
+
+.login-email, .login-pw, 
+.signin-email, .signin-pw, .signin-name, .signin-nickname{
+    all: unset;
+    width: 90%;
+    height: 35px;
+    border: 1px solid #000;
+    border-radius: 5px;
+
+    padding-left: 10px;
+    box-sizing: border-box;
+
+    font-size: 16px;
+    font-family: "Taipei Sans TC", "Zen Maru Gothic";
+
+
+}
+
+.login-btn, .signin-btn{
+    all: unset;
+    width: 90%;
+    height: 100%;
+    border-radius: 5px;
+    background-color: black;
+    color: #fff;
+
+    font-size: 16px;
+    text-align: center;
+    cursor: pointer;
+}
+
+.error-login-text, .error-signin-text{
+    width: 100%;
+    height: 100%;
+    font-size: 16px;
+    font-weight: 600;
+    font-family: "Taipei Sans TC", "Zen Maru Gothic";
+    color: rgb(179, 17, 17);
+
+    text-align: center;
+    display: none;
+}
+
+
 @media (1200px < width <= 1920px) {
     .search-bar{
         width: 600px;
@@ -444,7 +774,7 @@ body{
 
 @media (650px < width < 1200px) {
     .search-bar{
-        width: 600px;
+        width: 500px;
     }
 
     .country-droplist, .city-droplist, .types-droplist{
@@ -459,6 +789,18 @@ body{
 
     .country-droplist, .city-droplist, .types-droplist{
         width: 100%;
+    }
+
+    .create-posts-btn{
+        top: 285px;
+        right: auto;
+        left: 20px;
+    }
+
+    .loggin-btn-container{
+        top: 285px;
+        right: auto;
+        left: 20px;
     }
 }
 

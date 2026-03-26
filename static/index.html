@@ -8,7 +8,9 @@
         <link href="https://fonts.googleapis.com/css2?family=Kaushan+Script&family=Zen+Maru+Gothic&display=swap" rel="stylesheet">
         <link rel="stylesheet" href="/static/css/index.css">
         <link rel="stylesheet" href="/static/css/postsdialog.css">
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
         <script defer type="module" src="/static/js/index-controller.js"></script>
+        <script defer type="module" src="/static/js/login-controller.js"></script>
         <title>My Eats Map</title>
     </head>
     <body>
@@ -28,64 +30,87 @@
                         </button>
                         <div class="user-name">user</div>
                     </div>
+                    
                     <div class="position-item">
-                        <div class="item-country">
-                            <button type="button" class="country-select">選擇地區</button>
-                            <div class="country-droplist">
-                                <ul class="country-option">
-                                    
-                                </ul>
+                        <fieldset class="location-container">
+                            <legend class="location-title">定位</legend>
+                            
+                            <div class="item-country">
+                                <button type="button" class="country-select">選擇地區</button>
+                                <div class="country-droplist">
+                                    <ul class="country-option">
+                                        
+                                    </ul>
+                                </div>
                             </div>
-                        </div>
+                            
+                            <div class="item-city">
+                                <button type="button" class="city-select">選擇城市</button>
+                                <div class="city-droplist">
+                                    <ul class="city-option">
+                                    
+                                    </ul>
+                                </div>
+                            </div>
+                        </fieldset>
                         
-                        <div class="item-city">
-                            <button type="button" class="city-select">選擇城市</button>
-                            <div class="city-droplist">
-                                <ul class="city-option">
+                        <fieldset class="types-container">
+                            <legend class="types-title">餐廳種類</legend>
+                        
+                            <div class="item-types">
+                                <button type="button" class="types-select">全部種類</button>
+                                <div class="types-droplist">
+                                    <ul class="types-option">
+                                        
+                                    </ul>
+                                </div>
+                            </div>
+                        </fieldset>
+                    </div>
+                    <div class="search-input-item">
+                        <div class="input-item-container">
+                            <input class="input-item-keyword" type="text" placeholder="Search(店家名稱)">
+                            <button class="input-item-btn" type="button" title="搜尋">
+                                <img src="/static/img/magnifying-glass.png">
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="search-btn-distance">
+                        <div class="explain-search-distance">搜尋距離：</div>
+                        <button type="button" class="btn-dis-onekm active" title="根據定位搜尋範圍1公里的貼文">1公里</button>
+                        <button type="button" class="btn-dis-thrkm" title="根據定位搜尋範圍5公里的貼文">5公里</button>
+                        <button type="button" class="btn-dis-fivekm" title="根據定位搜尋範圍10公里的貼文">10公里</button>
+                    </div>
+
+                    <div class="search-btn-item">
+                        <button class="btn-own" type="button" title="根據定位搜尋我的發文">我</button>
+
+                        <div class="item-tracker">
+                            <button type="button" class="btn-tracker"  title="根據定位搜尋選擇的追蹤者發文">追蹤者</button>
+                            <div class="tracker-droplist">
+                                <ul class="tracker-option">
                                    
                                 </ul>
                             </div>
                         </div>
 
-                        <div class="item-types">
-                            <button type="button" class="types-select">全部種類</button>
-                            <div class="types-droplist">
-                                <ul class="types-option">
-                                    
-                                </ul>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="search-input-item">
-                        <div class="input-item-container">
-                            <input class="input-item-keyword" type="text" placeholder="Search(店家名稱)">
-                            <button class="input-item-btn" type="button">
-                                <img src="/static/img/magnifying-glass.png">
-                            </button>
-                        </div>
-                    </div>
-                    <div class="search-btn-item">
-                        <button class="btn-own" type="button">我</button>
-
-                        <div class="item-tracker">
-                            <button type="button" class="btn-tracker">追蹤者</button>
-                            <div class="tracker-droplist">
-                                <ul class="tracker-option">
-                                   <!-- <li class="option">haha</li>
-                                    <li class="option">paggy</li>
-                                    <li class="option">IU</li>
-                                    <li class="option">qb</li> -->
-                                </ul>
-                            </div>
-                        </div>
-<!-- 
-                        <button class="btn-tracker" type="button">追蹤者</button> -->
-                        <button class="btn-collect" type="button">收藏</button>
+                        <button class="btn-collect" type="button"  title="根據定位搜尋我收藏的發文">收藏</button>
                     </div>
                 </div>
             </div>
-        </div>
 
+            <div class="create-posts-btn">
+                <button class="post-add" title="新增發文">
+                    <img src="/static/img/additionPosts.png">
+                </button>
+            </div>
+            
+            <div class="loggin-btn-container">
+                <button class="log-in-btn">登入</button>
+            </div>
+        </div>
+        
         <dialog class="view-posts">
             <nav class="nav">
                 <div class="close-btn">
@@ -93,73 +118,41 @@
                 </div>
             </nav>
             <div class="posts-container">
-                <!-- <div class="post-content-container">
-                    <div class="post-content-img">
-                        <div class="content-img-container">
-                            <div class="food-img-info">
-                                <div class="img-info-scroll">
-                                    <div class="imgSlides" id="imgItem">
-                                        <div class="img-container">
-                                            <img src="/static/img/photo.png">
-                                        </div>
-                                    </div>
-                            
-                                    <div class="food-info">
-                                        <div class="food-info-container">
-                                            <div class="img-name">奶油義大利麵佐松露</div>
-                                            <div class="img-price">280元</div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="sildeBtn">
-                                <button type="button" class="leftBtn" id="slideLeft"><img src="/static/img/left-button.png"></button>
-                                <button type="button" class="rightBtn" id="slideRight"><img src="/static/img/right-button.png"></button>
-                            </div>
-                        </div>
-
-                        <div class="post-evaluate-action">
-                            <div class="love-btn">
-                                <img src="/static/img/heart-nocolor.png" data-like="no" id="like-btn">
-                                <div class="like-count">0</div>
-                            </div>
-
-                            <div class="collect-btn">
-                                <img src="/static/img/bookmark-nocolor.png" data-collect="no" id="favorite-btn">
-                                <div class="collect-count">0</div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="post-content-comment">
-                        <div class="user-info">
-                            <div class="user-headshot">
-                                <img src="/static/img/user.png" class="post-user-headshot">
-                            </div>
-                            <div class="user-nickname">user</div>
-                        </div>
-                        <div class="post-comment">
-                            <div class="store-name-add">
-                                <div class="obj-title">店家名稱</div>
-                                <p class="store-name"></p>
-                            </div>
-
-                            <div class="food-experience">
-                                <div class="obj-title">食物體驗</div>
-                                <p class="experience-text"></p>
-                            </div>
-                            
-                            <div class="dining-area">
-                                <div class="obj-title">用餐環境</div>
-                                <p class="area-text"></p>
-                            </div>   
-                        </div>
-                    </div>
-                </div>
-
-                <div class="space"></div> -->
+                
             </div>
 
+        </dialog>
+
+        <dialog class="view-login-dialog">
+            <div class="bg-color"></div>
+            <div class="login-input-container">
+                <div class="close-log-sign-btn">
+                    <img src="/static/img/close.png" class="close-img-btn">
+                </div>
+
+                <div class="login-first-container">
+                    <button type="button" class="signin-top-btn">註冊</button>
+                    <button type="button" class="login-top-btn active">登入</button>
+                </div>
+                
+                <div class="login-second-container" id="login-block">
+                    <div class="login-title">My Eats Map 登入</div>
+                    <input type="email" class="login-email" placeholder="電子信箱" value="">
+                    <input type="password" class="login-pw" placeholder="密碼" value="">
+                    <button type="button" class="login-btn">登入</button>
+                    <div class="error-login-text">電子信箱有錯誤，請確認</div>
+                </div>
+
+                <div class="sign-second-hidden" id="signin-block">
+                    <div class="signin-title">My Eats Map 註冊</div>
+                    <input type="text" class="signin-name" placeholder="姓名">
+                    <input type="email" class="signin-email" placeholder="電子信箱">
+                    <input type="password" class="signin-pw" placeholder="密碼">
+                    <input type="text" class="signin-nickname" placeholder="暱稱">
+                    <button type="button" class="signin-btn">註冊</button>
+                    <div class="error-signin-text"></div>
+                </div>
+            </div>
         </dialog>
     </body>
 </html>

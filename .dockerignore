@@ -136,6 +136,7 @@ celerybeat.pid
 
 # Environments
 .env
+.env.example
 .envrc
 .venv
 env/
@@ -220,3 +221,4 @@ docker-compose.yaml
 .gitignore
 .dockerignore
 nginx/
+certs/

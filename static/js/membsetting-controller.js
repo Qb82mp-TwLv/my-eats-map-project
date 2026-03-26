@@ -5,11 +5,9 @@ import settingV from './view/membersetting-v.js';
 const loaderUI = document.querySelector(".loading-container");
 async function verify_user_token() {
     try{
-        const token = localStorage.getItem("token");
-
         const response = await fetch("/api/user/auth", {
             method: "GET",
-            headers: {"Authorization": `Bearer ${token}`}
+            credentials: "include"
         });
 
         const dt = await response.json();

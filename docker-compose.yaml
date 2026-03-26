@@ -1,6 +1,6 @@
 services:
   web:
-    image: eats-map-web:1.0
+    image: eats-map-web:1.1
     ports:
       - "8000:8000"
     volumes:

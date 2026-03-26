@@ -135,6 +135,64 @@ def marker_posts_data(dt):
     except Exception as e:
         print(e)
         return {"error": "取標記圖示的貼文資料發生錯誤。"}
+    
+def marker_posts_data_visitor(dt):
+    try:
+        load_dotenv()
+        CDN_path = os.getenv("API_AWS_CDN_PATH")
+        url = f"{CDN_path}/"
+
+        dt_json = {
+                "data":[]
+            }
+
+        i = 0
+        for item in dt:
+            info_json = {"post":{},
+                         "user":{}
+                         }
+
+            imgUrl = []
+            for im in item[6].split(","):
+                imgUrl.append(url+im)
+            
+            foodNM = []
+            for name in item[7].split(","):
+                foodNM.append(name)
+
+            foodPrice = []
+            for price in item[8].split(","):
+                foodPrice.append(price)
+
+            # 貼文的資料
+            info_json["post"]["post_id"]=item[0]
+            info_json["post"]["name"]=item[5]
+            info_json["post"]["img"]=imgUrl
+            info_json["post"]["foodname"]=foodNM
+            info_json["post"]["price"]=foodPrice
+            info_json["post"]["comment"]=item[9]
+            info_json["post"]["area"]=item[10]
+            info_json["post"]["co_total"] = item[11]
+            info_json["post"]["lk_total"] = item[12]
+            info_json["post"]["co_click"] = "no"
+            info_json["post"]["lk_click"] = "no"
+            info_json["post"]["follow"] = "no"
+            # 使用者的資料
+            info_json["user"]["user_id"]=item[1]
+            info_json["user"]["name"]=item[2]
+            info_json["user"]["nickname"]=item[3]
+            if (item[4] != None):
+                info_json["user"]["headshot"]=url+item[4]
+            else:
+                info_json["user"]["headshot"]=item[4]
+
+            dt_json["data"].append(info_json)
+            i+= 1
+
+        return dt_json
+    except Exception as e:
+        print(e)
+        return {"error": "取標記圖示的貼文資料發生錯誤。"}
 
 def follow_user_info(dt):
     try:

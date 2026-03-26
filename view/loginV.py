@@ -16,6 +16,7 @@ def login_info(dt):
                 return {"error": True}
             else:
                 _token = {"token": _get_token}
+
                 return _token
         except Exception:
             return {"error": True}

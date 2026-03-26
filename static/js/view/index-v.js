@@ -89,6 +89,12 @@ class indexView {
         const nameText = document.querySelector(".user-name");
         nameText.textContent = String(name);
     };
+
+    // 清除追蹤者列表的資訊
+    clearFollowOptions() {
+        this.followOption.textContent="";
+    };
+
 };
 
 const indexV = new indexView();

@@ -2,15 +2,19 @@ import postCommentM from './model/postcomment-m.js';
 import postCommentV from './view/postcomment-v.js';
 
 
+const explainToast = Swal.mixin({
+    toast: true,
+    position: 'center',
+    showConfirmButton: false,
+    timer: 2500,
+});
 
 const loaderUI = document.querySelector(".loading-container");
 async function verify_user_token() {
     try{
-        const token = localStorage.getItem("token");
-
         const response = await fetch("/api/user/auth", {
             method: "GET",
-            headers: {"Authorization": `Bearer ${token}`}
+            credentials: "include"
         });
 
         const dt = await response.json();
@@ -41,10 +45,10 @@ async function verify_user_token() {
 
 async function createPostOptionItem() {
     const countryStr = sessionStorage.getItem("country");
-    const typeStr = sessionStorage.getItem("type");
+    const typeStr = await postCommentM.getTypesOptionName();
+    const types = typeStr.data.types;
     if (countryStr !== null && typeStr !== null){
         const countryStrSplit = countryStr.split(",");
-        const typeStrSplit = typeStr.split(",");
         const countrySelect = document.querySelector(".country-select");
 
         for(let i=0; i< countryStrSplit.length; i++){
@@ -55,8 +59,8 @@ async function createPostOptionItem() {
             });
         };
   
-        for(let i=0; i< typeStrSplit.length; i++){
-            const optionTag = postCommentV.typesDropList(typeStrSplit[i]);
+        for(let i=0; i< types.length; i++){
+            const optionTag = postCommentV.typesDropList(types[i]);
             postCommentM.typesOptionItemClick(optionTag);
         };
     }
@@ -128,7 +132,10 @@ async function postBtnSetting() {
             fileUpload.addEventListener("change", async function() {         
                 if (this.files.length > maxImgFileSum){
                     this.value="";
-                    alert("最多只能選取7張圖，請重新選擇。");
+                    explainToast.fire({
+                        icon: "info",
+                        title: "抱歉，最多只能選取7張圖，請重新選擇。",
+                    });
                     return;
                 }
 
@@ -155,37 +162,44 @@ async function postBtnSetting() {
 }
 
 
-const addFoodNmPriceBtn = document.querySelector(".add-object");
-let addCount = 0;
-if (addFoodNmPriceBtn){
-    addFoodNmPriceBtn.addEventListener("click", () => {
-        if (addCount < 6){
-            postCommentV.addFoodNameAndPriceInput();
-            addCount++;
-            return;
-        }
-        console.log("最多只能新增6次。");
-    });
-}
-
 async function postAction(id) {
     const postSubmitBtn = document.querySelector(".submit-btn");
     if (postSubmitBtn){
         postSubmitBtn.addEventListener("click", async () => {
+            Swal.fire({
+                title: '建立貼文中...',
+                timer: 5000,
+                didOpen: () => {
+                    Swal.showLoading(); // 旋轉圖示
+                }
+            });
+
             const result = await postCommentM.submitPostInfo(id);
             if (result.ok !== true){
-                alert(result);
+                explainToast.fire({
+                    icon: "error",
+                    title: String(result),
+                });
                 return;
             }
 
-            postCommentM.loaderUI.classList.toggle('active');
-            requestAnimationFrame(() => {
-                requestAnimationFrame(() => {
-                    setTimeout(() => {
-                        window.location.replace("/member");
-                    }, 500);
-                });
+            Swal.close();
+            explainToast.fire({
+                icon: "success",
+                title: "成功建立貼文!",
             });
+
+            setTimeout(() => {
+                postCommentM.loaderUI.classList.toggle('active');
+                requestAnimationFrame(() => {
+                    requestAnimationFrame(() => {
+                        setTimeout(() => {
+                            window.location.replace("/");
+                        }, 500);
+                    });
+                });
+            }, 1500)
+            
             
         });
     }

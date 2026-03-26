@@ -8,7 +8,7 @@
         <link href="https://fonts.googleapis.com/css2?family=Kaushan+Script&family=Zen+Maru+Gothic&display=swap" rel="stylesheet">
         <link rel="stylesheet" href="/static/css/postcomment.css">
         <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-        <script defer type="module" src="/static/js/postcomment-controller.js"></script>
+        <script defer type="module" src="/static/js/editpost-controller.js"></script>
         <title>My Eats Map</title>
     </head>
     <body>
@@ -25,9 +25,9 @@
 
         <div class="content-container">
             <div class="secondblock">
-                <div class="post-block-container">
+                <div class="edit-post-block">
 
-                    <div class="post-img-container">
+                    <div class="edit-post-img">
                         <div class="img-slide-container">
                             <div class="preview-img-slide">
                                 
@@ -39,13 +39,12 @@
                             </div>
                         </div>
                         
-                        <div class="upload-img-file">
+                        <!-- <div class="upload-img-file">
                             <input type="file" id="image-upload" class="upload-img-btn" multiple accept="image/*">
                             <label for="image-upload" class="add-img">
                                 <img src="/static/img/add-image.png">
                             </label>
-                        </div>
-                        <div class="remark-str">注意:請一次上傳所需圖片，勿上傳超過7張，謝謝。</div>
+                        </div> -->
                     </div>
                     <div class="post-input-container">
                         <div class="store-address">
@@ -107,7 +106,7 @@
                         </div>
 
                         <div class="submit-container">
-                            <button type="button" class="submit-btn">送出</button>
+                            <button type="button" class="submit-btn">儲存</button>
                         </div>
                     </div>
                 </div>
@@ -117,5 +116,19 @@
                 COPY RIGHT 2026
             </footer>
         </div>
+
+        <dialog class="delete-ask-window">
+            <div class="ask-text-container">
+                <div class="ask-text">
+                    請問確定要刪除這張圖片嗎?
+                </div>
+            </div>
+            <hr>
+            <div class="ask-btn-container">
+                <button type="button" class="ask-delete-btn">刪除</button>
+                <hr>
+                <button type="button" class="ask-cancel-btn">取消</button>
+            </div>
+        </dialog>
     </body>
 </html>

@@ -7,10 +7,9 @@
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
         <link href="https://fonts.googleapis.com/css2?family=Kaushan+Script&family=Zen+Maru+Gothic&display=swap" rel="stylesheet">
         <link rel="stylesheet" href="/static/css/member.css">
-        <link rel="stylesheet" href="/static/css/selectheadshot.css">
         <link rel="stylesheet" href="/static/css//singlepostdialog.css">
         <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-        <script defer type="module" src="/static/js/member-controller.js"></script>
+        <script defer type="module" src="/static/js/othermember-controller.js"></script>
         <title>My Eats Map</title>
     </head>
     <body>
@@ -21,9 +20,6 @@
         <nav class="navbar">
             <div class="navbar-container">
                 <div class="navbar-title">My Eats Map</div>
-                <button class="navbar-setting">
-                    <img src="/static/img/settingBtn.png">
-                </button>
             </div>
         </nav>
 
@@ -36,7 +32,6 @@
                                 <div class="headshot-img">
                                     <img class="headshot-item-img" src="/static/img/user.png">
                                 </div>
-                                <button type="button" class="change-img-btn">變更大頭照</button>
                             </div>
                         </div>
 
@@ -95,33 +90,6 @@
                 COPY RIGHT 2026
             </footer>
         </div>
-        
-        <dialog class="view-select-headshot">
-            <nav class="nav">
-                <div class="close-btn">
-                    <img src="/static/img/close.png">
-                </div>
-            </nav>
-            <div class="select-headshot-container">
-                <div class="headshot-block">
-                    <div class="view-img">
-                        <img src="/static/img/user.png" class="preview-img">
-                    </div>
-
-                    <div class="select-img">
-                        <input type="file" id="image-upload" class="upload-btn" accept="image/*">
-                        <label for="image-upload" class="add-img">
-                            <img src="/static/img/add-image.png">
-                        </label>
-                    </div>
-
-                    <div class="btn-block">
-                        <button type="button" class="submit-btn">確認</button>
-                        <button type="button" class="cancel-btn">取消</button>
-                    </div>
-                </div>
-            </div>
-        </dialog>
 
         <dialog class="view-one-post">
             <nav class="nav-post">
@@ -174,21 +142,6 @@
                                 <img src="/static/img/user.png" class="post-user-headshot">
                             </div>
                             <div class="user-nickname">user</div>
-                            <button type="button" class="post-option-container">
-                                <img src="/static/img/dots_bar.png">
-                            </button>
-                            <div class="post-droplist">
-                                <ul class="post-option">
-                                    <li class="option" id="post-edit">
-                                        <img src="/static/img/pencil_edit.png">
-                                        <span>編輯</span>
-                                    </li>
-                                    <li class="option" id="post-delete">
-                                        <img src="/static/img/delete_icon.png">
-                                        <span>刪除</span>
-                                    </li>
-                                </ul>
-                            </div>
                         </div>
                         <div class="post-comment">
                             <div class="store-name-add">
@@ -208,20 +161,6 @@
                         </div>
                     </div>
                 </div>
-            </div>
-        </dialog>
-
-        <dialog class="delete-ask-window">
-            <div class="ask-text-container">
-                <div class="ask-text">
-                    請問確定要刪除這則貼文嗎?
-                </div>
-            </div>
-            <hr>
-            <div class="ask-btn-container">
-                <button type="button" class="ask-delete-btn">刪除</button>
-                <hr>
-                <button type="button" class="ask-cancel-btn">取消</button>
             </div>
         </dialog>
     </body>

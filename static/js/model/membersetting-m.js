@@ -24,7 +24,7 @@ class memberSettingModel {
         requestAnimationFrame(() => {
             requestAnimationFrame(() => {
                 setTimeout(() => {
-                    window.location.replace("/eatsmap");
+                    window.location.replace("/");
                 }, 300);
                 
             });
@@ -33,16 +33,27 @@ class memberSettingModel {
 
     async logOutSubmit() {
         this.loaderUI.classList.toggle('active');
-        localStorage.removeItem("token");
-        sessionStorage.clear();
-        requestAnimationFrame(() => {
-            requestAnimationFrame(() => {
-                setTimeout(() => {
-                    window.location.replace("/login");
-                }, 300);
-                
-            });
+        const response = await fetch(`/api/user/logout`, {
+            method: "POST",
+            credentials: "include",
         });
+
+        const dt = await response.json();
+        if (dt.logOut === true){
+            sessionStorage.clear();
+            // 清除
+            document.cookie = "my_eatweb_isLogged_here=; max-age=0; path=/;";
+            
+            requestAnimationFrame(() => {
+                requestAnimationFrame(() => {
+                    setTimeout(() => {
+                        window.location.replace("/");
+                    }, 300);
+                    
+                });
+            });
+        }
+        
     }
 
     async updateMemberInfo(id) {
@@ -64,12 +75,10 @@ class memberSettingModel {
             }
 
             try{
-                const token = localStorage.getItem("token");
                 const response = await fetch("/api/user/infoupdate", {
                     method: "PATCH",
-                    headers: {"Content-Type": "application/json",
-                            "Authorization": `Bearer ${token}`
-                            },
+                    credentials: "include",
+                    headers: {"Content-Type": "application/json"},
                     body: JSON.stringify(jsonInfo)
                 });
 
@@ -109,12 +118,10 @@ class memberSettingModel {
             }
 
             try{
-                const token = localStorage.getItem("token");
                 const response = await fetch("/api/uer/updatepw", {
                     method: "PATCH",
-                    headers: {"Content-Type": "application/json",
-                            "Authorization": `Bearer ${token}`
-                            },
+                    credentials: "include",
+                    headers: {"Content-Type": "application/json"},
                     body: JSON.stringify(jsonInfo)
                 });
 
