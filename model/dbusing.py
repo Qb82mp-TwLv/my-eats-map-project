@@ -1,4 +1,4 @@
-from DB.dbconnection import db_init
+from model.dbconnection import db_init
 from mysql.connector import OperationalError
 
 class db_interaction:

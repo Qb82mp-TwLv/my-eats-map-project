@@ -7,7 +7,7 @@ def user_follows_people(dt):
             "count": dt[0]
         }}
 
-    return {"error": "取追蹤人數出現錯誤"}
+    return {"error": "取追蹤人數出現錯誤。"}
 
 def user_fans_people(dt):
     if type(dt) != bool:
@@ -15,7 +15,7 @@ def user_fans_people(dt):
             "count": dt[0]
         }}
 
-    return {"error": "取粉絲人數出現錯誤"}
+    return {"error": "取粉絲人數出現錯誤。"}
 
 def user_posts_data(dt):
     if type(dt) != bool:
@@ -47,7 +47,7 @@ def user_posts_data(dt):
         dt_json["data"]["post_id"] = post_id_list
         return dt_json
     
-    return {"error": "發文的資料發生錯誤"}
+    return {"error": "取得所有發的貼文部分發生錯誤。"}
 
 def user_collect_data(dt):
     if type(dt) != bool:
@@ -80,7 +80,7 @@ def user_collect_data(dt):
         dt_json["data"]["post_id"] = collect_id_list
         return dt_json
     
-    return {"error": "收藏的資料發生錯誤"}
+    return {"error": "取得所有收藏的貼文部分發生錯誤。"}
 
 def other_member_info(dt):
     if dt != False:

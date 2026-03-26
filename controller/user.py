@@ -1,6 +1,6 @@
 from fastapi import *
 from fastapi.responses import JSONResponse
-from dbusing import db
+from model.dbusing import db
 from pydantic import BaseModel
 from dotenv import load_dotenv
 from view.loginV import signin_info, login_info, verify_user_info
@@ -37,7 +37,7 @@ async def sign_in(user_data: sign_in_info):
             dt_json = signin_info(signin_dt)
             return JSONResponse(dt_json)
         
-        return JSONResponse({"error": "根據執行結果發生錯誤。"})
+    return JSONResponse({"error": "註冊過程中發生錯誤。"})
     
 class log_in_info(BaseModel):
     email: str
@@ -77,9 +77,9 @@ async def log_in(user_data: log_in_info, response: Response):
                 path="/"
             )
 
-            return {"ok": "True"}
+            return {"ok": True}
     
-    return JSONResponse({"error": True})
+    return JSONResponse({"error": "登入過程中發生錯誤。"})
 
 @router.get("/api/user/auth")
 async def confirm_user_info(session_token: str=Cookie(None)):
@@ -141,7 +141,7 @@ async def get_user_follows(user_id: int, session_token: str=Cookie(None)):
             dt_json = user_follows_people(get_dt)
             return JSONResponse(dt_json)
         
-    return JSONResponse({"error": "取追蹤人數出現錯誤"})
+    return JSONResponse({"error": "取追蹤人數出現錯誤。"})
 
 # 取得粉絲的人數
 @router.get("/api/user/fans")
@@ -153,7 +153,7 @@ async def get_user_fans(user_id: int, session_token: str=Cookie(None)):
             dt_json = user_fans_people(get_dt)
             return JSONResponse(dt_json)
         
-    return JSONResponse({"error": "取粉絲人數出現錯誤"})
+    return JSONResponse({"error": "取粉絲人數出現錯誤。"})
 
 @router.get("/api/user/posts")
 async def get_user_posts(user_id: int, session_token: str=Cookie(None)):
@@ -165,7 +165,7 @@ async def get_user_posts(user_id: int, session_token: str=Cookie(None)):
             dt_json = user_posts_data(get_dt)
             return JSONResponse(dt_json)
         
-    return JSONResponse({"error": "取發的所有貼文部分發生錯誤"})
+    return JSONResponse({"error": "取得所有發的貼文部分發生錯誤。"})
 
 @router.get("/api/user/collect")
 async def get_user_posts(user_id: int, session_token: str=Cookie(None)):
@@ -176,7 +176,7 @@ async def get_user_posts(user_id: int, session_token: str=Cookie(None)):
             dt_json = user_collect_data(get_dt)
             return JSONResponse(dt_json)
         
-    return JSONResponse({"error": "取收藏所有的貼文部分發生錯誤"})
+    return JSONResponse({"error": "取得所有收藏的貼文部分發生錯誤。"})
 
 @router.get("/api/user/headshoturl")
 async def get_user_headshot_url(headshot_name: str, session_token: str=Cookie(None)):
@@ -213,7 +213,7 @@ async def upload_headshot_img(user_id: int=Form(), headshot: str=Form(None), ima
                 headshot_name = f"mapImg_{time_number}_{hash_name}{extension}"
 
                 if not image.content_type.startswith("image/"):
-                    return JSONResponse({"error": "不是圖片類型的檔案"})
+                    return JSONResponse({"error": "不是圖片類型的檔案。"})
                 else:
                     img_size = await image.read()
                     if len(img_size) > (5*1024*1024):
@@ -240,10 +240,10 @@ async def upload_headshot_img(user_id: int=Form(), headshot: str=Form(None), ima
                         dt_json = await get_CDN_image(headshot_name)
                         return JSONResponse(dt_json)
                     
-                return JSONResponse({"error": "更換大頭照發生錯誤"})
+                return JSONResponse({"error": "更換大頭照發生錯誤。"})
             except Exception as e:
                 print(e)
-                return JSONResponse({"error": "更換大頭照發生錯誤"})
+                return JSONResponse({"error": "更換大頭照發生錯誤。"})
 
 class member_save_info(BaseModel):
     id: int
@@ -259,7 +259,7 @@ async def save_user_info(member_info: member_save_info, session_token: str=Cooki
             if (update_dt == True):
                 return JSONResponse({"ok": True})
 
-    return JSONResponse({"error": "執行會員資料更新發生錯誤"})
+    return JSONResponse({"error": "執行會員資料更新發生錯誤。"})
 
 class member_save_pw(BaseModel):
     id: int
@@ -285,5 +285,5 @@ async def save_user_pw(member_pw: member_save_pw, session_token: str=Cookie(None
             if (update_dt == True):
                 return JSONResponse({"ok": True})
 
-    return JSONResponse({"error": "密碼更新發生錯誤"})
+    return JSONResponse({"error": "密碼更新發生錯誤。"})
 

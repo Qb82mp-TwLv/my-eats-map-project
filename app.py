@@ -58,7 +58,7 @@ async def map_value():
         _result = os.getenv("API_GOOGEL_MAP_KEY")
         return JSONResponse({"data": _result})
     except Exception:
-        return JSONResponse({"error": "根據執行結果發生錯誤。"})
+        return JSONResponse({"error": "取地圖金鑰發生錯誤。"})
     
 @app.get("/api/mapid")
 async def map_value():
@@ -67,4 +67,4 @@ async def map_value():
         _result = os.getenv("API_GOOGLE_MAPID")
         return JSONResponse({"data": _result})
     except Exception:
-        return JSONResponse({"error": "根據執行結果發生錯誤。"})
+        return JSONResponse({"error": "取地圖圖型發生錯誤。"})

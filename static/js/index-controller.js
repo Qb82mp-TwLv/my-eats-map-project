@@ -9,6 +9,13 @@ const explainToast = Swal.mixin({
     timer: 2500,
 });
 
+// 確認是否有使用follow的搜尋
+let followSearchId = null;
+
+// 用來判斷是否再用搜尋功能
+let searchingNow = true;
+let mouseMoving = false;
+
 let markerArr = [];
 let userId = null;
 const loaderUI = document.querySelector(".loading-container");
@@ -95,8 +102,34 @@ async function initMap() {
         clickableIcons: false, // 停用預設的點擊事件
     });
 
+    // 只有手動移動才會執行
+    map.addListener("dragstart", () => {
+        mouseMoving = true;
+    });
+
+    setMovingMapCenterAndSearchPosts();
 }
 
+async function setMovingMapCenterAndSearchPosts() {
+    map.addListener("idle", () => {
+        if (searchingNow === false && mouseMoving === true){
+            const mapCenter = map.getCenter();
+            const storeType = indexM.typesSelect.textContent;
+            if (indexM.ownSearchBtn.classList.contains('active')){
+                getOwnPosts(userId, mapCenter.lat(), mapCenter.lng());
+            }else if (indexM.collectSearchBtn.classList.contains('active')) {
+                getCollectPosts(userId, mapCenter.lat(), mapCenter.lng());
+            }else if (indexV.followBtn.textContent !== "追蹤者" && followSearchId !== null){
+                getFollowPosts(followSearchId, mapCenter.lat(), mapCenter.lng());
+            }
+            else{
+                getPostsNearLatAndLng(mapCenter.lat(), mapCenter.lng(), storeType);
+            }
+        }
+
+        mouseMoving = false;
+    });  
+}
 
 async function createOptionItem() {
     // 取得地區(國家)
@@ -208,7 +241,10 @@ async function createFollowUser(user_id) {
                 optionTag.addEventListener("click", async () => {
                     btnTracker.textContent = optionTag.textContent;
                     const follow_id = optionTag.dataset.followId;
-                    const dtJson = await indexM.ownSearchPosts(follow_id);
+                    // 取得follow ID
+                    followSearchId = follow_id;
+
+                    const dtJson = await indexM.ownSearchPosts(follow_id, indexM.lat, indexM.lon);
                     genMarker(dtJson);
                 });
 
@@ -217,14 +253,22 @@ async function createFollowUser(user_id) {
     }
 }
 
+async function getFollowPosts(id, lat, lon) {
+    const dtJson = await indexM.movingMapOwnBtnProcessing(id, lat, lon);
+    movingGenMarker(dtJson, lat, lon);
+}
+
 const searchBtn = document.querySelector(".input-item-btn");
 if (searchBtn){
     searchBtn.addEventListener("click", () => {
+        indexV.anotherSearcBtnNameOrigin();
+        indexM.anotherSearchBtnHidden();
         searchPosts();
     });
 }
 
 async function searchPosts() {
+    searchingNow = true;
     // 取得選項
     const storeType = indexM.typesSelect.textContent;
     if (indexM.rejectPosition === true){
@@ -254,18 +298,12 @@ async function searchPosts() {
                     }
                 }
                 
-                // 找出當下位置
-                const {lat, lng} = await indexM.searchPosition(country, city[0]);
-
-                if (lat !== "nan" && lng !== "nan"){
-                    indexM.lat = lat;
-                    indexM.lon = lng;
-                    const newPosition = {
-                        lat: lat, 
-                        lng: lng
-                    }
-                    map.panTo(newPosition);
+                const newPosition = {
+                    lat: indexM.lat, 
+                    lng: indexM.lon
                 }
+                map.panTo(newPosition);
+                map.setZoom(12);
 
                 // 若沒找到資料要發出沒找到的資訊
                 if (dtJson!== null && dtJson.length === 0){
@@ -281,55 +319,64 @@ async function searchPosts() {
                         title: "抱歉，搜尋相關貼文失敗。",
                     });
                 }
+
             };
         };
+
+        searchingNow = false;
     }else if(indexM.rejectPosition === false){
+        await getPostsNearLatAndLng(indexM.lat, indexM.lon, storeType);
+
         // 先定位
         const newPosition = {
             lat: indexM.lat, 
             lng: indexM.lon
         }
         map.panTo(newPosition);
+        map.setZoom(12);
 
-        const keywordStr = document.querySelector(".input-item-keyword").value.trim();
-        const dtJson = await indexM.searchAgreePositionPosts(storeType, keywordStr);
-        if (dtJson !== null){
-            clearMarker();
-
-            for(let i=0; i<dtJson.length; i++){
-                const markerObj = await indexV.marker(map, { lat: dtJson[i].lat, lng: dtJson[i].lon,}, dtJson[i].img);
-                markerObj.postId = dtJson[i].post_id;
-                markerObj.addEventListener("click", async () => {
-                    const result = await indexM.getStorePosts(userId, markerObj.position.lat, markerObj.position.lng);
-                    if (result !== null){
-                        indexM.openPostsContent();
-                        await modifyPostInfoInDialog(result);
-                        indexM.slideBtnClick();
-                    }
-                });
-
-                markerArr.push(markerObj);
-            }
-        }
-
-        // 若沒找到資料要發出沒找到的資訊
-        if (dtJson!== null && dtJson.length === 0){
-            explainToast.fire({
-                icon: "info",
-                title: "抱歉，沒搜尋到相關的貼文。",
-            });
-        }
-
-        if (dtJson === null){
-            explainToast.fire({
-                icon: "error",
-                title: "抱歉，搜尋相關貼文失敗。",
-            });
-        }
-            
+        searchingNow = false;
     }
-    
+
 };
+
+async function getPostsNearLatAndLng(lat, lon, storeType) {
+    const keywordStr = document.querySelector(".input-item-keyword").value.trim();
+    const dtJson = await indexM.searchAgreePositionPosts(lat, lon, storeType, keywordStr);
+    if (dtJson !== null){
+        clearMarker();
+
+        for(let i=0; i<dtJson.length; i++){
+            const markerObj = await indexV.marker(map, { lat: dtJson[i].lat, lng: dtJson[i].lon,}, dtJson[i].img);
+            markerObj.postId = dtJson[i].post_id;
+            markerObj.addEventListener("click", async () => {
+                const result = await indexM.getStorePosts(userId, markerObj.position.lat, markerObj.position.lng);
+                if (result !== null){
+                    indexM.openPostsContent();
+                    await modifyPostInfoInDialog(result);
+                    indexM.slideBtnClick();
+                }
+            });
+
+            markerArr.push(markerObj);
+        }
+    }
+
+    // 若沒找到資料要發出沒找到的資訊
+    if (dtJson!== null && dtJson.length === 0){
+        explainToast.fire({
+            icon: "info",
+            title: "抱歉，沒搜尋到相關的貼文。",
+        });
+    }
+
+    if (dtJson === null){
+        explainToast.fire({
+            icon: "error",
+            title: "抱歉，搜尋相關貼文失敗。",
+        });
+    }
+}
 
 async function clearMarker() {
     for (let i=0; i<markerArr.length; i++){
@@ -713,13 +760,26 @@ async function setMemberInfo(imgNm, user_name, nickname) {
     }
 }
 
+async function getOwnPosts(id, lat, lon) {
+    const result = document.cookie.includes("my_eatweb_isLogged_here=true");
+    if (result){
+        const dtJson = await indexM.movingMapOwnBtnProcessing(id, lat, lon);
+
+        movingGenMarker(dtJson, lat, lon);
+    }else{
+        // 跳出登入視窗
+        indexM.openLoginAndSigninDialog();
+    }
+}
+
 async function ownPostSearch(){
     if (indexM.ownSearchBtn){
         indexM.ownSearchBtn.addEventListener("click", async () => {
             const result = document.cookie.includes("my_eatweb_isLogged_here=true");
             if (result){
                 const dtJson = await indexM.ownBtnProcessing(userId);
-
+                // 將取得的追蹤者ID變數值改為null
+                followSearchId = null;
                 // 將追蹤按鈕名稱移除改為預設
                 const followBtn = document.querySelector(".btn-tracker");
                 followBtn.textContent = "追蹤者";
@@ -761,13 +821,26 @@ async function followPostSearch(id) {
     }
 };
 
+
+async function getCollectPosts(id, lat, lon) {
+    const result = document.cookie.includes("my_eatweb_isLogged_here=true");
+    if (result){
+        const dtJson = await indexM.movingMapCollectBtnProcessing(id, lat, lon);
+        movingGenMarker(dtJson, lat, lon);
+    }else{
+        // 跳出登入視窗
+        indexM.openLoginAndSigninDialog();
+    }
+}
+
 async function collectPostSearch(){
     if (indexM.collectSearchBtn){
         indexM.collectSearchBtn.addEventListener("click", async () => {
             const result = document.cookie.includes("my_eatweb_isLogged_here=true");
             if (result){
                 const dtJson = await indexM.collectBtnProcessing(userId);
-
+                // 將取得的追蹤者ID變數值改為null
+                followSearchId = null;
                 // 將追蹤按鈕名稱移除改為預設
                 const followBtn = document.querySelector(".btn-tracker");
                 followBtn.textContent = "追蹤者";
@@ -800,28 +873,12 @@ async function genMarker(dtJson) {
             markerArr.push(markerObj);
         }
 
-        if (indexM.rejectPosition === true){
-            // 找出當下位置
-            const country = indexM.countryName;
-            const city = indexM.cityName;
-            const {lat, lng} = await indexM.searchPosition(country, city[0]);
-
-            if (lat !== "nan" && lng !== "nan"){
-                indexM.lat = lat;
-                indexM.lon = lng;
-                const newPosition = {
-                    lat: lat, 
-                    lng: lng
-                }
-                map.panTo(newPosition);
-            }
-        }else{
-            const newPosition = {
-                lat: indexM.lat, 
-                lng: indexM.lon
-            }
-            map.panTo(newPosition);
+        const newPosition = {
+            lat: indexM.lat, 
+            lng: indexM.lon
         }
+        map.panTo(newPosition);
+        map.setZoom(12);
 
         if (dtJson.length === 0){
             explainToast.fire({
@@ -837,6 +894,48 @@ async function genMarker(dtJson) {
         });
     }
 }
+
+// 移動地圖使用的產生marker function
+async function movingGenMarker(dtJson, lat, lon) {
+    if (dtJson !== null && dtJson !== "取消"){
+        clearMarker();
+
+        for(let i=0; i<dtJson.length; i++){
+            const markerObj = await indexV.marker(map, { lat: dtJson[i].lat, lng: dtJson[i].lon,}, dtJson[i].img);
+            markerObj.postId = dtJson[i].post_id;
+            markerObj.addEventListener("click", async () => {
+                const result = await indexM.getStorePosts(userId, markerObj.position.lat, markerObj.position.lng);
+                if (result !== null){
+                    indexM.openPostsContent();
+                    await modifyPostInfoInDialog(result);
+                    indexM.slideBtnClick();
+                }
+            });
+
+            markerArr.push(markerObj);
+        }
+
+        const newPosition = {
+            lat: lat, 
+            lng: lon
+        }
+        map.panTo(newPosition);
+
+        if (dtJson.length === 0){
+            explainToast.fire({
+                icon: "info",
+                title: "抱歉，沒搜尋到相關的貼文。",
+            });
+        }
+
+    }else if (dtJson === null){
+        explainToast.fire({
+            icon: "info",
+            title: "抱歉，沒搜尋到相關的貼文。",
+        });
+    }
+}
+
 
 async function postFollowBtn(followBtnObj) {
     if (followBtnObj){
@@ -940,3 +1039,4 @@ window.addEventListener("load", () => {
 });
 
 searchDistanceBtn();
+

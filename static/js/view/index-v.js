@@ -4,6 +4,8 @@ class indexView {
         this.cityOption = document.querySelector(".city-option");
         this.typeOption = document.querySelector(".types-option");
         this.followOption = document.querySelector(".tracker-option");
+
+        this.followBtn= document.querySelector(".btn-tracker");
     }
 
     async marker(map, position, img) {
@@ -95,6 +97,9 @@ class indexView {
         this.followOption.textContent="";
     };
 
+    anotherSearcBtnNameOrigin() {
+        this.followBtn.textContent="追蹤者";
+    }
 };
 
 const indexV = new indexView();

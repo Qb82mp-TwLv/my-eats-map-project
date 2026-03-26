@@ -5,7 +5,7 @@ def signin_info(dt):
     try:
         return {"ok": dt}
     except Exception:
-        return {"error": True}
+        return {"error": "註冊過程中發生錯誤。"}
     
 def login_info(dt):
     if dt != False:

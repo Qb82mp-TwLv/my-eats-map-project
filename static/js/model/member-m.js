@@ -4,19 +4,23 @@ class memberModel {
         this.collectCTN = document.getElementById("collect-eachone-container");
         this.viewSelectHeadshot = document.querySelector(".view-select-headshot");
         this.viewPostContent = document.querySelector(".view-one-post");
+
+        this.imgFile=null;
+        this.previewImg = document.querySelector(".preview-img");
+        this.user_id=null;
+
         this.closeSelectHeadshotBtn = document.querySelector(".close-btn");
         if (this.closeSelectHeadshotBtn){
             this.closeSelectHeadshotBtn.addEventListener("click", () => {
+                if (this.imgFile !== null){
+                    this.previewImg.src = "/static/img/user.png";
+                }
                 this.viewSelectHeadshot.close();
             });
         }
 
         this.cancelSelectHeadshotBtn = document.querySelector(".cancel-btn");
         this.cancelSelectHeadshot();
-
-        this.imgFile=null;
-        this.previewImg = document.querySelector(".preview-img");
-        this.user_id=null;
 
         // 貼文的dialog
         this.closePostDialogBtn = document.querySelector(".close-post-btn");
@@ -183,6 +187,9 @@ class memberModel {
     async cancelSelectHeadshot() {
         if (this.cancelSelectHeadshotBtn){
             this.cancelSelectHeadshotBtn.addEventListener("click", () => {
+                if (this.imgFile !== null){
+                    this.previewImg.src = "/static/img/user.png";
+                }
                 this.closeSelectHeadshot();
             });
         }
@@ -238,9 +245,14 @@ class memberModel {
     async changeImg() {
         const fileUpload = document.getElementById("image-upload");
         fileUpload.addEventListener("change", (e) => {
+            if (this.imgFile !== null){
+                URL.revokeObjectURL(URL.createObjectURL(this.imgFile));
+            }
+
             this.imgFile = e.target.files[0];
 
-            this.previewImg.src = URL.createObjectURL(this.imgFile);
+            const imgURL = URL.createObjectURL(this.imgFile);
+            this.previewImg.src = imgURL;
         });
     };
 

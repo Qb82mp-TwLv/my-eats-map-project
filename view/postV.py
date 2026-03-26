@@ -51,7 +51,7 @@ def post_content_data(dt):
             
         return dt_json
     
-    return {"error": "取發文的內容出現錯誤"}
+    return {"error": "取得一則發文的詳細內容出現錯誤。"}
 
 def edit_post_data(dt):
     if type(dt) != bool:
@@ -89,4 +89,4 @@ def edit_post_data(dt):
             
         return dt_json
     
-    return {"error": "取發文的內容出現錯誤"}
+    return {"error": "取要編輯的貼文內容發生錯誤。"}
