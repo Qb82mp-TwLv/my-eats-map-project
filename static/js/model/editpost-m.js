@@ -9,9 +9,6 @@ class editPostModel {
         this.cityItem = document.querySelector(".city-droplist");
         this.typeItem = document.querySelector(".type-droplist");
 
-        // // 取得選取的圖片
-        // this.imgFiles=null;
-
         // 取得其他物件
         this.searchAddress = document.querySelector(".search-address");
         this.storeDatail = document.querySelector(".name-address-text");
@@ -53,7 +50,7 @@ class editPostModel {
         requestAnimationFrame(() => {
             requestAnimationFrame(() => {
                 setTimeout(() => {
-                    window.location.replace("/eatsmap");
+                    window.location.replace("/");
                 }, 300);
                 
             });

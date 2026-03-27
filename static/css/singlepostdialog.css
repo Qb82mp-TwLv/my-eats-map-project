@@ -102,6 +102,7 @@ body{
     display: flex;
     gap: 5px;
     overflow-x: auto;
+    overscroll-behavior-x: contain;
     scroll-snap-type: x mandatory;
     scroll-behavior: smooth;
 
@@ -461,6 +462,11 @@ hr{
         grid-template-columns: 1fr;
         grid-template-rows: 300px 200px;
         gap: 5px;
+    }
+
+    .food-img-info{
+        scroll-snap-type: x proximity;
+        scroll-behavior: auto;
     }
 
     .sildeBtn{
