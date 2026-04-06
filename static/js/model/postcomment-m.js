@@ -227,7 +227,7 @@ class postCommentModel {
                         formData.append("image", this.imgFiles[i]);
                     };
                     
-                    const response = await fetch("/api/post/single", {
+                    const response = await fetch("/api/article", {
                         method: "POST",
                         credentials: "include",
                         body: formData,

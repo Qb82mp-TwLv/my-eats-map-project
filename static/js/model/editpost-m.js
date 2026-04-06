@@ -242,7 +242,7 @@ class editPostModel {
 
     async editPostInfo(posId, userId) {
         try{
-            const response = await fetch(`/api/post/edit?post_id=${posId}&&user_id=${userId}`, {
+            const response = await fetch(`/api/article/edit?post_id=${posId}&&user_id=${userId}`, {
                 method: "GET",
                 credentials:"include",
             });
@@ -357,7 +357,7 @@ class editPostModel {
                     formData.append("del_image[]", delImgArr[i]);
                 }
 
-                const response = await fetch("/api/post/edit", {
+                const response = await fetch("/api/article/edit", {
                     method: "PUT",
                     credentials: "include",
                     body: formData,
