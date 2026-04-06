@@ -188,7 +188,7 @@ class othermemberModel {
     async getPostContent(post_id, id) {
         // 取得post的資料
         try{
-            const response = await fetch(`/api/post/single?post_id=${post_id}&user_id=${id}`,{
+            const response = await fetch(`/api/article/${post_id}?user_id=${id}`,{
                 method: "GET",
                 credentials: "include",
             });
@@ -242,7 +242,7 @@ class othermemberModel {
             formData.append("post_id", post_id);
             formData.append("action", action);
 
-            const response = fetch(`/api/post/likecount`,{
+            const response = fetch(`/api/article/likecount`,{
                 method: "POST",
                 credentials: "include",
                 body:formData,
@@ -260,7 +260,7 @@ class othermemberModel {
             formData.append("post_id", post_id);
             formData.append("action", action);
 
-            const response = fetch(`/api/post/collectcount`,{
+            const response = fetch(`/api/article/collectcount`,{
                 method: "POST",
                 credentials: "include",
                 body:formData,
@@ -310,7 +310,7 @@ class othermemberModel {
             formData.append("user_id", user_id);
             formData.append("action", action);
 
-            const response = await fetch(`/api/post/follow`,{
+            const response = await fetch(`/api/article/follow`,{
                 method: "POST",
                 credentials: "include",
                 body:formData,

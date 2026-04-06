@@ -10,7 +10,7 @@ import os, hashlib, boto3, asyncio
 
 router = APIRouter()
 
-@router.post("/api/post/single")
+@router.post("/api/article")
 async def post_rest_content(user_id:int = Form(...),rest_name:str = Form(...),rest_address:str = Form(...),
                             rest_country:str = Form(...),rest_city:str = Form(...),rest_lat:Decimal = Form(...),
                             rest_lon:Decimal = Form(...),rest_type:str = Form(...),rest_comment:str = Form(...),
@@ -86,19 +86,19 @@ async def img_file_judgment(files):
         return {"error": "判斷檔案的過程發生錯誤"}, {"error": "發生錯誤"}
 
 
-@router.get("/api/post/single")
-async def single_post_content(post_id: int, user_id: int, session_token: str=Cookie(None)):
+@router.get("/api/article/{postId}")
+async def single_post_content(postId: int, user_id: int, session_token: str=Cookie(None)):
     if (session_token != None):
         confirm_token = jwtDecode(session_token)
         if isinstance(confirm_token, dict):
-            get_dt = await db.get_post_info(post_id, user_id)
+            get_dt = await db.get_post_info(postId, user_id)
             dt_json = post_content_data(get_dt)
             await asyncio.sleep(0.1)
             return JSONResponse(dt_json)
         
     return JSONResponse({"error": "取得一則發文的詳細內容出現錯誤。"})
 
-@router.post("/api/post/likecount")
+@router.post("/api/article/likecount")
 async def post_like_count_action(user_id: int=Form(...), post_id: int=Form(...), action: str=Form(...), session_token: str=Cookie(None), background_tasks: BackgroundTasks=None):
     if (session_token != None):
         confirm_token = jwtDecode(session_token)
@@ -108,7 +108,7 @@ async def post_like_count_action(user_id: int=Form(...), post_id: int=Form(...),
 
     return Response(status_code=status.HTTP_204_NO_CONTENT)
 
-@router.post("/api/post/collectcount")
+@router.post("/api/article/collectcount")
 async def post_like_count_action(user_id: int=Form(...), post_id: int=Form(...), action: str=Form(...), session_token: str=Cookie(None), background_tasks: BackgroundTasks=None):
     if (session_token != None):
         confirm_token = jwtDecode(session_token)
@@ -118,7 +118,7 @@ async def post_like_count_action(user_id: int=Form(...), post_id: int=Form(...),
 
     return Response(status_code=status.HTTP_204_NO_CONTENT)
 
-@router.post("/api/post/follow")
+@router.post("/api/article/follow")
 async def post_like_count_action(post_user_id: int=Form(...), user_id: int=Form(...), action: str=Form(...), session_token: str=Cookie(None)):
     if (session_token != None):
         confirm_token = jwtDecode(session_token)
@@ -129,7 +129,7 @@ async def post_like_count_action(post_user_id: int=Form(...), user_id: int=Form(
 
     return JSONResponse({"error": "儲存追蹤者的資訊出現錯誤。"})
 
-@router.delete("/api/post/delete")
+@router.delete("/api/article/delete")
 async def del_user_post(post_id: int=Form(...), user_id: int=Form(...), img_list: List[str] = Form(..., alias="img_list[]"), session_token: str=Cookie(None)):
     if (session_token != None):
         confirm_token = jwtDecode(session_token)
@@ -153,7 +153,7 @@ async def del_user_post(post_id: int=Form(...), user_id: int=Form(...), img_list
             
     return JSONResponse({"error": "未成功刪除此貼文資料。"})                    
             
-@router.get("/api/post/edit")
+@router.get("/api/article/edit")
 async def edit_user_post(post_id: int, user_id: int, session_token: str=Cookie(None)):
     if (session_token != None):
         confirm_token = jwtDecode(session_token)
@@ -164,7 +164,7 @@ async def edit_user_post(post_id: int, user_id: int, session_token: str=Cookie(N
         
     return JSONResponse({"error": "取要編輯的貼文內容發生錯誤。"})
 
-@router.put("/api/post/edit")
+@router.put("/api/article/edit")
 async def save_edit_user_post(post_id:int = Form(...) ,user_id:int = Form(...),rest_name:str = Form(...),rest_address:str = Form(...),
                             rest_country:str = Form(...),rest_city:str = Form(...),rest_lat:Decimal = Form(None),
                             rest_lon:Decimal = Form(None),rest_type:str = Form(...),rest_comment:str = Form(...),

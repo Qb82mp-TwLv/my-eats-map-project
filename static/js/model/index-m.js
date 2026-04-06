@@ -469,7 +469,7 @@ class indexModel {
             formData.append("action", action);
 
             // const response = await 
-            const response = fetch(`/api/post/likecount`,{
+            const response = fetch(`/api/article/likecount`,{
                 method: "POST",
                 credentials: "include",
                 body:formData,
@@ -487,7 +487,7 @@ class indexModel {
             formData.append("post_id", post_id);
             formData.append("action", action);
 
-            const response = fetch(`/api/post/collectcount`,{
+            const response = fetch(`/api/article/collectcount`,{
                 method: "POST",
                 credentials: "include",
                 body:formData,
@@ -692,7 +692,7 @@ class indexModel {
             formData.append("user_id", user_id);
             formData.append("action", action);
 
-            const response = await fetch(`/api/post/follow`,{
+            const response = await fetch(`/api/article/follow`,{
                 method: "POST",
                 credentials: "include",
                 body:formData,
