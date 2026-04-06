@@ -9,7 +9,7 @@ import os
 def jwtEncode(user_data):
     if isinstance(user_data, dict):
         load_dotenv()
-        # _add_salt = os.getenv("API_TOKEN_KEY")
+        
         pem_key = os.getenv("API_PEM_KEY")
         if pem_key != None:
             pem_key_bytes = pem_key.encode('utf-8')

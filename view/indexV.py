@@ -14,7 +14,7 @@ def country_info(dt):
         _result["data"] = {"country": dt_list}
         return _result
     except Exception:
-        return {"error": "根據執行結果發生錯誤。"}
+        return {"error": "取得地區資料發生錯誤。"}
     
 def city_info(dt):
     try:
@@ -29,7 +29,7 @@ def city_info(dt):
         _result["data"] = {"city": dt_list}
         return _result
     except Exception:
-        return {"error": "根據執行結果發生錯誤。"}
+        return {"error": "取得城市資料發生錯誤。"}
     
 def types_info(dt):
     try:
@@ -44,7 +44,7 @@ def types_info(dt):
         _result["data"] = {"types": dt_list}
         return _result
     except Exception:
-        return {"error": "根據執行結果發生錯誤。"}
+        return {"error": "取得店家種類資料發生錯誤。"}
     
 def posts_marker_info(dt):
     try:

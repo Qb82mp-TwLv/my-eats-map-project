@@ -1,6 +1,6 @@
 from fastapi import *
 from fastapi.responses import JSONResponse
-from dbusing import db
+from model.dbusing import db
 from typing import List
 from model.user_validation import jwtDecode
 from view.postV import post_content_data,edit_post_data
@@ -45,9 +45,9 @@ async def post_rest_content(user_id:int = Form(...),rest_name:str = Form(...),re
                         return JSONResponse({"ok": True})
                 except Exception as e:
                     print(e)
-                    return JSONResponse({"error": "建立發文過程中發生錯誤"})
+                    return JSONResponse({"error": "建立發文過程中發生錯誤。"})
 
-    return JSONResponse({"error": "建立發文過程中發生錯誤"})
+    return JSONResponse({"error": "建立發文過程中發生錯誤。"})
 
 async def img_file_judgment(files):
     img_name_text = ""
@@ -96,7 +96,7 @@ async def single_post_content(post_id: int, user_id: int, session_token: str=Coo
             await asyncio.sleep(0.1)
             return JSONResponse(dt_json)
         
-    return JSONResponse({"error": "取發文的內容出現錯誤"})
+    return JSONResponse({"error": "取得一則發文的詳細內容出現錯誤。"})
 
 @router.post("/api/post/likecount")
 async def post_like_count_action(user_id: int=Form(...), post_id: int=Form(...), action: str=Form(...), session_token: str=Cookie(None), background_tasks: BackgroundTasks=None):
@@ -127,7 +127,7 @@ async def post_like_count_action(post_user_id: int=Form(...), user_id: int=Form(
             if (get_dt != False):
                 return JSONResponse({"ok": True})
 
-    return JSONResponse({"error": "儲存追蹤者的資訊出現錯誤"})
+    return JSONResponse({"error": "儲存追蹤者的資訊出現錯誤。"})
 
 @router.delete("/api/post/delete")
 async def del_user_post(post_id: int=Form(...), user_id: int=Form(...), img_list: List[str] = Form(..., alias="img_list[]"), session_token: str=Cookie(None)):
@@ -162,7 +162,7 @@ async def edit_user_post(post_id: int, user_id: int, session_token: str=Cookie(N
             dt_json = edit_post_data(get_dt)
             return JSONResponse(dt_json)
         
-    return JSONResponse({"error": "取要編輯的貼文出現錯誤"})
+    return JSONResponse({"error": "取要編輯的貼文內容發生錯誤。"})
 
 @router.put("/api/post/edit")
 async def save_edit_user_post(post_id:int = Form(...) ,user_id:int = Form(...),rest_name:str = Form(...),rest_address:str = Form(...),

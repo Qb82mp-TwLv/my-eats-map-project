@@ -142,6 +142,7 @@ textarea{
     display: flex;
     gap: 5px;
     overflow-x: auto;
+    overscroll-behavior-x: contain;
     scroll-snap-type: x mandatory;
     scroll-behavior: smooth;
 
@@ -710,13 +711,18 @@ hr{
         grid-template-rows: 110px 200px 400px 400px auto 60px;
     }
 
-    .imgSlides img{
-        width: 340px;
-        height: 280px;
+    .preview-img-slide{
+        scroll-snap-type: x proximity;
+        scroll-behavior: auto;
     }
 
     .sildeBtn{
         top: 130px;
+    }
+
+    .imgSlides img{
+        width: 340px;
+        height: 280px;
     }
 
     .store-address{

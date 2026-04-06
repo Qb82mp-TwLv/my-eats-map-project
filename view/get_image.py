@@ -13,7 +13,7 @@ async def get_CDN_image(img_name):
             "img": imgUrl
         }}
     except Exception:
-        return {"error", "取圖片檔案的網址發生錯誤"}
+        return {"error": "取圖片檔案的網址發生錯誤。"}
     
 async def get_Post_CDN_image(img_name):
     url_list=[]
@@ -29,9 +29,9 @@ async def get_Post_CDN_image(img_name):
             return {"data": {
                 "img": url_list
             }}
-        return {"error", "取圖片檔案的網址發生錯誤"}
+        return {"error": "取圖片檔案的網址發生錯誤。"}
     except Exception:
-        return {"error", "取圖片檔案的網址發生錯誤"}
+        return {"error": "取圖片檔案的網址發生錯誤。"}
     
 async def clear_CDN_cache():
     load_dotenv()
@@ -51,10 +51,3 @@ async def clear_CDN_cache():
         }
     )
     
-    # invalidation_id = response["Invalidation"]['Id']
-    # clear_wait = cdn.get_waiter('invalidation_completed')
-    # clear_wait.wait(
-    #     DistributionId=disId,
-    #     Id = invalidation_id,
-    #     WaiterConfig={"Delay": 20, "MaxAttemps": 30}
-    # )

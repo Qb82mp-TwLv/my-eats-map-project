@@ -342,7 +342,9 @@ body{
     line-height: 35px;
     align-content: start;
 
-    display: flex;
+    display: grid;
+    grid-template-columns: 40px auto 75.6px;
+    grid-template-rows: 1fr;
     gap: 5px;
 
     overflow: hidden;
@@ -617,6 +619,16 @@ body{
     .people-info-container{
         grid-template-columns: 1fr;
         grid-template-rows: 1fr 1fr;
+    }
+
+    .posts-content-container{
+        grid-template-columns: repeat(auto-fit, 103px);
+        grid-template-rows: repeat(auto-fit, 103px);
+    }
+
+    .collect-content-container{
+        grid-template-columns: repeat(auto-fit, 103px);
+        grid-template-rows: repeat(auto-fit, 103px);
     }
 }
 

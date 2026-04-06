@@ -43,8 +43,8 @@ async function verify_user_token() {
 
         const membdt = await othermemberM.membInfo(otherMembId);
         if (membdt !== null){
-            setMemberInfo(membdt);
             userId = dt.data.id;
+            setMemberInfo(membdt);
             // 確認進到此會員頁面的使用者，設定按讚、收藏資訊
             singlePostLikeAndFavoriteBtn(userId);
         }else{

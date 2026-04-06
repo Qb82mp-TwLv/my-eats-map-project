@@ -1,6 +1,6 @@
 from fastapi import *
 from fastapi.responses import JSONResponse
-from dbusing import db
+from model.dbusing import db
 from view.indexV import country_info, city_info, types_info, posts_marker_info, marker_posts_data, marker_posts_data_visitor, follow_user_info
 from model.user_validation import jwtDecode
 from decimal import Decimal
@@ -14,7 +14,7 @@ async def get_country_name():
         dt_json = country_info(get_dt)
         return JSONResponse(dt_json)
     
-    return JSONResponse({"error": "根據執行結果發生錯誤。"})
+    return JSONResponse({"error": "取得地區資料發生錯誤。"})
 
 @router.get("/api/cityname")
 async def get_city_name(country: str = None):
@@ -24,7 +24,7 @@ async def get_city_name(country: str = None):
             dt_json = city_info(get_dt)
             return JSONResponse(dt_json)
         
-    return JSONResponse({"error": "根據執行結果發生錯誤。"})
+    return JSONResponse({"error": "取得城市資料發生錯誤。"})
 
 @router.get("/api/typesname")
 async def get_city_name(country: str = None, city: str = None):
@@ -33,7 +33,7 @@ async def get_city_name(country: str = None, city: str = None):
         dt_json = types_info(get_dt)
         return JSONResponse(dt_json)
         
-    return JSONResponse({"error": "根據執行結果發生錯誤。"})
+    return JSONResponse({"error": "取得店家種類資料發生錯誤。"})
 
 @router.get("/api/search/post")
 async def search_post_info(country: str, city: str, types: str, lat: Decimal, lon: Decimal, keyword:str = None, km:int=1, session_token: str=Cookie(None)):

@@ -232,6 +232,7 @@ class indexModel {
             if (response.results && response.results.length){
                 const lat = response.results[0].geometry.location.lat();
                 const lng = response.results[0].geometry.location.lng();
+
                 return {lat, lng};
             }else{
                 console.log("找不到定位點。");
@@ -254,61 +255,6 @@ class indexModel {
             this.viewPosts.close();
         }
     }
-
-    async getCountryAndCityCoordinates(lat, lon) {
-        const addressCoordinate = new google.maps.Geocoder();
-        const latLon = {lat: lat, lng: lon};
-        try{
-            const response = await addressCoordinate.geocode({location: latLon});
-            if (response.results && response.results.length > 0){
-                // 先將資料用到子層的Array位置，再透過foreach迴圈，找對應的資料
-                const componentsArr = response.results[0].address_components;
-                let country = null;
-                let city = [];
-
-                componentsArr.forEach(e => {
-                    if (e.types.includes("country")){
-                        country = e.long_name;
-                    };
-
-                    if (e.types.includes("locality")){
-                        city.push(e.long_name);
-                    };
-
-                    if (e.types.includes("administrative_area_level_2")){
-                        city.push(e.long_name);
-                    };
-
-                    if (e.types.includes("administrative_area_level_1")){
-                        city.push(e.long_name);
-                    };
-                });
-
-                if (city.length < 3){
-                    switch (city.length){
-                        case 0:
-                            city.push("");
-                            city.push("");
-                            city.push("");
-                        case 1:
-                            city.push("");
-                            city.push("");
-                        case 2:
-                            city.push("");
-                    };
-                };
-
-                this.countryName = country;
-                this.cityName = city;
-                
-                return;
-            }
-
-            console.log("取得經緯度的國家城市有錯誤");
-        }catch(error){
-            console.log("取得經緯度的國家城市有錯誤");
-        }
-    };
 
     async getDropCoordinates(country, city) {
         const addressCoordinate = new google.maps.Geocoder();
@@ -389,14 +335,14 @@ class indexModel {
         }
     }
 
-    async searchAgreePositionPosts(storeType, keyword) {
+    async searchAgreePositionPosts(lat, lon, storeType, keyword) {
         try{
             let urlPara = "";
             // 判斷是否有關鍵字
             if (keyword !== ""){
-                urlPara = `?lat=${this.lat}&lon=${this.lon}&types=${storeType}&keyword=${keyword}&km=${this.searchDisNum}`;
+                urlPara = `?lat=${lat}&lon=${lon}&types=${storeType}&keyword=${keyword}&km=${this.searchDisNum}`;
             }else{
-                urlPara = `?lat=${this.lat}&lon=${this.lon}&types=${storeType}&km=${this.searchDisNum}`;
+                urlPara = `?lat=${lat}&lon=${lon}&types=${storeType}&km=${this.searchDisNum}`;
             }
 
             const response = await fetch(`/api/search/locate/post${urlPara}`,{
@@ -564,7 +510,7 @@ class indexModel {
                     this.collectSearchBtn.classList.remove('active');
 
                     // 要執行的搜尋
-                    const dtJson = await this.ownSearchPosts(userId);
+                    const dtJson = await this.ownSearchPosts(userId, this.lat, this.lon);
                     return dtJson;
                 }
                 return null;
@@ -575,7 +521,7 @@ class indexModel {
             this.collectSearchBtn.classList.remove('active');
 
             // 要執行的搜尋
-            const dtJson = await this.ownSearchPosts(userId);
+            const dtJson = await this.ownSearchPosts(userId, this.lat, this.lon);
             return dtJson;
         }
        
@@ -607,7 +553,7 @@ class indexModel {
                     this.collectSearchBtn.classList.toggle('active');
 
                     // 要執行的搜尋
-                    const dtJson = await this.collectSearchPosts(userId);
+                    const dtJson = await this.collectSearchPosts(userId, this.lat, this.lon);
                     return dtJson;
                 };
                 return null;
@@ -618,14 +564,14 @@ class indexModel {
             this.collectSearchBtn.classList.toggle('active');
 
             // 要執行的搜尋
-            const dtJson = await this.collectSearchPosts(userId);
+            const dtJson = await this.collectSearchPosts(userId, this.lat, this.lon);
             return dtJson;
             
         }
     };
 
     // 使用者自己的貼文資料搜尋
-    async ownSearchPosts(userId) {
+    async ownSearchPosts(userId, lat, lon) {
         try{
             let urlPara = "";
             // 判斷是否有關鍵字
@@ -633,7 +579,7 @@ class indexModel {
                 const paraEncode = new URLSearchParams();
                 paraEncode.set("city", this.cityName.join(","));
 
-                urlPara = `?country=${this.countryName}&${paraEncode.toString()}&types=${this.typeName}&lat=${this.lat}&lon=${this.lon}&user_id=${userId}&search=own&km=${this.searchDisNum}`;
+                urlPara = `?country=${this.countryName}&${paraEncode.toString()}&types=${this.typeName}&lat=${lat}&lon=${lon}&user_id=${userId}&search=own&km=${this.searchDisNum}`;
 
                 const response = await fetch(`/api/search/own/post${urlPara}`,{
                     method: "GET",
@@ -651,7 +597,7 @@ class indexModel {
                 return dt.data;
             }
 
-            urlPara = `?lat=${this.lat}&lon=${this.lon}&types=${this.typeName}&user_id=${userId}&search=own&km=${this.searchDisNum}`;
+            urlPara = `?lat=${lat}&lon=${lon}&types=${this.typeName}&user_id=${userId}&search=own&km=${this.searchDisNum}`;
 
             const response = await fetch(`/api/search/locate/own/post${urlPara}`,{
                 method: "GET",
@@ -675,14 +621,14 @@ class indexModel {
         
     };
 
-    async collectSearchPosts(userId) {
+    async collectSearchPosts(userId, lat, lon) {
         try{
             const paraEncode = new URLSearchParams();
             paraEncode.set("city", this.cityName.join(","));
 
             let urlPara = "";
             if (this.rejectPosition === true){
-                urlPara = `?country=${this.countryName}&${paraEncode.toString()}&types=${this.typeName}&lat=${this.lat}&lon=${this.lon}&user_id=${userId}&search=collect&km=${this.searchDisNum}`;
+                urlPara = `?country=${this.countryName}&${paraEncode.toString()}&types=${this.typeName}&lat=${lat}&lon=${lon}&user_id=${userId}&search=collect&km=${this.searchDisNum}`;
 
                 const response = await fetch(`/api/search/own/post${urlPara}`,{
                     method: "GET",
@@ -700,7 +646,7 @@ class indexModel {
                 return dt.data;
             }
 
-            urlPara = `?lat=${this.lat}&lon=${this.lon}&types=${this.typeName}&user_id=${userId}&search=collect&km=${this.searchDisNum}`;
+            urlPara = `?lat=${lat}&lon=${lon}&types=${this.typeName}&user_id=${userId}&search=collect&km=${this.searchDisNum}`;
 
             const response = await fetch(`/api/search/locate/own/post${urlPara}`,{
                 method: "GET",
@@ -855,7 +801,41 @@ class indexModel {
             this.viewLoginSignin.close();
         }
     }
-    
+
+    async anotherSearchBtnHidden() {
+        this.ownSearchBtn.classList.remove('active');
+        this.collectSearchBtn.classList.remove('active');
+    };
+
+    async movingMapOwnBtnProcessing(userId, lat, lon) {
+        if (this.rejectPosition === true){
+            if (this.countryName !== "選擇地區" && this.cityName.length > 0 && this.typeName !== ""){
+                // 要執行的搜尋
+                const dtJson = await this.ownSearchPosts(userId, lat, lon);
+                return dtJson;
+            }
+            return null;
+        }
+
+        // 要執行的搜尋
+        const dtJson = await this.ownSearchPosts(userId, lat, lon);
+        return dtJson;
+    };
+
+    async movingMapCollectBtnProcessing(userId, lat, lon) {
+        if (this.rejectPosition === true){
+            if (this.countryName !== "選擇地區" && this.cityName.length > 0 && this.typeName !== ""){
+                // 要執行的搜尋
+                const dtJson = await this.collectSearchPosts(userId, lat, lon);
+                return dtJson;
+            };
+            return null;
+        }
+
+        // 要執行的搜尋
+        const dtJson = await this.collectSearchPosts(userId, lat, lon);
+        return dtJson;
+    };
 }
 
 const indexM = new indexModel();
