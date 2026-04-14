@@ -233,7 +233,8 @@ async function mutationPostObs() {
                 try{
                     postEachOneClick();
                 }catch{
-                    console.log("設置貼文觸發功能發生錯誤。");
+                    //console.log("設置貼文觸發功能發生錯誤。");
+                    return;
                 }
             }
         });
@@ -258,7 +259,8 @@ async function mutationCollectObs() {
                 try{
                     postEachOneClick();
                 }catch{
-                    console.log("設置貼文觸發功能發生錯誤。");
+                    //console.log("設置貼文觸發功能發生錯誤。");
+                    return;
                 }
             }
         });

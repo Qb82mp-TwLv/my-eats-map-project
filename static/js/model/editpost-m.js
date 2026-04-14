@@ -65,7 +65,7 @@ class editPostModel {
         const dt = await response.json();
 
         if (!response.ok || dt.error !== undefined){
-            console.log("取得地區資料出現錯誤。");
+            //console.log("取得地區資料出現錯誤。");
             return {"city":[]};
         }else{
             return dt.data;
@@ -81,7 +81,7 @@ class editPostModel {
 
         await new Promise(delay => setTimeout(delay, 100));
         if (!response.ok || dt.error !== undefined){
-            console.log("取得地區資料出現錯誤。");
+            //console.log("取得地區資料出現錯誤。");
         }else{
             return dt;
         } 
@@ -110,7 +110,7 @@ class editPostModel {
             this.countryItem.classList.toggle('active');
             return;
         }
-        console.log("抱歉，找不到選擇地區的物件。");
+        //console.log("抱歉，找不到選擇地區的物件。");
     };
 
     cityOptionClick() {
@@ -120,7 +120,7 @@ class editPostModel {
             this.cityItem.classList.toggle('active');
             return;
         }
-        console.log("抱歉，找不到選擇城市的物件。");
+        //console.log("抱歉，找不到選擇城市的物件。");
     };
 
     typeOptionClick() {
@@ -131,7 +131,7 @@ class editPostModel {
             return;
         }
 
-        console.log("抱歉，找不到選擇店家種類的物件。");
+        //console.log("抱歉，找不到選擇店家種類的物件。");
     };
 
     droplistOptionHidden() {
@@ -157,7 +157,8 @@ class editPostModel {
             const value = await response.json();
 
             if (!response.ok || value.error!== undefined){
-                console.log("地圖發生錯誤。");
+                //console.log("地圖發生錯誤。");
+                return;
             }else{
                 const mapkey = value.data;
 
@@ -174,7 +175,8 @@ class editPostModel {
                 
             }
         }catch(error){
-            console.log("地圖發生錯誤。");
+            //console.log("地圖發生錯誤。");
+            return;
         };
     }
 
@@ -215,7 +217,7 @@ class editPostModel {
             const selectPlace = placesComplete.getPlace();
 
             if (!selectPlace.geometry || !selectPlace.name){
-                console.log("搜尋地點過程中，找不到輸入地點的相關資訊");
+                //console.log("搜尋地點過程中，找不到輸入地點的相關資訊");
                 alert("請從建議列表欄中，選取要使用的地點。");
                 return;
             }

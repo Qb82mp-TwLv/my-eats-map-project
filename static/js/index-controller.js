@@ -44,7 +44,6 @@ async function verify_user_token() {
         headshotFunc();
         addPostFunc();
     }catch(error){
-        console.log("驗證會員失敗");
         visitorProcess();
         followPostSearch("none")
     }
@@ -664,7 +663,8 @@ async function get_user_position() {
             get_position_error, 
             );
     }else{
-        console.log("使用者的瀏覽器不支援取定位的功能");
+        //console.log("使用者的瀏覽器不支援取定位的功能");
+        return;
     }
 }
 
