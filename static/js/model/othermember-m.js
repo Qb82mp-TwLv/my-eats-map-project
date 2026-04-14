@@ -93,7 +93,7 @@ class othermemberModel {
 
             return "0";
         }catch(error) {
-            console.log("取追蹤人數出現錯誤");
+            //console.log("取追蹤人數出現錯誤");
             return "0";
         }
     };
@@ -115,7 +115,7 @@ class othermemberModel {
 
             return "0";
         }catch(error) {
-            console.log("取粉絲人數出現錯誤");
+            //console.log("取粉絲人數出現錯誤");
             return "0";
         }
     };
@@ -148,7 +148,8 @@ class othermemberModel {
 
             return null;
         }catch(error) {
-            console.log("取發文的貼文資料發生錯誤");
+            //console.log("取發文的貼文資料發生錯誤");
+            return;
         }
     };
 
@@ -170,7 +171,8 @@ class othermemberModel {
 
             return null;
         }catch(error) {
-            console.log("取收藏的貼文資料發生錯誤");
+            //console.log("取收藏的貼文資料發生錯誤");
+            return;
         }
         
     };
@@ -197,14 +199,14 @@ class othermemberModel {
 
             await new Promise(delay => setTimeout(delay, 200));
             if (!response.ok || dt.error !== undefined){
-                console.log("取發文內容發生錯誤");
+                //console.log("取發文內容發生錯誤");
                 return null;
             }
 
             return dt.data;
 
         }catch(error){
-            console.log("取發文內容發生錯誤");
+            //console.log("取發文內容發生錯誤");
             return null;
         }
     };
@@ -249,7 +251,8 @@ class othermemberModel {
             });
 
         }catch{
-            console.log("按讚動作發生錯誤");
+            //console.log("按讚動作發生錯誤");
+            return;
         }
     }
 
@@ -267,7 +270,8 @@ class othermemberModel {
             });
 
         }catch{
-            console.log("收藏動作發生錯誤");
+            //console.log("收藏動作發生錯誤");
+            return;
         }
     }
 
@@ -299,7 +303,8 @@ class othermemberModel {
 
             return dt.data;
         }catch{
-            console.log("取粉絲資訊發生錯誤");
+            //console.log("取粉絲資訊發生錯誤");
+            return;
         }
     }
 
@@ -324,7 +329,7 @@ class othermemberModel {
 
             return true;
         }catch{
-            console.log("追蹤動作發生錯誤");
+            //console.log("追蹤動作發生錯誤");
             return false;
         }
     }

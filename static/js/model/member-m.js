@@ -90,7 +90,7 @@ class memberModel {
 
             return "0";
         }catch(error) {
-            console.log("取追蹤人數出現錯誤");
+            //console.log("取追蹤人數出現錯誤");
             return "0";
         }
     };
@@ -112,7 +112,7 @@ class memberModel {
 
             return "0";
         }catch(error) {
-            console.log("取粉絲人數出現錯誤");
+            //console.log("取粉絲人數出現錯誤");
             return "0";
         }
     };
@@ -145,7 +145,8 @@ class memberModel {
 
             return null;
         }catch(error) {
-            console.log("取發文的貼文資料發生錯誤");
+            //console.log("取發文的貼文資料發生錯誤");
+            return;
         }
     };
 
@@ -167,7 +168,8 @@ class memberModel {
 
             return null;
         }catch(error) {
-            console.log("取收藏的貼文資料發生錯誤");
+            //console.log("取收藏的貼文資料發生錯誤");
+            return;
         }
         
     };
@@ -222,7 +224,7 @@ class memberModel {
                 
                 await new Promise(delay => setTimeout(delay, 100));
                 if (!response.ok || dt.error !== undefined){
-                    console.log("大頭照更新失敗");
+                    //console.log("大頭照更新失敗");
                     return null;
                 }else{
                     this.previewImg.onload = () => {
@@ -233,7 +235,8 @@ class memberModel {
                 };
 
             }catch{
-                console.log("大頭照更新失敗");
+                //console.log("大頭照更新失敗");
+                return;
             }
 
             return null;
@@ -289,14 +292,14 @@ class memberModel {
 
             await new Promise(delay => setTimeout(delay, 200));
             if (!response.ok || dt.error !== undefined){
-                console.log("取發文內容發生錯誤");
+                //console.log("取發文內容發生錯誤");
                 return null;
             }
 
             return dt.data;
 
         }catch(error){
-            console.log("取發文內容發生錯誤");
+            //console.log("取發文內容發生錯誤");
             return null;
         }
     };
@@ -341,7 +344,8 @@ class memberModel {
             });
 
         }catch{
-            console.log("按讚動作發生錯誤");
+            //console.log("按讚動作發生錯誤");
+            return;
         }
     }
 
@@ -359,7 +363,8 @@ class memberModel {
             });
 
         }catch{
-            console.log("收藏動作發生錯誤");
+            //console.log("收藏動作發生錯誤");
+            return;
         }
     }
 
@@ -439,7 +444,8 @@ class memberModel {
 
             return dt.data;
         }catch{
-            console.log("取粉絲資訊發生錯誤");
+            //console.log("取粉絲資訊發生錯誤");
+            return;
         }
     }
 
@@ -464,7 +470,7 @@ class memberModel {
 
             return true;
         }catch{
-            console.log("追蹤動作發生錯誤");
+            //console.log("追蹤動作發生錯誤");
             return false;
         }
     }

@@ -58,7 +58,7 @@ class indexModel {
 
         await new Promise(delay => setTimeout(delay, 100));
         if (!response.ok || dt.error !== undefined){
-            console.log("取得地區資料出現錯誤。");
+            //console.log("取得地區資料出現錯誤。");
             return null;
         }else{
             return dt;
@@ -74,7 +74,7 @@ class indexModel {
 
         await new Promise(delay => setTimeout(delay, 100));
         if (!response.ok || dt.error !== undefined){
-            console.log("取得地區資料出現錯誤。");
+            //console.log("取得地區資料出現錯誤。");
             return {"city":[]};
         }else{
             return dt.data;
@@ -90,7 +90,7 @@ class indexModel {
 
         await new Promise(delay => setTimeout(delay, 100));
         if (!response.ok || dt.error !== undefined){
-            console.log("取得地區資料出現錯誤。");
+            //console.log("取得地區資料出現錯誤。");
             return null;
         }else{
             return dt;
@@ -104,7 +104,7 @@ class indexModel {
             this.countryItem.classList.toggle('active');
             return;
         }
-        console.log("抱歉，找不到選擇地區的物件。");
+        //console.log("抱歉，找不到選擇地區的物件。");
     };
 
     cityOptionClick() {
@@ -114,7 +114,7 @@ class indexModel {
             this.cityItem.classList.toggle('active');
             return;
         }
-        console.log("抱歉，找不到選擇城市的物件。");
+        //console.log("抱歉，找不到選擇城市的物件。");
     };
 
     typeOptionClick() {
@@ -125,7 +125,7 @@ class indexModel {
             return;
         }
 
-        console.log("抱歉，找不到選擇店家種類的物件。");
+        //console.log("抱歉，找不到選擇店家種類的物件。");
     };
 
     // 有問題，之後再修正
@@ -189,14 +189,16 @@ class indexModel {
             const value = await response.json();
 
             if (!response.ok || value.error!== undefined){
-                console.log("地圖發生錯誤。");
+                //console.log("地圖發生錯誤。");
+                return;
             }else{
                 this.mapkey = value.data;
             }
 
             await new Promise(delay => setTimeout(delay, 200));
         }catch{
-            console.log("地圖發生錯誤。");
+            //console.log("地圖發生錯誤。");
+            return;
         };
 
         return this.mapkey;
@@ -213,12 +215,14 @@ class indexModel {
 
             await new Promise(delay => setTimeout(delay, 100));
             if (!response.ok || value.error!== undefined){
-                console.log("地圖發生錯誤。");
+                //console.log("地圖發生錯誤。");
+                return;
             }else{
                 mapid = value.data;
             }
         }catch{
-            console.log("地圖發生錯誤。");
+            //console.log("地圖發生錯誤。");
+            return;
         };
 
         return mapid;
@@ -235,10 +239,10 @@ class indexModel {
 
                 return {lat, lng};
             }else{
-                console.log("找不到定位點。");
+                //console.log("找不到定位點。");
             }
         }catch{
-            console.log("定位發生錯誤。");
+            //console.log("定位發生錯誤。");
         };
 
         return {lat: "nan", lng: "nan"};
@@ -268,9 +272,10 @@ class indexModel {
                 return;
             }
 
-            console.log("取得經緯度發生錯誤");
+            //console.log("取得經緯度發生錯誤");
         }catch(error){
-            console.log("取得經緯度發生錯誤");
+            //console.log("取得經緯度發生錯誤");
+            return;
         }
     };
 
@@ -325,7 +330,7 @@ class indexModel {
 
             await new Promise(delay => setTimeout(delay, 200));
             if (!response.ok || dt.error !== undefined){
-                console.log("搜尋發生錯誤");
+                //console.log("搜尋發生錯誤");
                 return null;
             }
 
@@ -354,7 +359,7 @@ class indexModel {
 
             await new Promise(delay => setTimeout(delay, 200));
             if (!response.ok || dt.error !== undefined){
-                console.log("搜尋發生錯誤");
+                //console.log("搜尋發生錯誤");
                 return null;
             }
 
@@ -385,7 +390,7 @@ class indexModel {
 
             await new Promise(delay => setTimeout(delay, 200));
             if (!response.ok || dt.error !== undefined){
-                console.log("搜尋發生錯誤");
+                //console.log("搜尋發生錯誤");
                 return null;
             }
 
@@ -476,7 +481,8 @@ class indexModel {
             });
 
         }catch{
-            console.log("按讚動作發生錯誤");
+            //console.log("按讚動作發生錯誤");
+            return;
         }
     };
 
@@ -494,7 +500,8 @@ class indexModel {
             });
 
         }catch{
-            console.log("收藏動作發生錯誤");
+            //console.log("收藏動作發生錯誤");
+            return;
         }
     };
 
@@ -590,7 +597,7 @@ class indexModel {
 
                 await new Promise(delay => setTimeout(delay, 200));
                 if (!response.ok || dt.error !== undefined){
-                    console.log("搜尋發生錯誤");
+                    //console.log("搜尋發生錯誤");
                     return null;
                 }
 
@@ -608,14 +615,14 @@ class indexModel {
 
             await new Promise(delay => setTimeout(delay, 200));
             if (!response.ok || dt.error !== undefined){
-                console.log("搜尋發生錯誤");
+                //console.log("搜尋發生錯誤");
                 return null;
             }
 
             return dt.data;
             
         }catch(error){
-            console.log("搜尋發生錯誤");
+            //console.log("搜尋發生錯誤");
             return null;
         }
         
@@ -639,7 +646,7 @@ class indexModel {
 
                 await new Promise(delay => setTimeout(delay, 200));
                 if (!response.ok || dt.error !== undefined){
-                    console.log("搜尋發生錯誤");
+                    //console.log("搜尋發生錯誤");
                     return null;
                 }
 
@@ -657,14 +664,14 @@ class indexModel {
 
             await new Promise(delay => setTimeout(delay, 200));
             if (!response.ok || dt.error !== undefined){
-                console.log("搜尋發生錯誤");
+                //console.log("搜尋發生錯誤");
                 return null;
             }
 
             return dt.data;
             
         }catch(error){
-            console.log("搜尋發生錯誤");
+            //console.log("搜尋發生錯誤");
             return null;
         }
         
@@ -706,7 +713,7 @@ class indexModel {
 
             return true;
         }catch{
-            console.log("追蹤動作發生錯誤");
+            //console.log("追蹤動作發生錯誤");
             return false;
         }
     }

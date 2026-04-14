@@ -63,7 +63,7 @@ async def log_in(user_data: log_in_info, response: Response):
                 key="session_token",
                 value=token,
                 httponly=True,
-                secure=False,      # 本端開發測試用
+                secure=True,      # 本端開發測試用
                 samesite="lax",    
                 path="/"
             ) 
@@ -220,17 +220,19 @@ async def upload_headshot_img(user_id: int=Form(), headshot: str=Form(None), ima
                         return JSONResponse({"error": "圖片檔案過大。"})
                     image.file.seek(0)
 
-                    _result = False
-                    if "mapImg_" in headshot:
-                        headshot_name = headshot
-                        await clear_CDN_cache()
-                        _result = True
-                    else:
-                        _result = await db.user_headshot_info(user_id, headshot_name)
+                    _result = await db.user_headshot_info(user_id, headshot_name)
 
                     if _result != False:
                         img_backet_name = os.getenv("API_AWS_BUCKET_NAME")
-                        s3=boto3.client("s3")
+                        s3 = boto3.client("s3")
+
+                        if "mapImg_" in headshot:
+                            await clear_CDN_cache()
+                            s3.delete_object(
+                                Bucket= img_backet_name,
+                                Key="eatsmap/"+headshot
+                            )
+                        
                         s3.upload_fileobj(
                             Fileobj=image.file,
                             Bucket=img_backet_name,
@@ -239,6 +241,7 @@ async def upload_headshot_img(user_id: int=Form(), headshot: str=Form(None), ima
                         )
                         dt_json = await get_CDN_image(headshot_name)
                         return JSONResponse(dt_json)
+
                     
                 return JSONResponse({"error": "更換大頭照發生錯誤。"})
             except Exception as e:

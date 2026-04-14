@@ -46,8 +46,8 @@ async function verify_user_token() {
 async function createPostOptionItem() {
     const countryStr = sessionStorage.getItem("country");
     const typeStr = await postCommentM.getTypesOptionName();
-    const types = typeStr.data.types;
     if (countryStr !== null && typeStr !== null){
+        const types = typeStr.data.types;
         const countryStrSplit = countryStr.split(",");
         const countrySelect = document.querySelector(".country-select");
 

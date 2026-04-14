@@ -74,7 +74,7 @@ class postCommentModel {
         const dt = await response.json();
 
         if (!response.ok || dt.error !== undefined){
-            console.log("取得地區資料出現錯誤。");
+            //console.log("取得地區資料出現錯誤。");
             return {"city":[]};
         }else{
             return dt.data;
@@ -90,7 +90,8 @@ class postCommentModel {
 
         await new Promise(delay => setTimeout(delay, 100));
         if (!response.ok || dt.error !== undefined){
-            console.log("取得地區資料出現錯誤。");
+            //console.log("取得地區資料出現錯誤。");
+            return null;
         }else{
             return dt;
         } 
@@ -119,7 +120,7 @@ class postCommentModel {
             this.countryItem.classList.toggle('active');
             return;
         }
-        console.log("抱歉，找不到選擇地區的物件。");
+        //console.log("抱歉，找不到選擇地區的物件。");
     };
 
     cityOptionClick() {
@@ -129,7 +130,7 @@ class postCommentModel {
             this.cityItem.classList.toggle('active');
             return;
         }
-        console.log("抱歉，找不到選擇城市的物件。");
+        //console.log("抱歉，找不到選擇城市的物件。");
     };
 
     typeOptionClick() {
@@ -140,7 +141,7 @@ class postCommentModel {
             return;
         }
 
-        console.log("抱歉，找不到選擇店家種類的物件。");
+        //console.log("抱歉，找不到選擇店家種類的物件。");
     };
 
     droplistOptionHidden() {
@@ -260,7 +261,8 @@ class postCommentModel {
             const value = await response.json();
 
             if (!response.ok || value.error!== undefined){
-                console.log("地圖發生錯誤。");
+                //console.log("地圖發生錯誤。");
+                return;
             }else{
                 const mapkey = value.data;
 
@@ -277,7 +279,8 @@ class postCommentModel {
                 
             }
         }catch(error){
-            console.log("地圖發生錯誤。");
+            //console.log("地圖發生錯誤。");
+            return;
         };
     }
 
@@ -319,7 +322,7 @@ class postCommentModel {
             const selectPlace = placesComplete.getPlace();
 
             if (!selectPlace.geometry || !selectPlace.name){
-                console.log("搜尋地點過程中，找不到輸入地點的相關資訊");
+                //console.log("搜尋地點過程中，找不到輸入地點的相關資訊");
                 this.explainStrToast.fire({
                     icon: "info",
                     title: "請從建議列表欄中，選取要使用的地點。",
