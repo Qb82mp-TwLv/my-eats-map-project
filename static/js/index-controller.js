@@ -38,7 +38,7 @@ async function verify_user_token() {
         viewMemberFunc();
 
         await new Promise(delay => setTimeout(delay, 200));
-        setMemberInfo(dt.data.headshot, dt.data.name, dt.data.nickname);       
+        setMemberInfo(dt.data.id, dt.data.name, dt.data.nickname);       
         userId=dt.data.id;
         followPostSearch(dt.data.id);
         headshotFunc();
@@ -743,11 +743,11 @@ async function otherMemberCenter(id) {
     });
 }
 
-async function setMemberInfo(imgNm, user_name, nickname) {
+async function setMemberInfo(user_id, user_name, nickname) {
     // 修改大頭照
-    const headshotUrl = await indexM.getHeadshotUrl(imgNm)
-    if (imgNm === null){
-        indexV.setHeadshotImg(imgNm);
+    const headshotUrl = await indexM.getHeadshotUrl(user_id)
+    if (headshotUrl === null){
+        indexV.setHeadshotImg(null);
     }else{
         indexV.setHeadshotImg(headshotUrl);
     }

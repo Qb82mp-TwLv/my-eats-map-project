@@ -1,3 +1,4 @@
+from contextlib import asynccontextmanager
 from fastapi import *
 from fastapi.responses import FileResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
@@ -6,9 +7,20 @@ from controller.user import router as user_router
 from controller.post import router as post_router
 from starlette.middleware.cors import CORSMiddleware
 from dotenv import load_dotenv
+from model.dbusing import db
 import os
 
-app=FastAPI()
+# 用於FastAPI的生命週期設定
+@asynccontextmanager
+async def redis_update_to_db_lifespan(app: FastAPI):
+    # 伺服器啟動會執行
+    yield
+
+    # 伺服器終止時會關閉
+    db.db_conf.disconnected()
+
+
+app=FastAPI(lifespan=redis_update_to_db_lifespan)
 app.include_router(index_router)
 app.include_router(user_router)
 app.include_router(post_router)
@@ -17,7 +29,7 @@ app.mount("/static", StaticFiles(directory="static"), name="static")
 
 # 避免其他人直接偷換殼
 app.add_middleware(CORSMiddleware,
-                   allow_origins=[("網址位置")],
+                   allow_origins=["執行網址"],
                    allow_credentials=True,
                    allow_methods=[
                        "GET",
@@ -51,7 +63,7 @@ async def post_comment(request: Request):
 async def edit_post(post_id: int, request: Request):
     return FileResponse("./static/editpost.html", media_type="text/html")
 
-@app.get("/api/mapvalue")
+@app.get("/api/map/key")
 async def map_value():
     try:
         load_dotenv()
@@ -60,7 +72,7 @@ async def map_value():
     except Exception:
         return JSONResponse({"error": "取地圖金鑰發生錯誤。"})
     
-@app.get("/api/mapid")
+@app.get("/api/map/id")
 async def map_value():
     try:
         load_dotenv()
@@ -68,3 +80,4 @@ async def map_value():
         return JSONResponse({"data": _result})
     except Exception:
         return JSONResponse({"error": "取地圖圖型發生錯誤。"})
+    

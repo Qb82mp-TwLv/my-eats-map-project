@@ -58,7 +58,7 @@ class editPostModel {
     }
 
     async getCityOptionName(country) {
-        const response = await fetch(`/api/cityname?country=${country}`, {
+        const response = await fetch(`/api/city?country=${country}`, {
             method: "GET",
             credentials: "include",
         });
@@ -73,7 +73,7 @@ class editPostModel {
     }
 
     async getTypesOptionName() {
-        const response = await fetch(`/api/typesname`, {
+        const response = await fetch(`/api/types`, {
             method: "GET",
             credentials: "include",
         });
@@ -111,6 +111,7 @@ class editPostModel {
             return;
         }
         //console.log("抱歉，找不到選擇地區的物件。");
+        return;
     };
 
     cityOptionClick() {
@@ -121,6 +122,7 @@ class editPostModel {
             return;
         }
         //console.log("抱歉，找不到選擇城市的物件。");
+        return;
     };
 
     typeOptionClick() {
@@ -132,6 +134,7 @@ class editPostModel {
         }
 
         //console.log("抱歉，找不到選擇店家種類的物件。");
+        return;
     };
 
     droplistOptionHidden() {
@@ -150,7 +153,7 @@ class editPostModel {
 
     async getMapValue() { 
         try{
-            const response = await fetch("/api/mapvalue", {
+            const response = await fetch("/api/map/key", {
                 method: "GET",
                 credentials: "include",
             });
@@ -242,9 +245,9 @@ class editPostModel {
         });
     }
 
-    async editPostInfo(posId, userId) {
+    async editPostInfo(post_id, user_id) {
         try{
-            const response = await fetch(`/api/article/edit?post_id=${posId}&&user_id=${userId}`, {
+            const response = await fetch(`/api/posts/${post_id}?user_id=${user_id}&using=edit_post`, {
                 method: "GET",
                 credentials:"include",
             });
@@ -296,7 +299,7 @@ class editPostModel {
         return textImgName;
     }
 
-    async saveEditPostInfo(postId, id, saveImgArr, delImgArr) {  
+    async saveEditPostInfo(post_id, id, saveImgArr, delImgArr) {  
         try{
             let foodNameText = "";
             let foodPriceText = "";
@@ -338,7 +341,7 @@ class editPostModel {
                 restaurantTypes !== "全部種類" && restaurantComment !== ""){
 
                 const formData = new FormData();
-                formData.append("post_id", postId);
+                // formData.append("post_id", postId);
                 formData.append("user_id", id);
                 formData.append("rest_name", restaurantName);
                 formData.append("rest_address", restaurantAddress);
@@ -359,7 +362,7 @@ class editPostModel {
                     formData.append("del_image[]", delImgArr[i]);
                 }
 
-                const response = await fetch("/api/article/edit", {
+                const response = await fetch(`/api/posts/${post_id}`, {
                     method: "PUT",
                     credentials: "include",
                     body: formData,

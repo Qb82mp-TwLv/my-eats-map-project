@@ -33,7 +33,7 @@ class memberSettingModel {
 
     async logOutSubmit() {
         this.loaderUI.classList.toggle('active');
-        const response = await fetch(`/api/user/logout`, {
+        const response = await fetch(`/api/user/auth/logout`, {
             method: "POST",
             credentials: "include",
         });
@@ -75,7 +75,7 @@ class memberSettingModel {
             }
 
             try{
-                const response = await fetch("/api/user/infoupdate", {
+                const response = await fetch(`/api/user`, {
                     method: "PATCH",
                     credentials: "include",
                     headers: {"Content-Type": "application/json"},
@@ -118,7 +118,7 @@ class memberSettingModel {
             }
 
             try{
-                const response = await fetch("/api/uer/updatepw", {
+                const response = await fetch(`/api/user/password`, {
                     method: "PATCH",
                     credentials: "include",
                     headers: {"Content-Type": "application/json"},

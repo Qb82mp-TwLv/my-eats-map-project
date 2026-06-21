@@ -1,22 +1,6 @@
 from dotenv import load_dotenv
 import os
 
-def user_follows_people(dt):
-    if type(dt) != bool:
-        return {"data": {
-            "count": dt[0]
-        }}
-
-    return {"error": "取追蹤人數出現錯誤。"}
-
-def user_fans_people(dt):
-    if type(dt) != bool:
-        return {"data": {
-            "count": dt[0]
-        }}
-
-    return {"error": "取粉絲人數出現錯誤。"}
-
 def user_posts_data(dt):
     if type(dt) != bool:
         dt_json = {
@@ -123,3 +107,20 @@ def fans_member_info(dt):
         return dt_json
     
     return {"data": None}
+
+
+def follow_user_info(dt):
+    try:
+        _result = {
+            "data":[]
+        }
+
+        i = 0
+        for (id, name) in dt:
+            dt_list = {str(i):[id, name]}
+            _result["data"].append(dt_list)
+            i+=1
+
+        return _result
+    except Exception:
+        return {"error": "整理追蹤的資料發生錯誤。"}

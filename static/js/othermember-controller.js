@@ -91,15 +91,14 @@ async function set_member_info(dt) {
     if (dt.headshot === null){
         othermemberV.settingHeadshot(null);
     }else{
-        const headshotUrl = await othermemberM.getHeadshotUrl(dt.headshot)
+        const headshotUrl = await othermemberM.getHeadshotUrl(dt.id)
         othermemberV.settingHeadshot(headshotUrl);
     }
-    // 追蹤人數
-    setTrackerNumber(dt.id);
-    // 粉絲人數
-    setFansNumber(dt.id);
     // 粉絲資訊
     fansOptionItem(dt.id);
+    // 追蹤人數
+    setTrackerNumber(dt.id);
+    
     // 切換發文與收藏的按鈕
     memberPostAndCollectSwitchButton(dt.id);
     // 取會員面的會員發文、收藏資料
@@ -115,11 +114,10 @@ async function setTrackerNumber(id) {
     }
 };
 
-async function setFansNumber(id) {
+async function setFansNumber() {
     const fansCountText = document.querySelector(".fans-number-info");
     if (fansCountText){
-        const fansNum = await othermemberM.get_fans_number(id);
-        fansCountText.textContent = String(fansNum);
+        fansCountText.textContent = String(othermemberM.fansCount);
     }
 };
 
@@ -183,7 +181,7 @@ async function  singlePostLikeAndFavoriteBtn(id) {
                 likeCountNum.textContent = String(likeCount);
 
                 const postId = parseInt(likeCountNum.dataset.postId);
-                othermemberM.likeCountSubmit(id, postId, "yes");
+                othermemberM.likeCountSubmit(id, postId);
             }else{
                 postlikeBtn.src = "/static/img/heart-nocolor.png";
                 postlikeBtn.dataset.like="no";
@@ -191,7 +189,7 @@ async function  singlePostLikeAndFavoriteBtn(id) {
                 likeCountNum.textContent = String(likeCount);
 
                 const postId = parseInt(likeCountNum.dataset.postId);
-                othermemberM.likeCountSubmit(id, postId, "no");
+                othermemberM.deleteLikeCountSubmit(id, postId);
             }
         });
     };
@@ -210,7 +208,7 @@ async function  singlePostLikeAndFavoriteBtn(id) {
                 collectCountNum.textContent = String(collectCount);
 
                 const postId = parseInt(collectCountNum.dataset.postId);
-                othermemberM.collectCountSubmit(id, postId, "yes");
+                othermemberM.collectCountSubmit(id, postId);
             }else{
                 postCollecteBtn.src = "/static/img/bookmark-nocolor.png";
                 postCollecteBtn.dataset.collect="no";
@@ -218,7 +216,7 @@ async function  singlePostLikeAndFavoriteBtn(id) {
                 collectCountNum.textContent = String(collectCount);
 
                 const postId = parseInt(collectCountNum.dataset.postId);
-                othermemberM.collectCountSubmit(id, postId, "no");
+                othermemberM.deleteCollectCountSubmit(id, postId);
             }
         });
     };
@@ -262,14 +260,17 @@ async function postEachOneClick() {
 
 mutationPostObs();
 async function mutationPostObs() {
-    let getTagCount = 0;
+    let isTriggered = false; // 新增一個旗標，確保只會執行一次
 
     const observerPost = new MutationObserver(function (tags) {
         tags.forEach(function (tag) {
-            getTagCount++;
-            const count = othermemberV.postCount;
+            const currentPostCount = document.querySelectorAll('.posts-content-container .post-img').length;
+            const targetCount = othermemberV.postCount;
 
-            if (getTagCount === count){
+            if (isTriggered) return;
+
+            if (currentPostCount === targetCount){
+                isTriggered = true;
                 observerPost.disconnect();
                 try{
                     postEachOneClick();
@@ -288,14 +289,17 @@ async function mutationPostObs() {
 }
 
 async function mutationCollectObs() {
-    let getTagCount = 0;
+    let isTriggered = false; // 新增一個旗標，確保只會執行一次
 
     const observerPost = new MutationObserver(function (tags) {
         tags.forEach(function (tag) {
-            getTagCount++;
-            const count = othermemberV.collectCount;
+            const currentPostCount = document.querySelectorAll('.collect-content-container .post-img').length;
+            const targetCount = othermemberV.collectCount;
 
-            if (getTagCount === count){
+            if (isTriggered) return;
+
+            if (currentPostCount === targetCount){
+                isTriggered = true;
                 observerPost.disconnect();
                 try{
                     postEachOneClick();
@@ -436,6 +440,8 @@ async function fansOptionItem(id) {
     const fansInfo = await othermemberM.getFansInfo(id, userId);
     if (fansInfo !== null){
         genFansOption(fansInfo);
+        // 粉絲人數
+        setFansNumber();
     }
 }
 

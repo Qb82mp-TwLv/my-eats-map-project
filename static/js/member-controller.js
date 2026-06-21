@@ -50,38 +50,21 @@ async function set_member_info(dt) {
     if (dt.headshot === null){
         memberV.settingHeadshot(null);
     }else{
-        const headshotUrl = await memberM.getHeadshotUrl(dt.headshot)
+        const headshotUrl = await memberM.getHeadshotUrl(dt.id)
         memberV.settingHeadshot(headshotUrl);
     }
     
-    setTrackerNumber(dt.id);
-    setFansNumber(dt.id);
     memberPostAndCollectSwitchButton(dt.id);
     setChangeImg(dt.id);
     headshotUpdate(dt.headshot);
     fansOptionItem(dt.id);
+    setTrackerNumber(dt.id);
 
     const postsData = await memberM.getAllPosts(dt.id);
     memberV.genPostsInMember(postsData);
     
     singlePostLikeAndFavoriteBtn(dt.id);
 }
-
-async function setTrackerNumber(id) {
-    const trackerCountText = document.querySelector(".tracker-number-info");
-    if (trackerCountText){
-        const trackerNum = await memberM.get_tracker_number(id);
-        trackerCountText.textContent = String(trackerNum);
-    }
-};
-
-async function setFansNumber(id) {
-    const fansCountText = document.querySelector(".fans-number-info");
-    if (fansCountText){
-        const fansNum = await memberM.get_fans_number(id);
-        fansCountText.textContent = String(fansNum);
-    }
-};
 
 function memberPostAndCollectSwitchButton(id) {
     const postsBtn = document.querySelector(".post-btn");
@@ -142,9 +125,6 @@ async function headshotUpdate(imgNM){
                 memberM.closeSelectHeadshot();
             }
 
-            setTimeout(() => {
-                location.reload();
-            }, 1500);
         });
     }
 }
@@ -189,6 +169,7 @@ async function postEachOneClick() {
 
                 const postId = postB.dataset.postId;
                 const postData = await memberM.getPostContent(postId, userId);
+
                 if (postData !== null){
                     memberV.modifyPostInfoInDialog(postData);
                     likeCountNum.dataset.postId=postId;
@@ -221,14 +202,17 @@ async function postEachOneClick() {
 
 mutationPostObs();
 async function mutationPostObs() {
-    let getTagCount = 0;
+    let isTriggered = false; // 新增一個旗標，確保只會執行一次
 
     const observerPost = new MutationObserver(function (tags) {
         tags.forEach(function (tag) {
-            getTagCount++;
-            const count = memberV.postCount;
+            const currentPostCount = document.querySelectorAll('.posts-content-container .post-img').length;
+            const targetCount = memberV.postCount;
 
-            if (getTagCount === count){
+            if (isTriggered) return;
+
+            if (currentPostCount === targetCount){
+                isTriggered = true;
                 observerPost.disconnect();
                 try{
                     postEachOneClick();
@@ -247,14 +231,17 @@ async function mutationPostObs() {
 }
 
 async function mutationCollectObs() {
-    let getTagCount = 0;
+    let isTriggered = false; // 新增一個旗標，確保只會執行一次
 
     const observerPost = new MutationObserver(function (tags) {
         tags.forEach(function (tag) {
-            getTagCount++;
-            const count = memberV.collectCount;
+            const currentPostCount = document.querySelectorAll('.collect-content-container .post-img').length;
+            const targetCount = memberV.collectCount;
 
-            if (getTagCount === count){
+            if (isTriggered) return;
+
+            if (currentPostCount === targetCount){
+                isTriggered = true;
                 observerPost.disconnect();
                 try{
                     postEachOneClick();
@@ -276,7 +263,7 @@ async function setSlideBtn() {
     memberM.slideBtnClick();
 }
 
-async function singlePostLikeAndFavoriteBtn(id) {
+async function buildPostsClick(id) {
     const postlikeBtn = document.getElementById("like-btn");
     if (postlikeBtn){
         postlikeBtn.addEventListener("click", function() {
@@ -291,7 +278,7 @@ async function singlePostLikeAndFavoriteBtn(id) {
                 likeCountNum.textContent = String(likeCount);
 
                 const postId = parseInt(likeCountNum.dataset.postId);
-                memberM.likeCountSubmit(id, postId, "yes");
+                memberM.likeCountSubmit(id, postId);
             }else{
                 postlikeBtn.src = "/static/img/heart-nocolor.png";
                 postlikeBtn.dataset.like="no";
@@ -299,11 +286,15 @@ async function singlePostLikeAndFavoriteBtn(id) {
                 likeCountNum.textContent = String(likeCount);
 
                 const postId = parseInt(likeCountNum.dataset.postId);
-                memberM.likeCountSubmit(id, postId, "no");
+                memberM.deleteLikeCountSubmit(id, postId);
             }
         });
     };
+}
 
+async function singlePostLikeAndFavoriteBtn(id) {
+    buildPostsClick(id);
+    
     const postCollecteBtn = document.getElementById("favorite-btn");
     if (postCollecteBtn){
         postCollecteBtn.addEventListener("click", function() {
@@ -318,7 +309,7 @@ async function singlePostLikeAndFavoriteBtn(id) {
                 collectCountNum.textContent = String(collectCount);
 
                 const postId = parseInt(collectCountNum.dataset.postId);
-                memberM.collectCountSubmit(id, postId, "yes");
+                memberM.collectCountSubmit(id, postId);
             }else{
                 postCollecteBtn.src = "/static/img/bookmark-nocolor.png";
                 postCollecteBtn.dataset.collect="no";
@@ -326,7 +317,7 @@ async function singlePostLikeAndFavoriteBtn(id) {
                 collectCountNum.textContent = String(collectCount);
 
                 const postId = parseInt(collectCountNum.dataset.postId);
-                memberM.collectCountSubmit(id, postId, "no");
+                memberM.deleteCollectCountSubmit(id, postId);
             }
         });
     };
@@ -371,6 +362,7 @@ if (postDelBtn){
     });
 };
 
+
 const postAskDeleteBtn = document.querySelector(".ask-delete-btn");
 if (postAskDeleteBtn){
     postAskDeleteBtn.addEventListener("click", async function() {
@@ -401,9 +393,19 @@ if (postAskDeleteBtn){
             title: "貼文刪除成功",
             text: "成功將此貼文刪除了!",
         });
-        setTimeout(() => {
-            location.reload();
-        }, 3100);
+
+        setTimeout(async() => {
+            const postContainer = document.querySelector(".posts-content-container");
+            postContainer.textContent="";
+
+            mutationPostObs();
+
+            const postsData = await memberM.getAllPosts(userId);
+            memberV.genPostsInMember(postsData);
+            buildPostsClick(userId);
+
+        }, 100);
+
     });
 };
 
@@ -523,14 +525,30 @@ function genFansOption(dt) {
     }
 }
 
+async function setFansNumber() {
+    const fansCountText = document.querySelector(".fans-number-info");
+    if (fansCountText){
+        fansCountText.textContent = String(memberM.fansCount);
+    }
+};
+
 // 取的粉絲資料，並將資料建置於下拉式中
 async function fansOptionItem(id) {
     // 先取得粉絲的資訊
     const fansInfo = await memberM.getFansInfo(id, userId);
     if (fansInfo !== null){
         genFansOption(fansInfo);
+        setFansNumber();
     }
 }
+
+async function setTrackerNumber(id) {
+    const trackerCountText = document.querySelector(".tracker-number-info");
+    if (trackerCountText){
+        const trackerNum = await memberM.get_tracker_number(id);
+        trackerCountText.textContent = String(trackerNum);
+    }
+};
 
 
 verify_user_token();

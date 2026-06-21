@@ -225,6 +225,40 @@ class db_interaction:
         
         return _result
     
+    async def query_user_headshot(self, user_id):
+        dt_json = False
+        
+        cursor = self.db_operate.cursor()
+        query_user_info = """SELECT headshot_img FROM `member_info`
+                            WHERE user_id=%s;"""
+        query_data = (user_id,)
+
+        cursor.execute(query_user_info, query_data)
+        findOne = cursor.fetchone()
+
+        if findOne != None:
+            dt_json = findOne[0]
+
+        if cursor is not None:
+            cursor.close()
+        return dt_json
+
+    async def get_user_headshot(self, user_id):
+        _result = False
+        try:
+            _result = await self.query_user_headshot(user_id)
+        except OperationalError:
+            self.db_conf.restart_connect()
+            try:
+                _result = await self.query_user_headshot(user_id)
+            except Exception:
+                return False
+        except Exception as e:
+            print("token error,"+str(e))
+            return False
+        
+        return _result
+
     async def query_follows_count(self, user_id):
         dt_json = False
         
@@ -475,8 +509,8 @@ class db_interaction:
     
     async def query_post_data(self, post_id, user_id):
         dt_json = False
-        
-        cursor = self.db_operate.cursor()
+
+        cursor = self.db_operate.cursor()         
         query_post = """SELECT M.user_id, M.name, M.nickname, M.headshot_img, P.store_location, P.store_name,
                         P.food_img, P.food_name, P.food_price, P.food_comment, P.dining_area,
                         IFNULL(collect.c_count, 0) AS collect_total,
@@ -510,7 +544,7 @@ class db_interaction:
         cursor.execute(query_post, query_data)
         findOne = cursor.fetchone()
 
-        if findOne != None:
+        if findOne is not None:
             dt_json = findOne
 
         if cursor is not None:
@@ -588,22 +622,27 @@ class db_interaction:
         
         return _result
         
-    def add_or_del_like(self, user_id, post_id, action):
+
+    def add_like_count(self, user_id, post_id, action):
         dt_json = False
         
         cursor = self.db_operate.cursor()
         action_like=""
 
-        if action == "yes":
-            action_like = """INSERT INTO `like_info` (user_id, post_id)
-                            VALUES (%s, %s);"""
-        if action == "no":
-            action_like = """DELETE FROM `like_info` WHERE user_id=%s AND post_id=%s;"""
+        try:
+            if action == "yes":
+                action_like = """INSERT INTO `like_info` (user_id, post_id)
+                                VALUES (%s, %s);"""
+            if action == "no":
+                action_like = """DELETE FROM `like_info` WHERE user_id=%s AND post_id=%s;"""
+            
+            like_data = (user_id, post_id)
 
-        like_data = (user_id, post_id)
+            cursor.execute(action_like, like_data)
+        except:
+            pass
 
-        cursor.execute(action_like, like_data)      
-        if cursor.rowcount == 1:
+        if cursor.rowcount >= 1:
             self.db_operate.commit()
             dt_json = True
         else:
@@ -616,11 +655,11 @@ class db_interaction:
     def post_like_action(self, user_id, post_id, action):  
         _result = False
         try:
-            _result = self.add_or_del_like(user_id, post_id, action)
+            _result = self.add_like_count(user_id, post_id, action)
         except OperationalError:
             self.db_conf.restart_connect()
             try:
-                _result = self.add_or_del_like(user_id, post_id, action)
+                _result = self.add_like_count(user_id, post_id, action)
             except Exception as e:
                 print("post like action error,"+str(e))
                 return False
@@ -630,22 +669,27 @@ class db_interaction:
         
         return _result
 
+    
     def add_or_del_collect(self, user_id, post_id, action):
         dt_json = False
         
         cursor = self.db_operate.cursor()
         action_like=""
 
-        if action == "yes":
-            action_like = """INSERT INTO `collect_info` (user_id, post_id)
-                            VALUES (%s, %s);"""
-        if action == "no":
-            action_like = """DELETE FROM `collect_info` WHERE user_id=%s AND post_id=%s;"""
+        try:
+            if action == "yes":
+                action_like = """INSERT INTO `collect_info` (user_id, post_id)
+                                VALUES (%s, %s);"""
+            if action == "no":
+                action_like = """DELETE FROM `collect_info` WHERE user_id=%s AND post_id=%s;"""
 
-        like_data = (user_id, post_id)
+            like_data = (user_id, post_id)
 
-        cursor.execute(action_like, like_data)      
-        if cursor.rowcount == 1:
+            cursor.execute(action_like, like_data)  
+        except:
+            pass
+
+        if cursor.rowcount >= 1:
             self.db_operate.commit()
             dt_json = True
         else:
@@ -671,24 +715,17 @@ class db_interaction:
             return False
         
         return _result
-    
-    async def add_or_del_follow(self, post_user_id, user_id, action):
+
+    async def add_follower(self, post_user_id, user_id):
         dt_json = False
         
         cursor = self.db_operate.cursor()
-        action_like=""
-        follow_data = ""
-
-        if action == "yes":
-            action_like = """INSERT INTO `tracker_info` (user_id, tracker_id, tracker_name)
-                            SELECT %s, %s, user.name
-                            FROM `member_info` AS m
-                            LEFT JOIN `member_info` AS user ON user.user_id=%s
-                            GROUP BY user.user_id;"""
-            follow_data = (user_id, post_user_id, post_user_id)
-        if action == "no":
-            action_like = """DELETE FROM `tracker_info` WHERE user_id=%s AND tracker_id=%s;"""
-            follow_data = (user_id, post_user_id)
+        action_like = """INSERT INTO `tracker_info` (user_id, tracker_id, tracker_name)
+                        SELECT %s, %s, user.name
+                        FROM `member_info` AS m
+                        LEFT JOIN `member_info` AS user ON user.user_id=%s
+                        GROUP BY user.user_id;"""
+        follow_data = (user_id, post_user_id, post_user_id)
 
         cursor.execute(action_like, follow_data)      
         if cursor.rowcount == 1:
@@ -701,19 +738,54 @@ class db_interaction:
             cursor.close()
         return dt_json
 
-    async def user_follow_action(self, post_user_id,user_id, action):  
+    async def add_user_follow(self, post_user_id,user_id):  
         _result = False
         try:
-            _result = await self.add_or_del_follow(post_user_id,user_id, action)
+            _result = await self.add_follower(post_user_id,user_id)
         except OperationalError:
             self.db_conf.restart_connect()
             try:
-                _result = await self.add_or_del_follow(post_user_id,user_id, action)
+                _result = await self.add_follower(post_user_id,user_id)
             except Exception as e:
-                print("user follow action error,"+str(e))
+                print("add user follow error,"+str(e))
                 return False
         except Exception as e:
-            print("user follow action error,"+str(e))
+            print("add user follow error,"+str(e))
+            return False
+        
+        return _result
+
+    async def delete_follower(self, post_user_id, user_id):
+        dt_json = False
+        
+        cursor = self.db_operate.cursor()
+        action_like = """DELETE FROM `tracker_info` WHERE user_id=%s AND tracker_id=%s;"""
+        follow_data = (user_id, post_user_id)
+
+        cursor.execute(action_like, follow_data)      
+        if cursor.rowcount == 1:
+            self.db_operate.commit()
+            dt_json = True
+        else:
+            self.db_operate.rollback()
+
+        if cursor is not None:
+            cursor.close()
+        return dt_json
+
+    async def delete_user_follow(self, post_user_id,user_id):  
+        _result = False
+        try:
+            _result = await self.delete_follower(post_user_id,user_id)
+        except OperationalError:
+            self.db_conf.restart_connect()
+            try:
+                _result = await self.delete_follower(post_user_id,user_id)
+            except Exception as e:
+                print("delete user follow error,"+str(e))
+                return False
+        except Exception as e:
+            print("delete user follow error,"+str(e))
             return False
         
         return _result
@@ -1374,7 +1446,7 @@ class db_interaction:
         
         return _result
 
-    async def query_own_locate_posts_data(self, lat, lon, types, user_id, search, km):
+    async def query_own_locate_posts_data(self, lat, lon, search, types, user_id, keyword, km):
         dt_json = []
         
         cursor = self.db_operate.cursor()
@@ -1425,6 +1497,7 @@ class db_interaction:
                                 ) < (%s*1000)
                                 GROUP BY post.lat, post.lon;"""
                 query_data = (lat, km, lat, km, lon, km, lon, km, user_id, types, lon, lat, km)
+            
             if (types == "全部種類"):
                 query_posts = """SELECT MIN(post.post_id), post.lat, post.lon, MIN(post.food_img) FROM (
                                 SELECT * FROM `posts_info`
@@ -1439,7 +1512,7 @@ class db_interaction:
                                 ) < (%s*1000)
                                 GROUP BY post.lat, post.lon;"""
                 query_data = (lat, km, lat, km, lon, km, lon, km, user_id, lon, lat, km)
-       
+            
         cursor.execute(query_posts, query_data)
         findAll = cursor.fetchall()
 
@@ -1450,14 +1523,14 @@ class db_interaction:
             cursor.close()
         return dt_json
 
-    async def get_own_locate_posts_info(self, lat, lon, types, user_id, search, km):
+    async def get_own_locate_posts_info(self, lat, lon, search, types, user_id, km):
         _result = False
         try:
-            _result = await self.query_own_locate_posts_data(lat, lon, types, user_id, search, km)
+            _result = await self.query_own_locate_posts_data(lat, lon, search, types, user_id, km)
         except OperationalError:
             self.db_conf.restart_connect()
             try:
-                _result = await self.query_own_locate_posts_data(lat, lon, types, user_id, search, km)
+                _result = await self.query_own_locate_posts_data(lat, lon, search, types, user_id, km)
             except Exception as e:
                 print("search own locate post error,"+str(e))
                 return False

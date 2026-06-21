@@ -4,7 +4,7 @@ from model.dbusing import db
 from pydantic import BaseModel
 from dotenv import load_dotenv
 from view.loginV import signin_info, login_info, verify_user_info
-from view.memberV import user_follows_people, user_fans_people, user_posts_data, user_collect_data, other_member_info, fans_member_info
+from view.memberV import user_posts_data, user_collect_data, other_member_info, fans_member_info, follow_user_info
 from view.get_image import get_CDN_image, clear_CDN_cache
 from model.user_validation import jwtDecode
 from datetime import datetime
@@ -92,7 +92,7 @@ async def confirm_user_info(session_token: str=Cookie(None)):
         
     return JSONResponse({"data": None})
 
-@router.post("/api/user/logout")
+@router.post("/api/user/auth/logout")
 def log_out(response: Response):
     # 刪除HttpOnly Cookie
     response.delete_cookie(
@@ -119,7 +119,7 @@ async def get_other_user_info(memb_id: int, session_token: str=Cookie(None)):
     return JSONResponse({"data": None})
 
 # 取得粉絲的資訊
-@router.get("/api/user/fansinfo")
+@router.get("/api/user/fans")
 async def member_fans_info(user_id: int, user_follow_id: int, session_token: str=Cookie(None)):  # user_follow_id指進到會員中心的人ID，要判斷他是否有追蹤他人的粉絲
     if session_token != None:
         confirm_token = jwtDecode(session_token)
@@ -131,29 +131,41 @@ async def member_fans_info(user_id: int, user_follow_id: int, session_token: str
     return JSONResponse({"data": None})
 
 
-# 取得追蹤的人數
-@router.get("/api/user/follow")
-async def get_user_follows(user_id: int, session_token: str=Cookie(None)):
+@router.get("/api/user/followers")
+async def get_user_follow(user_id: str, session_token: str=Cookie(None)):
     if (session_token != None):
         confirm_token = jwtDecode(session_token)
         if isinstance(confirm_token, dict):
-            get_dt = await db.get_user_follow_number(user_id)
-            dt_json = user_follows_people(get_dt)
-            return JSONResponse(dt_json)
-        
-    return JSONResponse({"error": "取追蹤人數出現錯誤。"})
+            get_dt = await db.get_user_follow_info(user_id)
+            if get_dt != False:
+                dt_json = follow_user_info(get_dt)
+                return JSONResponse(dt_json)
+    
+    return JSONResponse({"error": "取得追蹤的資料發生錯誤。"})
 
-# 取得粉絲的人數
-@router.get("/api/user/fans")
-async def get_user_fans(user_id: int, session_token: str=Cookie(None)):
+
+@router.post("/api/user/following")
+async def post_like_count_action(post_user_id: int=Form(...), user_id: int=Form(...), session_token: str=Cookie(None)):
     if (session_token != None):
         confirm_token = jwtDecode(session_token)
         if isinstance(confirm_token, dict):
-            get_dt = await db.get_user_fans_number(user_id)
-            dt_json = user_fans_people(get_dt)
-            return JSONResponse(dt_json)
-        
-    return JSONResponse({"error": "取粉絲人數出現錯誤。"})
+            get_dt = await db.add_user_follow(post_user_id,user_id)
+            if (get_dt != False):
+                return JSONResponse({"ok": True})
+
+    return JSONResponse({"error": "儲存追蹤者的資訊出現錯誤。"})
+
+@router.delete("/api/user/following")
+async def post_like_count_action(post_user_id: int=Form(...), user_id: int=Form(...), session_token: str=Cookie(None)):
+    if (session_token != None):
+        confirm_token = jwtDecode(session_token)
+        if isinstance(confirm_token, dict):
+            get_dt = await db.delete_user_follow(post_user_id,user_id)
+            if (get_dt != False):
+                return JSONResponse({"ok": True})
+
+    return JSONResponse({"error": "移除被使用者追蹤的他人資訊，過程中發生錯誤。"})
+
 
 @router.get("/api/user/posts")
 async def get_user_posts(user_id: int, session_token: str=Cookie(None)):
@@ -167,7 +179,7 @@ async def get_user_posts(user_id: int, session_token: str=Cookie(None)):
         
     return JSONResponse({"error": "取得所有發的貼文部分發生錯誤。"})
 
-@router.get("/api/user/collect")
+@router.get("/api/user/favorites")
 async def get_user_posts(user_id: int, session_token: str=Cookie(None)):
     if (session_token != None):
         confirm_token = jwtDecode(session_token)
@@ -178,8 +190,8 @@ async def get_user_posts(user_id: int, session_token: str=Cookie(None)):
         
     return JSONResponse({"error": "取得所有收藏的貼文部分發生錯誤。"})
 
-@router.get("/api/user/headshoturl")
-async def get_user_headshot_url(headshot_name: str, session_token: str=Cookie(None)):
+@router.get("/api/user/headshot")
+async def get_user_headshot_url(user_id: int, session_token: str=Cookie(None)):
     try:
         if (session_token != None):
             confirm_token = jwtDecode(session_token)
@@ -188,20 +200,23 @@ async def get_user_headshot_url(headshot_name: str, session_token: str=Cookie(No
                 CDN_path = os.getenv("API_AWS_CDN_PATH")
                 url = f"{CDN_path}/"
 
-                await clear_CDN_cache()
-                imgUrl = url+headshot_name
+                headshot_name = await db.get_user_headshot(user_id)
+     
+                if headshot_name != False:
+                    await clear_CDN_cache()
+                    imgUrl = url+headshot_name
 
-                await asyncio.sleep(0.1)
-                return JSONResponse({"data": {
-                    "img": imgUrl
-                }})
+                    await asyncio.sleep(0.1)
+                    return JSONResponse({"data": {
+                        "img": imgUrl
+                    }})
         return JSONResponse({"data": None})
     except Exception as e:
         print("大頭照: %s",str(e))
         return JSONResponse({"data": None})
 
 @router.post("/api/user/headshot")
-async def upload_headshot_img(user_id: int=Form(), headshot: str=Form(None), image: UploadFile=File(...), session_token: str=Cookie(None)):
+async def upload_headshot_img(user_id: int=Form(...), headshot: str=Form(None), image: UploadFile=File(...), session_token: str=Cookie(None)):
     load_dotenv()
     if (session_token != None):
         confirm_token = jwtDecode(session_token)
@@ -253,7 +268,7 @@ class member_save_info(BaseModel):
     name: str
     nickname: str
 
-@router.patch("/api/user/infoupdate")
+@router.patch("/api/user")
 async def save_user_info(member_info: member_save_info, session_token: str=Cookie(None)):
     if (session_token != None):
         confirm_token = jwtDecode(session_token)
@@ -269,7 +284,7 @@ class member_save_pw(BaseModel):
     oldpassword: str
     newpassword: str
 
-@router.patch("/api/uer/updatepw")
+@router.patch("/api/user/password")
 async def save_user_pw(member_pw: member_save_pw, session_token: str=Cookie(None)):
     if (session_token != None):
         confirm_token = jwtDecode(session_token)

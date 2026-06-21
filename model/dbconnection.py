@@ -1,4 +1,4 @@
-from mysql.connector import errors, OperationalError
+from mysql.connector import errors
 import mysql.connector
 from dotenv import load_dotenv
 import os
@@ -36,5 +36,9 @@ class connection_database:
 
     def restart_connect(self):
         self._cnx.reconnect(attempts=2, delay=3)
+
+    def disconnected(self):
+        if self._cnx != None and self._cnx.is_connected:
+            self._cnx.close()
 
 db_init = connection_database()

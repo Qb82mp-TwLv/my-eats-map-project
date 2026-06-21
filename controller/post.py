@@ -10,7 +10,7 @@ import os, hashlib, boto3, asyncio
 
 router = APIRouter()
 
-@router.post("/api/article")
+@router.post("/api/posts")
 async def post_rest_content(user_id:int = Form(...),rest_name:str = Form(...),rest_address:str = Form(...),
                             rest_country:str = Form(...),rest_city:str = Form(...),rest_lat:Decimal = Form(...),
                             rest_lon:Decimal = Form(...),rest_type:str = Form(...),rest_comment:str = Form(...),
@@ -85,52 +85,74 @@ async def img_file_judgment(files):
         print(e)
         return {"error": "判斷檔案的過程發生錯誤"}, {"error": "發生錯誤"}
 
-
-@router.get("/api/article/{postId}")
-async def single_post_content(postId: int, user_id: int, session_token: str=Cookie(None)):
+# 在某一貼文的資訊
+@router.get("/api/posts/{post_id}")
+async def a_piece_of_post_content(post_id: int, user_id: int, using: str, session_token: str=Cookie(None)):
     if (session_token != None):
         confirm_token = jwtDecode(session_token)
         if isinstance(confirm_token, dict):
-            get_dt = await db.get_post_info(postId, user_id)
-            dt_json = post_content_data(get_dt)
-            await asyncio.sleep(0.1)
-            return JSONResponse(dt_json)
-        
-    return JSONResponse({"error": "取得一則發文的詳細內容出現錯誤。"})
+            
+            if using == "show_in_member":
+                post_dt = await single_post_content(post_id, user_id)
+                await asyncio.sleep(0.1)
+                return JSONResponse(post_dt)
+            
+            if using == "edit_post" and confirm_token["id"]==user_id:
+                post_dt = await edit_user_post(post_id, user_id)
+                return JSONResponse(post_dt)
 
-@router.post("/api/article/likecount")
-async def post_like_count_action(user_id: int=Form(...), post_id: int=Form(...), action: str=Form(...), session_token: str=Cookie(None), background_tasks: BackgroundTasks=None):
+    return JSONResponse({"error": "獲取一則貼文內容出現錯誤。"})
+
+
+async def single_post_content(post_id: int, user_id: int):
+    get_dt = await db.get_post_info(post_id, user_id)
+    dt_json = post_content_data(get_dt)
+    return dt_json
+
+
+@router.post("/api/posts/{post_id}/likes")
+async def post_like_count_action(post_id: int, user_id: int=Form(...), session_token: str=Cookie(None), background_tasks: BackgroundTasks=None):
     if (session_token != None):
         confirm_token = jwtDecode(session_token)
         if isinstance(confirm_token, dict):
             # 不需要回傳的值，所以不用等待
-            background_tasks.add_task(db.post_like_action,user_id, post_id, action)
+            background_tasks.add_task(db.post_like_action,user_id, post_id, "yes")
 
     return Response(status_code=status.HTTP_204_NO_CONTENT)
 
-@router.post("/api/article/collectcount")
-async def post_like_count_action(user_id: int=Form(...), post_id: int=Form(...), action: str=Form(...), session_token: str=Cookie(None), background_tasks: BackgroundTasks=None):
+@router.delete("/api/posts/{post_id}/likes")
+async def delete_post_like_count_action(post_id: int, user_id: int=Form(...), session_token: str=Cookie(None), background_tasks: BackgroundTasks=None):
     if (session_token != None):
         confirm_token = jwtDecode(session_token)
         if isinstance(confirm_token, dict):
             # 不需要回傳的值，所以不用等待
-            background_tasks.add_task(db.post_collect_action,user_id, post_id, action)
+            background_tasks.add_task(db.post_like_action,user_id, post_id, "no")
 
     return Response(status_code=status.HTTP_204_NO_CONTENT)
 
-@router.post("/api/article/follow")
-async def post_like_count_action(post_user_id: int=Form(...), user_id: int=Form(...), action: str=Form(...), session_token: str=Cookie(None)):
+@router.post("/api/posts/{post_id}/favorites")
+async def post_favorites_count_action(post_id: int, user_id: int=Form(...), session_token: str=Cookie(None), background_tasks: BackgroundTasks=None):
     if (session_token != None):
         confirm_token = jwtDecode(session_token)
         if isinstance(confirm_token, dict):
-            get_dt = await db.user_follow_action(post_user_id,user_id, action)
-            if (get_dt != False):
-                return JSONResponse({"ok": True})
+            # 不需要回傳的值，所以不用等待
+            background_tasks.add_task(db.post_collect_action,user_id, post_id, "yes")
 
-    return JSONResponse({"error": "儲存追蹤者的資訊出現錯誤。"})
+    return Response(status_code=status.HTTP_204_NO_CONTENT)
 
-@router.delete("/api/article/delete")
-async def del_user_post(post_id: int=Form(...), user_id: int=Form(...), img_list: List[str] = Form(..., alias="img_list[]"), session_token: str=Cookie(None)):
+@router.delete("/api/posts/{post_id}/favorites")
+async def delete_post_favorites_count_action(post_id: int, user_id: int=Form(...), session_token: str=Cookie(None), background_tasks: BackgroundTasks=None):
+    if (session_token != None):
+        confirm_token = jwtDecode(session_token)
+        if isinstance(confirm_token, dict):
+            # 不需要回傳的值，所以不用等待
+            background_tasks.add_task(db.post_collect_action,user_id, post_id, "no")
+
+    return Response(status_code=status.HTTP_204_NO_CONTENT)
+
+
+@router.delete("/api/posts/{post_id}")
+async def del_user_post(post_id: int, user_id: int=Form(...), img_list: List[str] = Form(..., alias="img_list[]"), session_token: str=Cookie(None)):
     if (session_token != None):
         confirm_token = jwtDecode(session_token)
         if isinstance(confirm_token, dict):
@@ -153,19 +175,13 @@ async def del_user_post(post_id: int=Form(...), user_id: int=Form(...), img_list
             
     return JSONResponse({"error": "未成功刪除此貼文資料。"})                    
             
-@router.get("/api/article/edit")
-async def edit_user_post(post_id: int, user_id: int, session_token: str=Cookie(None)):
-    if (session_token != None):
-        confirm_token = jwtDecode(session_token)
-        if isinstance(confirm_token, dict) and confirm_token["id"]==user_id:
-            get_dt = await db.get_edit_user_post(post_id, user_id)
-            dt_json = edit_post_data(get_dt)
-            return JSONResponse(dt_json)
-        
-    return JSONResponse({"error": "取要編輯的貼文內容發生錯誤。"})
+async def edit_user_post(post_id: int, user_id: int):
+    get_dt = await db.get_edit_user_post(post_id, user_id)
+    dt_json = edit_post_data(get_dt)
+    return dt_json
 
-@router.put("/api/article/edit")
-async def save_edit_user_post(post_id:int = Form(...) ,user_id:int = Form(...),rest_name:str = Form(...),rest_address:str = Form(...),
+@router.put("/api/posts/{post_id}")
+async def save_edit_user_post(post_id:int ,user_id:int = Form(...),rest_name:str = Form(...),rest_address:str = Form(...),
                             rest_country:str = Form(...),rest_city:str = Form(...),rest_lat:Decimal = Form(None),
                             rest_lon:Decimal = Form(None),rest_type:str = Form(...),rest_comment:str = Form(...),
                             rest_area:str = Form(""),rest_foodname:str = Form(...),rest_foodprice:str = Form(...),
@@ -193,3 +209,4 @@ async def save_edit_user_post(post_id:int = Form(...) ,user_id:int = Form(...),r
                     print(e)
     
     return JSONResponse({"error": "未成功更新貼文資料。"})
+
