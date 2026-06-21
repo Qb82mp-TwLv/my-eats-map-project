@@ -194,19 +194,4 @@ def marker_posts_data_visitor(dt):
         print(e)
         return {"error": "取標記圖示的貼文資料發生錯誤。"}
 
-def follow_user_info(dt):
-    try:
-        _result = {
-            "data":[]
-        }
-
-        i = 0
-        for (id, name) in dt:
-            dt_list = {str(i):[id, name]}
-            _result["data"].append(dt_list)
-            i+=1
-
-        return _result
-    except Exception:
-        return {"error": "整理追蹤的資料發生錯誤。"}
 

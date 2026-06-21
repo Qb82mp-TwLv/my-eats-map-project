@@ -17,8 +17,6 @@ class postCommentModel {
         this.storeDatail = document.querySelector(".name-address-text");
         this.restNameText = null;
         this.addressText = null;
-        // this.restNameText = document.querySelector(".rest-name-text");
-        // this.addressText = document.querySelector(".address-text");
         this.commentInfoText = document.querySelector(".comment-info");
         this.diningAreaInfoText = document.querySelector(".dining-area-info");
         // 貼文的餐廳經緯度
@@ -67,7 +65,7 @@ class postCommentModel {
     }
 
     async getCityOptionName(country) {
-        const response = await fetch(`/api/cityname?country=${country}`, {
+        const response = await fetch(`/api/city?country=${country}`, {
             method: "GET",
             credentials: "include",
         });
@@ -82,7 +80,7 @@ class postCommentModel {
     }
 
     async getTypesOptionName() {
-        const response = await fetch(`/api/typesname`, {
+        const response = await fetch(`/api/types`, {
             method: "GET",
             credentials: "include",
         });
@@ -228,7 +226,7 @@ class postCommentModel {
                         formData.append("image", this.imgFiles[i]);
                     };
                     
-                    const response = await fetch("/api/article", {
+                    const response = await fetch("/api/posts", {
                         method: "POST",
                         credentials: "include",
                         body: formData,
@@ -254,7 +252,7 @@ class postCommentModel {
 
     async getMapValue() { 
         try{
-            const response = await fetch("/api/mapvalue", {
+            const response = await fetch("/api/map/key", {
                 method: "GET",
                 credentials: "include",
             });

@@ -50,7 +50,7 @@ class indexModel {
     }
 
     async getCountryOptionName() {
-        const response = await fetch("/api/countryname", {
+        const response = await fetch("/api/country", {
             method: "GET",
             credentials: "include"
         });
@@ -66,7 +66,7 @@ class indexModel {
     }
 
     async getCityOptionName(country) {
-        const response = await fetch(`/api/cityname?country=${country}`, {
+        const response = await fetch(`/api/city?country=${country}`, {
             method: "GET",
             credentials: "include"
         });
@@ -82,7 +82,7 @@ class indexModel {
     }
 
     async getTypesOptionName(country, city) {
-        const response = await fetch(`/api/typesname?country=${country}&city=${city}`, {
+        const response = await fetch(`/api/types?country=${country}&city=${city}`, {
             method: "GET",
             credentials: "include"
         });
@@ -163,7 +163,7 @@ class indexModel {
 
     async getFollowOptionName(user_id) {
         try{
-            const response = await fetch(`/api/user/followmember?user_id=${user_id}`, {
+            const response = await fetch(`/api/user/followers?user_id=${user_id}`, {
                 method: "GET",
                 credentials: "include",
             });
@@ -182,7 +182,7 @@ class indexModel {
 
     async getMapValue() { 
         try{
-            const response = await fetch("/api/mapvalue", {
+            const response = await fetch("/api/map/key", {
                 method: "GET",
                 credentials: "include"
             });
@@ -207,7 +207,7 @@ class indexModel {
     async getMapId() {
         let mapid = "";
         try{
-            const response = await fetch("/api/mapid", {
+            const response = await fetch("/api/map/id", {
                 method: "GET",
                 credentials: "include"
             });
@@ -240,9 +240,11 @@ class indexModel {
                 return {lat, lng};
             }else{
                 //console.log("找不到定位點。");
+                return;
             }
         }catch{
             //console.log("定位發生錯誤。");
+            return;
         };
 
         return {lat: "nan", lng: "nan"};
@@ -285,9 +287,9 @@ class indexModel {
         return response.state;
     }
 
-    async getHeadshotUrl(imgNM) {
+    async getHeadshotUrl(user_id) {
         try{
-            const response = await fetch(`/api/user/headshoturl?headshot_name=${imgNM}`,{
+            const response = await fetch(`/api/user/headshot?user_id=${user_id}`,{
                 method: "GET",
                 credentials: "include"
             });
@@ -295,7 +297,7 @@ class indexModel {
             const dt = await response.json();
 
             await new Promise(delay => setTimeout(delay, 200));
-            if (!response.ok || dt.error !== undefined){
+            if (!response.ok || dt.data === null){
                 return null;
             }
 
@@ -316,12 +318,12 @@ class indexModel {
             let urlPara = "";
             // 判斷是否有關鍵字
             if (keyword !== ""){
-                urlPara = `?country=${country}&${paraEncode.toString()}&types=${storeType}&lat=${this.lat}&lon=${this.lon}&keyword=${keyword}&km=${this.searchDisNum}`;
+                urlPara = `?lat=${this.lat}&lon=${this.lon}&using=search_by_city&country=${country}&${paraEncode.toString()}&types=${storeType}&keyword=${keyword}&km=${this.searchDisNum}`;
             }else{
-                urlPara = `?country=${country}&${paraEncode.toString()}&types=${storeType}&lat=${this.lat}&lon=${this.lon}&km=${this.searchDisNum}`;
+                urlPara = `?lat=${this.lat}&lon=${this.lon}&using=search_by_city&country=${country}&${paraEncode.toString()}&types=${storeType}&km=${this.searchDisNum}`;
             }
 
-            const response = await fetch(`/api/search/post${urlPara}`,{
+            const response = await fetch(`/api/posts${urlPara}`,{
                 method: "GET",
                 credentials: "include"
             });
@@ -345,12 +347,12 @@ class indexModel {
             let urlPara = "";
             // 判斷是否有關鍵字
             if (keyword !== ""){
-                urlPara = `?lat=${lat}&lon=${lon}&types=${storeType}&keyword=${keyword}&km=${this.searchDisNum}`;
+                urlPara = `?lat=${lat}&lon=${lon}&using=search_by_geographic&types=${storeType}&keyword=${keyword}&km=${this.searchDisNum}`;
             }else{
-                urlPara = `?lat=${lat}&lon=${lon}&types=${storeType}&km=${this.searchDisNum}`;
+                urlPara = `?lat=${lat}&lon=${lon}&using=search_by_geographic&types=${storeType}&km=${this.searchDisNum}`;
             }
 
-            const response = await fetch(`/api/search/locate/post${urlPara}`,{
+            const response = await fetch(`/api/posts${urlPara}`,{
                 method: "GET",
                 credentials: "include"
             });
@@ -374,14 +376,14 @@ class indexModel {
             let urlPara = "";
             switch (user_id){
                 case null:
-                    urlPara=`?lat=${lat}&lon=${lon}`;
+                    urlPara=`?lat=${lat}&lon=${lon}&using=search_by_marker`;
                     break;
                 default:
-                    urlPara=`?lat=${lat}&lon=${lon}&user_id=${user_id}`;
+                    urlPara=`?lat=${lat}&lon=${lon}&using=search_by_marker&user_id=${user_id}`;
                     break;
             }
 
-            const response = await fetch(`/api/marker/posts${urlPara}`,{
+            const response = await fetch(`/api/posts${urlPara}`,{
                 method: "GET",
                 credentials: "include"
             });
@@ -416,7 +418,7 @@ class indexModel {
                         likeCountNum.textContent = String(likeCount);
 
                         const postId = parseInt(likeCountNum.dataset.postId);
-                        this.likeCountSubmit(user_id, postId, "yes");
+                        this.likeCountSubmit(user_id, postId);
                     }else{
                         likeBtnImg.src = "/static/img/heart-nocolor.png";
                         likeBtnImg.dataset.like="no";
@@ -424,7 +426,7 @@ class indexModel {
                         likeCountNum.textContent = String(likeCount);
 
                         const postId = parseInt(likeCountNum.dataset.postId);
-                        this.likeCountSubmit(user_id, postId, "no");
+                        this.deleteLikeCountSubmit(user_id, postId);
                     }
                 }else{
                     // 顯示登入畫面
@@ -448,7 +450,7 @@ class indexModel {
                         collectCountNum.textContent = String(collectCount);
 
                         const postId = parseInt(collectCountNum.dataset.postId);
-                        this.collectCountSubmit(user_id, postId, "yes");
+                        this.collectCountSubmit(user_id, postId);
                     }else{
                         collectBtnImg.src = "/static/img/bookmark-nocolor.png";
                         collectBtnImg.dataset.collect="no";
@@ -456,7 +458,7 @@ class indexModel {
                         collectCountNum.textContent = String(collectCount);
 
                         const postId = parseInt(collectCountNum.dataset.postId);
-                        this.collectCountSubmit(user_id, postId, "no");
+                        this.deleteCollectCountSubmit(user_id, postId);
                     }
                 }else{
                     // 顯示登入畫面
@@ -466,15 +468,13 @@ class indexModel {
         };
     };
 
-    async likeCountSubmit(user_id, post_id, action) {
+    async likeCountSubmit(user_id, post_id) {
         try{
             const formData = new FormData();
             formData.append("user_id", user_id);
-            formData.append("post_id", post_id);
-            formData.append("action", action);
 
             // const response = await 
-            const response = fetch(`/api/article/likecount`,{
+            const response = fetch(`/api/posts/${post_id}/likes`,{
                 method: "POST",
                 credentials: "include",
                 body:formData,
@@ -486,15 +486,52 @@ class indexModel {
         }
     };
 
-    async collectCountSubmit(user_id, post_id, action) {
+    async deleteLikeCountSubmit(user_id, post_id) {
+        try{
+            const formData = new FormData();
+            formData.append("user_id", user_id);
+
+            // const response = await 
+            const response = fetch(`/api/posts/${post_id}/likes`,{
+                method: "DELETE",
+                credentials: "include",
+                body:formData,
+            });
+
+        }catch{
+            //console.log("按讚動作發生錯誤");
+            return;
+        }
+    };
+
+    async collectCountSubmit(user_id, post_id) {
         try{
             const formData = new FormData();
             formData.append("user_id", user_id);
             formData.append("post_id", post_id);
-            formData.append("action", action);
+            // formData.append("action", action);
 
-            const response = fetch(`/api/article/collectcount`,{
+            const response = fetch(`/api/posts/${post_id}/favorites`,{
                 method: "POST",
+                credentials: "include",
+                body:formData,
+            });
+
+        }catch{
+            //console.log("收藏動作發生錯誤");
+            return;
+        }
+    };
+
+    async deleteCollectCountSubmit(user_id, post_id) {
+        try{
+            const formData = new FormData();
+            formData.append("user_id", user_id);
+            formData.append("post_id", post_id);
+            // formData.append("action", action);
+
+            const response = fetch(`/api/posts/${post_id}/favorites`,{
+                method: "DELETE",
                 credentials: "include",
                 body:formData,
             });
@@ -586,9 +623,9 @@ class indexModel {
                 const paraEncode = new URLSearchParams();
                 paraEncode.set("city", this.cityName.join(","));
 
-                urlPara = `?country=${this.countryName}&${paraEncode.toString()}&types=${this.typeName}&lat=${lat}&lon=${lon}&user_id=${userId}&search=own&km=${this.searchDisNum}`;
+                urlPara = `?lat=${lat}&lon=${lon}&using=search_by_own&search=own&country=${this.countryName}&${paraEncode.toString()}&types=${this.typeName}&km=${this.searchDisNum}&user_id=${userId}`;
 
-                const response = await fetch(`/api/search/own/post${urlPara}`,{
+                const response = await fetch(`/api/posts${urlPara}`,{
                     method: "GET",
                     credentials: "include"
                 });
@@ -604,9 +641,9 @@ class indexModel {
                 return dt.data;
             }
 
-            urlPara = `?lat=${lat}&lon=${lon}&types=${this.typeName}&user_id=${userId}&search=own&km=${this.searchDisNum}`;
+            urlPara = `?lat=${lat}&lon=${lon}&using=search_by_own&search=own&types=${this.typeName}&km=${this.searchDisNum}&user_id=${userId}`;
 
-            const response = await fetch(`/api/search/locate/own/post${urlPara}`,{
+            const response = await fetch(`/api/posts${urlPara}`,{
                 method: "GET",
                 credentials: "include"
             });
@@ -635,9 +672,9 @@ class indexModel {
 
             let urlPara = "";
             if (this.rejectPosition === true){
-                urlPara = `?country=${this.countryName}&${paraEncode.toString()}&types=${this.typeName}&lat=${lat}&lon=${lon}&user_id=${userId}&search=collect&km=${this.searchDisNum}`;
+                urlPara = `?lat=${lat}&lon=${lon}&using=search_by_own&search=collect&country=${this.countryName}&${paraEncode.toString()}&types=${this.typeName}&km=${this.searchDisNum}&user_id=${userId}`;
 
-                const response = await fetch(`/api/search/own/post${urlPara}`,{
+                const response = await fetch(`/api/posts${urlPara}`,{
                     method: "GET",
                     credentials: "include"
                 });
@@ -653,9 +690,9 @@ class indexModel {
                 return dt.data;
             }
 
-            urlPara = `?lat=${lat}&lon=${lon}&types=${this.typeName}&user_id=${userId}&search=collect&km=${this.searchDisNum}`;
+            urlPara = `?lat=${lat}&lon=${lon}&using=search_by_own&search=collect&types=${this.typeName}&user_id=${userId}&km=${this.searchDisNum}`;
 
-            const response = await fetch(`/api/search/locate/own/post${urlPara}`,{
+            const response = await fetch(`/api/posts${urlPara}`,{
                 method: "GET",
                 credentials: "include"
             });
@@ -687,7 +724,7 @@ class indexModel {
         }else if(followBtnObj.dataset.follow === "yes"){
             followBtnObj.textContent = "追蹤";
             followBtnObj.dataset.follow = "no";
-            const result = await this.setFollowUser(postUserId, user_id, "no");
+            const result = await this.deleteFollowUser(postUserId, user_id, "no");
             return result;
         }; 
     }
@@ -699,8 +736,34 @@ class indexModel {
             formData.append("user_id", user_id);
             formData.append("action", action);
 
-            const response = await fetch(`/api/article/follow`,{
+            const response = await fetch(`/api/user/following`,{
                 method: "POST",
+                credentials: "include",
+                body:formData,
+            });
+
+            const data = await response.json();
+
+            if(!response.ok || data.error !== undefined){
+                return false;
+            }
+
+            return true;
+        }catch{
+            //console.log("追蹤動作發生錯誤");
+            return false;
+        }
+    }
+
+    async deleteFollowUser(postUserId, user_id, action) {
+        try{
+            const formData = new FormData();
+            formData.append("post_user_id", postUserId);
+            formData.append("user_id", user_id);
+            formData.append("action", action);
+
+            const response = await fetch(`/api/user/following`,{
+                method: "DELETE",
                 credentials: "include",
                 body:formData,
             });

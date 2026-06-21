@@ -46,6 +46,8 @@ class memberModel {
 
         // 顯示粉絲資訊的區塊
         this.fansInfoItem = document.querySelector(".fans-info-droplist");
+        // 紀錄粉絲的數量
+        this.fansCount = 0;
     }
 
     async settingMemberInfo() {
@@ -75,7 +77,7 @@ class memberModel {
 
     async get_tracker_number(id) {
         try{
-            const response = await fetch(`/api/user/follow?user_id=${id}`, {
+            const response = await fetch(`/api/user/followers?user_id=${id}`, {
                 method: "GET",
                 credentials: "include",
             });
@@ -84,35 +86,14 @@ class memberModel {
 
             await new Promise(delay => setTimeout(delay, 200));
             if (dt.data !== undefined){
-                const trackerCount = dt.data.count;
+                // const trackerCount = dt.data.count;
+                const trackerCount = (dt.data).length;
                 return String(trackerCount);
             }
 
             return "0";
         }catch(error) {
             //console.log("取追蹤人數出現錯誤");
-            return "0";
-        }
-    };
-
-    async get_fans_number(id) {
-        try{
-            const response = await fetch(`/api/user/fans?user_id=${id}`, {
-                method: "GET",
-                credentials: "include",
-            });
-
-            const dt = await response.json();
-
-            await new Promise(delay => setTimeout(delay, 100));
-            if (dt.data !== undefined){
-                const fansCount = dt.data.count;
-                return String(fansCount);
-            }
-
-            return "0";
-        }catch(error) {
-            //console.log("取粉絲人數出現錯誤");
             return "0";
         }
     };
@@ -127,9 +108,9 @@ class memberModel {
         this.postCTN.className = "posts-content-hidden";
     };
 
-    async getAllPosts(id) {
+    async getAllPosts(user_id) {
         try{
-            const response = await fetch(`/api/user/posts?user_id=${id}`, {
+            const response = await fetch(`/api/user/posts?user_id=${user_id}`, {
                 method: "GET",
                 credentials: "include",
             });
@@ -152,7 +133,7 @@ class memberModel {
 
     async getAllCollect(id) {
         try{
-            const response = await fetch(`/api/user/collect?user_id=${id}`, {
+            const response = await fetch(`/api/user/favorites?user_id=${id}`, {
                 method: "GET",
                 credentials: "include",
             });
@@ -214,7 +195,7 @@ class memberModel {
             formData.append("headshot", imgNM);
             formData.append("image", this.imgFile); 
             try{
-                const response = await fetch("/api/user/headshot",{
+                const response = await fetch(`/api/user/headshot`,{
                     method: "POST",
                     credentials: "include",
                     body:formData,
@@ -259,9 +240,9 @@ class memberModel {
         });
     };
 
-    async getHeadshotUrl(imgNM) {
+    async getHeadshotUrl(user_id) {
         try{
-            const response = await fetch(`/api/user/headshoturl?headshot_name=${imgNM}`,{
+            const response = await fetch(`/api/user/headshot?user_id=${user_id}`,{
                 method: "GET",
                 credentials: "include",
             });
@@ -269,7 +250,7 @@ class memberModel {
             const dt = await response.json();
 
             await new Promise(delay => setTimeout(delay, 200));
-            if (!response.ok || dt.error !== undefined){
+            if (!response.ok || dt.data === null){
                 return null;
             }
 
@@ -283,7 +264,7 @@ class memberModel {
     async getPostContent(post_id, id) {
         // 取得post的資料
         try{
-            const response = await fetch(`/api/article/${post_id}?user_id=${id}`,{
+            const response = await fetch(`/api/posts/${post_id}?user_id=${id}&using=show_in_member`,{
                 method: "GET",
                 credentials: "include",
             });
@@ -292,14 +273,14 @@ class memberModel {
 
             await new Promise(delay => setTimeout(delay, 200));
             if (!response.ok || dt.error !== undefined){
-                //console.log("取發文內容發生錯誤");
+                // console.log("取發文內容發生錯誤");
                 return null;
             }
 
             return dt.data;
 
         }catch(error){
-            //console.log("取發文內容發生錯誤");
+            // console.log("取發文內容發生錯誤");
             return null;
         }
     };
@@ -330,14 +311,12 @@ class memberModel {
         });
     }
 
-    async likeCountSubmit(user_id, post_id, action) {
+    async likeCountSubmit(user_id, post_id) {
         try{
             const formData = new FormData();
             formData.append("user_id", user_id);
-            formData.append("post_id", post_id);
-            formData.append("action", action);
 
-            const response = fetch(`/api/article/likecount`,{
+            const response = fetch(`/api/posts/${post_id}/likes`,{
                 method: "POST",
                 credentials: "include",
                 body:formData,
@@ -349,14 +328,29 @@ class memberModel {
         }
     }
 
-    async collectCountSubmit(user_id, post_id, action) {
+    async deleteLikeCountSubmit(user_id, post_id) {
         try{
             const formData = new FormData();
             formData.append("user_id", user_id);
-            formData.append("post_id", post_id);
-            formData.append("action", action);
 
-            const response = fetch(`/api/article/collectcount`,{
+            const response = fetch(`/api/posts/${post_id}/likes`,{
+                method: "DELETE",
+                credentials: "include",
+                body:formData,
+            });
+
+        }catch{
+            //console.log("按讚動作發生錯誤");
+            return;
+        }
+    };
+
+    async collectCountSubmit(user_id, post_id) {
+        try{
+            const formData = new FormData();
+            formData.append("user_id", user_id);
+
+            const response = fetch(`/api/posts/${post_id}/favorites`,{
                 method: "POST",
                 credentials: "include",
                 body:formData,
@@ -367,6 +361,23 @@ class memberModel {
             return;
         }
     }
+
+    async deleteCollectCountSubmit(user_id, post_id) {
+        try{
+            const formData = new FormData();
+            formData.append("user_id", user_id);
+
+            const response = fetch(`/api/posts/${post_id}/favorites`,{
+                method: "DELETE",
+                credentials: "include",
+                body:formData,
+            });
+
+        }catch{
+            //console.log("收藏動作發生錯誤");
+            return;
+        }
+    };
 
     postOptionClick() {
         if (!this.postDropItem.classList.contains('active')){
@@ -399,7 +410,7 @@ class memberModel {
                 formData.append("img_list[]", postImageArr[i]);
             }
 
-            const response = await fetch(`/api/article/delete`, {
+            const response = await fetch(`/api/posts/${post_id}`, {
                 method: "DELETE",
                 credentials:"include",
                 body:formData,
@@ -432,7 +443,7 @@ class memberModel {
 
     async getFansInfo(userId, userFollowId) {
          try{
-            const response = await fetch(`/api/user/fansinfo?user_id=${userId}&user_follow_id=${userFollowId}`,{
+            const response = await fetch(`/api/user/fans?user_id=${userId}&user_follow_id=${userFollowId}`,{
                 method: "GET",
                 credentials: "include",
             });
@@ -442,6 +453,7 @@ class memberModel {
                 return null;
             }
 
+            this.fansCount = (dt.data).length;
             return dt.data;
         }catch{
             //console.log("取粉絲資訊發生錯誤");
@@ -449,15 +461,39 @@ class memberModel {
         }
     }
 
-    async setFollowUser(fansUserId, user_id, action) {
+    async addFollowUser(fansUserId, user_id) {
         try{
             const formData = new FormData();
             formData.append("post_user_id", fansUserId);
             formData.append("user_id", user_id);
-            formData.append("action", action);
 
-            const response = await fetch(`/api/article/follow`,{
+            const response = await fetch(`/api/user/following`,{
                 method: "POST",
+                credentials: "include",
+                body:formData,
+            });
+
+            const data = await response.json();
+
+            if(!response.ok || data.error !== undefined){
+                return false;
+            }
+
+            return true;
+        }catch{
+            //console.log("追蹤動作發生錯誤");
+            return false;
+        }
+    }
+
+    async deleteFollowUser(fansUserId, user_id) {
+        try{
+            const formData = new FormData();
+            formData.append("post_user_id", fansUserId);
+            formData.append("user_id", user_id);
+
+            const response = await fetch(`/api/user/following`,{
+                method: "DELETE",
                 credentials: "include",
                 body:formData,
             });
@@ -480,12 +516,12 @@ class memberModel {
         if (followBtnObj.dataset.follow === "no"){
             followBtnObj.textContent = "取消追蹤";
             followBtnObj.dataset.follow = "yes";
-            const result = await this.setFollowUser(fansUserId, user_id, "yes");
+            const result = await this.addFollowUser(fansUserId, user_id);
             return result;
         }else if(followBtnObj.dataset.follow === "yes"){
             followBtnObj.textContent = "追蹤";
             followBtnObj.dataset.follow = "no";
-            const result = await this.setFollowUser(fansUserId, user_id, "no");
+            const result = await this.deleteFollowUser(fansUserId, user_id);
             return result;
         }; 
     }

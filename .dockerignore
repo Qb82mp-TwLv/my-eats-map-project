@@ -213,6 +213,7 @@ pos.json
 types.json
 README_data.md
 sqlImg/
+project_img/
 private_key.pem
 public_key.pem
 Dockerfile
