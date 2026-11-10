@@ -2,6 +2,7 @@
 =========================
 My Eats Map網站可以透過地圖的方式，找出美食餐廳，同時，又可以推薦自己的美食口袋名單給其他人，讓所有的使用者都可以找到自己喜愛的美食。
 
+### (目前網站已停止使用)
 Website：<https://my-eats-map.com/>
 
 ![image](project_img/project_home_img.JPG)
